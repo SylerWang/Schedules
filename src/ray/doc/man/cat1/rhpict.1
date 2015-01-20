@@ -1,0 +1,162 @@
+RHPICT(1)                                                            RHPICT(1)
+
+
+
+NNAAMMEE
+       rhpict - render a RADIANCE picture from a holodeck file
+
+SSYYNNOOPPSSIISS
+       rrhhppiicctt [ ooppttiioonnss ] hhoollooddeecckk
+
+DDEESSCCRRIIPPTTIIOONN
+       _R_h_p_i_c_t  generates  one or more pictures from the RADIANCE holodeck file
+       _h_o_l_o_d_e_c_k and sends them to the standard output.  The _-_o option  may  be
+       used  to  specify  an alternate output file.  Other options specify the
+       viewing parameters and provide some control over the calculation.
+
+       The view as well as some of the other controls  are  shared  in  common
+       with  the  _r_p_i_c_t_(_1_) command.  The options that are unique to _r_h_p_i_c_t are
+       given first, followed by the more familiar ones.
+
+       --ss        Use the smooth resampling algorithm, which amounts to  linear
+                 interpolation between ray samples with additional edge detec-
+                 tion along color and object boundaries.  This is the default.
+
+       --rr _r_f     Use  random  resampling,  where  _r_f is a fraction from 0 to 1
+                 indicating the desired degree of randomness.  A random  frac-
+                 tion of 0 is not the same as smooth resampling, because there
+                 is no linear interpolation,  just  Voronoi  regions.   Values
+                 greater than 1 produce interesting underwater effects.
+
+       --xx _r_e_s    Set the maximum x resolution to _r_e_s_.
+
+       --yy _r_e_s    Set the maximum y resolution to _r_e_s_.
+
+       --ppaa _r_a_t   Set  the  pixel  aspect  ratio  (height  over  width) to _r_a_t_.
+                 Either the x or the y resolution will be reduced so that  the
+                 pixels  have  this  ratio  for the specified view.  If _r_a_t is
+                 zero, then the x and y resolutions will adhere to  the  given
+                 maxima.
+
+       --ppee _e_x_p_v_a_l
+                 Set  the  exposure  value  for the output pictures to _e_x_p_v_a_l_.
+                 Since filtering is performed by _r_h_p_i_c_t_, there is little sense
+                 in  passing  the output through _p_f_i_l_t_(_1_)_, other than changing
+                 the exposure.  This option eliminates that need.   The  value
+                 may  be  specified  either as a multiplier, or as a number f-
+                 stops preceeded by a '+' or '-' character.
+
+       --vvtt_t      Set view type to _t_.  If _t  is  'v',  a  perspective  view  is
+                 selected.  If _t is 'l', a parallel view is used.  A cylindri-
+                 cal panorma may be selected by setting _t to the  letter  'c'.
+                 This view is like a standard perspective vertically, but pro-
+                 jected on  a  cylinder  horizontally  (like  a  soupcan's-eye
+                 view).   Three fisheye views are provided as well; 'h' yields
+                 a hemispherical fisheye view, 'a' results in angular  fisheye
+                 distortion,  and 's' results in a planisphere (stereographic)
+                 projection.  A hemispherical fisheye is a projection  of  the
+                 hemisphere  onto  a  circle.  The maximum view angle for this
+                 type is 180 degrees.  An angular fisheye view is defined such
+                 that distance from the center of the image is proportional to
+                 the angle from the central view direction.  An angular  fish-
+                 eye  can  display  a full 360 degrees.  A planisphere fisheye
+                 view maintains angular relationships between  lines,  and  is
+                 commonly  used  for sun path analysis.  This is more commonly
+                 known as a "stereographic projection," but we avoid the  term
+                 here  so  as  not  to confuse it with a stereoscopic pair.  A
+                 planisphere fisheye can display up to (but not including) 360
+                 degrees, although distortion becomes extreme as this limit is
+                 approached.  Note that there is no  space  between  the  view
+                 type option and its single letter argument.
+
+       --vvpp _x _y _z Set  the  view point to _x _y _z _.  This is the focal point of a
+                 perspective view or the center of a parallel projection.
+
+       --vvdd _x_d _y_d _z_d
+                 Set the view direction vector to _x_d _y_d _z_d _.
+
+       --vvuu _x_d _y_d _z_d
+                 Set the view up vector (vertical direction) to _x_d _y_d _z_d _.
+
+       --vvhh _v_a_l   Set the view horizontal size to _v_a_l_.  For a perspective  pro-
+                 jection  (including  fisheye  views),  _v_a_l  is the horizontal
+                 field of view (in degrees).  For a parallel  projection,  _v_a_l
+                 is the view width in world coordinates.
+
+       --vvvv _v_a_l   Set the view vertical size to _v_a_l_.
+
+       --vvoo _v_a_l   Set  the  view  fore clipping plane at a distance of _v_a_l from
+                 the view point.  The plane will be perpendicular to the  view
+                 direction for perspective and parallel view types.  For fish-
+                 eye view types, the clipping plane  is  actually  a  clipping
+                 sphere,  centered on the view point with radius _v_a_l_.  Objects
+                 in front of this imaginary surface will not be visible.  This
+                 may  be useful for seeing through walls (to get a longer per-
+                 spective from an exterior view point) or for incremental ren-
+                 dering.   A  value of zero implies no foreground clipping.  A
+                 negative value produces some interesting  effects,  since  it
+                 creates  an  inverted image for objects behind the viewpoint.
+                 This possibility is provided mostly for the purpose  of  ren-
+                 dering stereographic holograms.
+
+       --vvaa _v_a_l   Set the view aft clipping plane at a distance of _v_a_l from the
+                 view point.  Like the view fore plane, it will be perpendicu-
+                 lar  to  the view direction for perspective and parallel view
+                 types.  For fisheye view types, the clipping plane  is  actu-
+                 ally  a  clipping  sphere,  centered  on  the view point with
+                 radius _v_a_l_.  Objects behind this imaginary surface  will  not
+                 be  visible.   A  value of zero means no aft clipping, and is
+                 the only way to see infinitely distant objects  such  as  the
+                 sky.
+
+       --vvss _v_a_l   Set  the  view  shift  to _v_a_l_.  This is the amount the actual
+                 image will be shifted to the right  of  the  specified  view.
+                 This  is  option is useful for generating skewed perspectives
+                 or rendering an image a piece at a time.  A value of 1  means
+                 that  the rendered image starts just to the right of the nor-
+                 mal view.  A value of -1 would be to  the  left.   Larger  or
+                 fractional values are permitted as well.
+
+       --vvll _v_a_l   Set  the  view  lift  to  _v_a_l_.  This is the amount the actual
+                 image will be lifted up from the specified view,  similar  to
+                 the _-_v_s option.
+
+       --vvff _f_i_l_e  Get  view  parameters  from _f_i_l_e_, which may be a picture or a
+                 file created by rvu (with the "view" command).
+
+       --SS _s_e_q_s_t_a_r_t
+                 Instead of generating a single picture based only on the view
+                 parameters  given  on  the  command  line, this option causes
+                 _r_h_p_i_c_t to read view options from the standard input  and  for
+                 each  line  containing a valid view specification, generate a
+                 corresponding picture.  _S_e_q_s_t_a_r_t is a positive  integer  that
+                 will  be  associated  with the first output frame, and incre-
+                 mented for successive output frames.  By default, each  frame
+                 is  concatenated  to the output stream, but it is possible to
+                 change this action using the  _-_o  option  (described  below).
+                 Multiple  frames  may be later extracted from a single output
+                 stream using the _r_a___r_g_b_e_(_1_) command.
+
+       --oo _f_s_p_e_c  Send the picture(s) to the file(s) given by _f_s_p_e_c instead  of
+                 the  standard  output.  If this option is used in combination
+                 with _-_S and _f_s_p_e_c contains an  integer  field  for  _p_r_i_n_t_f_(_3_)
+                 (eg.,  "%03d")  then the actual output file name will include
+                 the current frame number.
+
+       --ww        Turn off warning messages.
+
+EEXXAAMMPPLLEE
+       rhpict -vp 10 5 3 -vd 1 -.5 0 scene.hdk > scene.hdr
+
+       rpict -S 1 -o frame%02d.hdr scene.hdk < keyframes.vf
+
+AAUUTTHHOORR
+       Greg Ward
+
+SSEEEE AALLSSOO
+       getinfo(1),  pfilt(1),  pinterp(1),  printf(3),  ra_rgbe(1),  rholo(1),
+       rpict(1), rvu(1)
+
+
+
+RADIANCE                            3/10/99                          RHPICT(1)

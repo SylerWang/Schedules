@@ -1,0 +1,42 @@
+LAMPCOLOR(1)                                                      LAMPCOLOR(1)
+
+
+
+NNAAMMEE
+       lampcolor - compute spectral radiance for diffuse emitter
+
+SSYYNNOOPPSSIISS
+       llaammppccoolloorr [ lamptable ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _L_a_m_p_c_o_l_o_r is an interactive program for computing the appropriate color
+       for a diffuse emitter.  From  the  total  lumen  output  and  a  simple
+       description of the fixture geometry, the radiance for a diffuse fixture
+       is calculated.  Since most light fixtures are not really  diffuse,  the
+       preferred   method   is   to   use  luminaire  distribution  data  (see
+       _i_e_s_2_r_a_d_(_1_)_)_.
+
+       A table of lamp colors and depreciation factors  is  used  to  get  the
+       color for a specific lamp type.  If "white" is specified, the lamp will
+       be uncolored.  This is probably preferable for scenes with only a  sin-
+       gle variety of lamp in order to produce color-balanced images.
+
+EENNVVIIRROONNMMEENNTT
+       RAYPATH        Directories to check for lamp table
+
+FFIILLEESS
+       lamp.tab       Default lamp lookup table
+
+AAUUTTHHOORR
+       Greg Ward
+
+AACCKKNNOOWWLLEEDDGGEEMMEENNTT
+       Work  on  this program was initiated and sponsored by the LESO group at
+       EPFL in Switzerland.
+
+SSEEEE AALLSSOO
+       ies2rad(1)
+
+
+
+RADIANCE                           11/15/93                       LAMPCOLOR(1)

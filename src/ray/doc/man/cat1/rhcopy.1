@@ -1,0 +1,71 @@
+RHCOPY(1)                                                            RHCOPY(1)
+
+
+
+NNAAMMEE
+       rhcopy - copy ray information into a holodeck
+
+SSYYNNOOPPSSIISS
+       rrhhccooppyy ddeesstt__hhoolloo [ --uu ][ --dd ] --hh ssrrcc__hhoolloo ....
+       or
+       rrhhccooppyy ddeesstt__hhoolloo [ --uu ][ --dd ] --pp ssrrcc__ppiicc ssrrcc__zzbbff ....
+
+DDEESSCCRRIIPPTTIIOONN
+       _R_h_c_o_p_y adds ray sample data to the existing holodeck _d_e_s_t___h_o_l_o_.  In the
+       first form, the ray samples are taken from one or more  holodeck  files
+       given  after  the  _-_h  option.  In the second form, the ray samples are
+       taken from one or more RADIANCE picture files and their depth  buffers,
+       which must be paired on the command line after the _-_p option.
+
+       The _-_u option turns on duplicate ray checking.  In some cases, the same
+       ray may already exist in the destination  holodeck,  and  it  would  be
+       redundant to add it.  By default, _r_h_c_o_p_y does not check for duplicates,
+       because it takes extra time, and in many invocations is not  necessary,
+       as when copying into an empty holodeck.
+
+       The  _-_d  option  turns off depth checking.  Normally, _r_h_c_o_p_y checks the
+       OBSTRUCTIONS variable of the destination holodeck, and if it is set  to
+       True, makes sure that all contributing rays start outside each section.
+       If OBSTRUCTIONS is set to False, then _r_h_c_o_p_y makes sure that  any  con-
+       tributing  rays  end outside each section.  If OBSTRUCTIONS is not set,
+       then this option has no effect.  (See the _r_h_o_l_o_(_1_) man page for a defi-
+       nition of the OBSTRUCTIONS variable.)
+
+       _R_c_o_p_y  cannot  be  used to create a holodeck -- use _r_h_o_l_o for this pur-
+       pose.  For example, to create an  empty  holodeck,  run  _r_h_o_l_o  without
+       either  the  _-_n or _-_o option.  Whatever variables are set by _r_h_o_l_o when
+       the new holodeck is created are the ones that  will  have  effect  when
+       later  rendering  or  viewing.   Since the ray sample data may be taken
+       from any source, _r_h_o_l_o and _r_h_c_o_p_y may be used together to  change  cer-
+       tain  unalterable  holodeck parameters, such as the section grid geome-
+       try.
+
+EEXXAAMMPPLLEE
+       To take data from an existing holodeck after changing the section grid:
+
+         rholo new.hdk new.hif
+         rhcopy new.hdk -h old.hdk
+
+       To add ray samples from two pictures to the new holodeck:
+
+         rhcopy new.hdk -p view1.hdr view1.zbf view2.hdr view2.zbf
+
+NNOOTTEESS
+       _R_h_c_o_p_y  attempts to place the beams in the holodeck in a good order for
+       quick access, but if the data comes from multiple sources, the  results
+       may not be optimal.  For large holodecks, it is sometimes useful to run
+       the _r_h_o_p_t_i_m_i_z_e_(_1_) program once all runs of _r_h_c_o_p_y are through.
+
+AAUUTTHHOORR
+       Greg Ward Larson
+
+AACCKKNNOOWWLLEEDDGGMMEENNTT
+       This work was supported by Silicon Graphics, Inc.
+
+SSEEEE AALLSSOO
+       getinfo(1), pfilt(1),  psign(1),  rhinfo(1),  rholo(1),  rhoptimize(1),
+       rpict(1)
+
+
+
+RADIANCE                            1/15/99                          RHCOPY(1)

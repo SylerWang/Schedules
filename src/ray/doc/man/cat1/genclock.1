@@ -1,0 +1,45 @@
+GENCLOCK(1)                                                        GENCLOCK(1)
+
+
+
+NNAAMMEE
+       genclock - generate a RADIANCE description of a clock
+
+SSYYNNOOPPSSIISS
+       ggeenncclloocckk [ --ff ffaaccee__mmaatt ][ --cc ccaassee__mmaatt ][ --nn nnaammee ] { HHHH::MMMM | hhoouurrss }
+
+DDEESSCCRRIIPPTTIIOONN
+       _G_e_n_c_l_o_c_k produces a RADIANCE scene description of an analog clock show-
+       ing the given hour.  The hour may either be given as _H_H_:_M_M  or  decimal
+       _h_o_u_r_s_.
+
+       The  face  of  the clock will have a radius of 1.0 units, with the sur-
+       rounding case 1.1 (2.2 diameter).  The origin is at the center  of  the
+       back,  and  the face looks in the positive X-direction.  The 12 o'clock
+       direction corresponds to the positive Z-axis.  (The Y-axis direction is
+       3  o'clock.)   The  _x_f_o_r_m_(_1_) command may be used to resize and relocate
+       the clock as desired.
+
+       Normally, _g_e_n_c_l_o_c_k produces all of the materials necessary for its  own
+       description,  but  options  are provided to specify alternate materials
+       for the face and case.  The numbers on the face are in dark  lettering,
+       so the face material must be relatively light for them to show up well.
+       By default, the clock is given  the  name  "clock,"  but  this  may  be
+       changed with the _-_n option.
+
+EEXXAAMMPPLLEE
+       To  produce a 12 inch diameter clock showing 10:35 and hang it at 60 on
+       a wall facing the Y-direction at Y=10:
+
+         genclock 10:35 | xform -s 6 -rz 90 -t 20 10 60
+
+AAUUTTHHOORR
+       Greg Ward
+
+SSEEEE AALLSSOO
+       genbox(1),  genrev(1),  gensurf(1),   genworm(1),   rpict(1),   rvu(1),
+       xform(1)
+
+
+
+RADIANCE                            4/9/97                         GENCLOCK(1)

@@ -1,0 +1,86 @@
+import os
+
+Import('env')
+
+# compose paths
+def radlib(name): return os.path.join(env['RAD_BUILDLIB'], name)
+
+# custom flags
+getlibpath = env.StaticObject(source='getlibpath.c',
+        CPPFLAGS='-DDEFPATH=\\":%s\\"' % env['RAD_RLIBDIR'])
+tmapcolrs = env.StaticObject(source='tmapcolrs.c',
+        CPPFLAGS='-DPCOND=\\"pcond\\"')
+ezxml = env.Object('ezxml.c',
+		CPPDEFINES=env.get('CPPDEFINES',[]) + env.get('EZXML_CPPDEFINES',[]))
+
+# source and object dependencies
+RTSCENE = Split('''cone.c face.c free_os.c instance.c readobj.c readoct.c
+		otypes.c objset.c octree.c readfargs.c modobject.c
+		font.c mesh.c readmesh.c tmesh.c sceneio.c xf.c''') #addobjnotify.c
+
+RTMGFOBJ = Split('''mgf_parser.c mgf_object.c mgf_xf.c mgf_context.c''')
+RTCOLOR = Split('''spec_rgb.c''')
+RTTMAP = Split('''tonemap.c tmapluv.c tmaptiff.c tmap16bit.c''') + [tmapcolrs]
+RTPIC = Split('color.c colrops.c resolu.c image.c bmpfile.c falsecolor.c')+ RTCOLOR + RTTMAP
+
+RTERROR = Split('''error.c eputs.c wputs.c quit.c''')
+RTCONT = Split('''lookup.c savestr.c savqstr.c bsdf.c ccolor.c ccyrgb.c bsdf_m.c bsdf_t.c disk2square.c hilbert.c loadbsdf.c ezxml''')
+#RTCONT = Split('''lookup.c savestr.c savqstr.c bsdf.c ezxml getpath.c gethomedir.c paths.c words.c fvect.c multisamp.c mat4.c''') + [getlibpath]
+RTMATH = Split('''fvect.c invmat4.c linregr.c mat4.c tcos.c urand.c urind.c
+		zeroes.c dircode.c clip.c multisamp.c plocate.c byteswap.c'''
+		) + env.get('RAD_MATHCOMPAT', [])
+RTFUNC = Split('''biggerlib.c caldefn.c calexpr.c calfunc.c calprnt.c
+		chanvalue.c''')
+RTIO = Split('''fdate.c fgetline.c fgetval.c fgetword.c fputword.c loadvars.c
+		portio.c wordfile.c words.c header.c timegm.c''')
+RTARGS = Split('''badarg.c expandarg.c''') + env.get('RAD_ARGSCOMPAT', [])
+RTPATH = Split('''getpath.c gethomedir.c paths.c''') + [getlibpath]
+RTLAMPS = Split('''fropen.c rexpr.c lamps.c''')+ [getlibpath]
+
+RTPROC = Split('''process.c''') + env.get('RAD_PROCESS', [])
+
+RTMEM = Split('ealloc.c bmalloc.c')
+RTNET = Split('myhostname.c')
+RTDUMMY = Split('addobjnotify.c')
+
+STD = (RTERROR + RTPATH +  RTARGS + RTIO + RTMATH + RTCONT + RTMEM +
+		RTFUNC + RTPROC + RTLAMPS)
+
+ALL = RTSCENE + RTPIC + STD + RTNET
+
+# build libraries
+rtscene = env.StaticLibrary(target=radlib('rtscene'), source=RTSCENE)
+libmgf = env.StaticLibrary(target=radlib('mgf'), source=RTMGFOBJ)
+rterror = env.StaticLibrary(target=radlib('rterror'), source=RTERROR)
+rtpath = env.StaticLibrary(target=radlib('rtpath'), source=RTPATH)
+rtargs = env.StaticLibrary(target=radlib('rtargs'), source=RTARGS)
+rtio = env.StaticLibrary(target=radlib('rtio'), source=RTIO)
+rtmath = env.StaticLibrary(target=radlib('rtmath'), source=RTMATH)
+rtcont = env.StaticLibrary(target=radlib('rtcont'), source=RTCONT)
+rtmem = env.StaticLibrary(target=radlib('rtmem'), source=RTMEM)
+rtfunc = env.StaticLibrary(target=radlib('rtfunc'), source=RTFUNC)
+rtproc = env.StaticLibrary(target=radlib('rtproc'), source=RTPROC)
+rtcolor = env.StaticLibrary(target=radlib('rtcolor'), source=RTCOLOR)
+rtlamps = env.StaticLibrary(target=radlib('rtlamps'), source=RTLAMPS)
+rtpic = env.StaticLibrary(target=radlib('rtpic'), source=RTPIC)
+rtnet = env.StaticLibrary(target=radlib('rtnet'), source=RTNET)
+# librtdummy is needed, because addobjnotify has different sizes depending
+#   on the program, and in some cases isn't actually needed at all.
+#   It should really be a pointer, and its content allocated
+#   dynamically during program initialization.
+rtdummy = env.StaticLibrary(target=radlib('rtdummy'), source=RTDUMMY)
+
+rtall = env.StaticLibrary(target=radlib('rtall'), source=ALL)
+#librtrad = env.StaticLibrary(target=radlib('rtrad'), source=ALL)
+#Default(librtrad)
+
+LIBFILES = Split('tmesh.cal')
+env.Append(RAD_RLIBINSTALL=env.Install(env['RAD_RLIBDIR'], LIBFILES))
+
+if env.has_key('OGL'):
+	oglincl = env.get('CPPPATH', []) + env.get('OGLINCLUDE', [])
+	RGL = Split('rglfile.c rglmat.c rgldomat.c rglsurf.c rglinst.c rglsrc.c')
+	librgl = env.StaticLibrary(target=radlib('rgl'), source=RGL,
+			CPPPATH=oglincl)
+	Default(librgl)
+

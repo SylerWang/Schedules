@@ -1,0 +1,118 @@
+XFORM(1)                                                              XFORM(1)
+
+
+
+NNAAMMEE
+       xform - transform a RADIANCE scene description
+
+SSYYNNOOPPSSIISS
+       xxffoorrmm  [ --cc ][ --II ][ --nn nnaammee ][ --mm nneewwmmoodd ][ --ff aarrggffiillee ][ xxff00 ][ --aa nn11
+       xxff11 ....  ][ --ii 11 xxffff ] ffiillee ....
+
+DDEESSCCRRIIPPTTIIOONN
+       _X_f_o_r_m transforms each scene description _f_i_l_e according to  the  options
+       given.   If  no  _f_i_l_e is specified, the standard input is read.  The _-_c
+       option causes commands in the input not to be expanded.  The default is
+       to  execute  all in line commands.  (See note below about file names.)
+       The _-_n option causes all identifiers to be prefixed with _n_a_m_e_.  The  _-_m
+       option  causes  all  surfaces  to be given the modifier _n_e_w_m_o_d_.  The _-_I
+       option causes all surfaces to be inverted, reversing their surface nor-
+       mal  orientations.   These  options  are followed by the transformation
+       options, which are described below.
+
+       The _-_f option causes the _x_f_o_r_m command line to be constructed from  the
+       given  file, by inserting each line of the file at the current point in
+       the command argument list.  Each line in the file will result in a log-
+       ically  separate  invocation  of  _x_f_o_r_m_,  and may may contain any valid
+       _x_f_o_r_m arguments, including nested _-_f options.  This is a convenient way
+       to specify multiple copies of an object that do not fit a regular array
+       pattern, without having to actually execute _x_f_o_r_m many times.  Separate
+       scene  files  may  be specified this way as well, but remember that the
+       constructed command line must fit the format of  initial  options  _(_-_n_,
+       _-_m_, _-_c_, _-_I_) followed by the transform then the scene files.  No initial
+       options may appear after the first transform option, and  no  transform
+       options  will be understood after the first named file.  In the special
+       case where the argument to the _-_f option is a hyphen ('-'), _x_f_o_r_m  will
+       take  its  arguments  from  the standard input.  Note that _x_f_o_r_m cannot
+       simultaneously take its scene information from the  standard  input  if
+       the option is used in this way.  Competely empty lines and lines begin-
+       ning with a pound sign  ('#')  will  be  silently  ignored.   Beginning
+       "!xform" or "xform" command names will also be ignored.
+
+       If  one  or  more scene files are given on the command line, _x_f_o_r_m will
+       search the RADIANCE library directories  for  each  file.   (No  search
+       takes  place  if a file name begins with a '.', '/' or '~' character.)
+       Unless the _-_c option is present, _x_f_o_r_m will also change to that  file's
+       directory  before  loading it.  Thus, any commands executed within that
+       file will happen in that  file's  directory,  which  simplifies  object
+       hierarchy construction.
+
+       The  transformation consists of a sequence of operations which are exe-
+       cuted in the order they appear.
+
+OOPPTTIIOONNSS
+       --tt _x _y _z  Translate the scene along the vector _x _y _z _.
+
+       --rrxx _d_e_g_r_e_e_s
+                 Rotate the scene _d_e_g_r_e_e_s about the x axis.  A positive  rota-
+                 tion  corresponds  to counter-clockwise when looking down the
+                 axis.
+
+       --rryy _d_e_g_r_e_e_s
+                 Rotate the scene _d_e_g_r_e_e_s about the y axis.
+
+       --rrzz _d_e_g_r_e_e_s
+                 Rotate the scene _d_e_g_r_e_e_s about the z axis.
+
+       --ss _f_a_c_t_o_r Scale the scene by _f_a_c_t_o_r_.
+
+       --mmxx       Mirror the scene about the yz plane.
+
+       --mmyy       Mirror the scene about the xz plane.
+
+       --mmzz       Mirror the scene about the xy plane.
+
+       --ii _c_o_u_n_t  Iterate (repeat) the following transformation (up to the next
+                 _-_i  option) _c_o_u_n_t times.  This option is primarily to support
+                 the _-_a option, which is described below.
+
+   AArrrraayyss
+       An array is a  repeated  transformation  that  results  in  a  repeated
+       object.  It is specified using the _-_a option, which takes the number to
+       repeat as its argument.  The objects will step  by  the  transformation
+       given  between  this _-_a option and the next _-_a or _-_i option.  The first
+       object will have zero applications of the transform.  A two-dimensional
+       array  is  given  by  two different transformations each preceded by an
+       array count.
+
+EEXXAAMMPPLLEE
+       To rotate ``book'' 30 degrees about the x  axis  then  move  20  in  y,
+       prepending the name book1:
+
+         xform -n book1 -rx 30 -t 0 20 0 book > book1
+
+       To  expand  all  commands  and see what information is actually used by
+       RADIANCE:
+
+         xform scene | more
+
+       To create a two-dimensional array of 20 lights, after an initial  rota-
+       tion and followed by a global translation (no command expansion):
+
+         xform -c -rz 90 -a 5 -t 2 0 0 -a 4 -t 0 1.5 0 -i 1 -t 0 0 10 light
+
+EENNVVIIRROONNMMEENNTT
+       RAYPATH        path to search for scene files
+
+AAUUTTHHOORR
+       Greg Ward
+
+BBUUGGSS
+       Only regular (distortion-free) transformations are allowed.
+
+SSEEEE AALLSSOO
+       genbox(1), gensurf(1), oconv(1), replmarks(1), rpict(1), rvu(1)
+
+
+
+RADIANCE                            6/4/99                            XFORM(1)

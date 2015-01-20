@@ -1,0 +1,50 @@
+MKSOURCE(1)                                                        MKSOURCE(1)
+
+
+
+NNAAMMEE
+       mksource - compute distant sources for RADIANCE image-based lighting
+
+SSYYNNOOPPSSIISS
+       mmkkssoouurrccee [ --dd nnssaammppss ][ --tt tthhrreesshh ][ --aa mmaaxxaanngg ] [ ooccttrreeee ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _M_k_s_o_u_r_c_e produces a RADIANCE scene description of distant illum sources
+       corresponding to bright, concentrated  regions  in  the  given  ambient
+       environment.   Any local geometry is ignored in the input octree, which
+       should be derived from a captured light probe and modeled as a  distant
+       hemispherical or spherical glow source.  The output sources may then be
+       combined with this environment to produce a more  efficient  scene  for
+       rendering, faster and less prone to sampling artifacts.
+
+       The  _-_d  option may be used to specify the number of ray samples, which
+       defaults to 262,000.  Calculation time is roughly proportional to  this
+       setting,  and the default is fine enough to resolve sources the size of
+       the sun (half a degree) or larger.
+
+       The _-_t option may be used to manually set the  radiance  threshold  for
+       sources, in watts/sr/meter^2.  The default uses the top 2 percentile of
+       the environment, which is usally a good value.
+
+       The _-_a option may be used to specify a maximum source  diameter,  which
+       defaults  to  15  degrees.   _M_k_i_l_l_u_m silently enforces a maximum of 180
+       degrees for this option.
+
+       If no input octree is specified, the standard input is read.
+
+EEXXAAMMPPLLEE
+       To add sources with a maximum size of 20  degrees  to  the  enviornment
+       described in environ.oct:
+
+         mksource -a 20 environ.oct > srcs.rad
+         oconv -i environ.oct srcs.rad > env+srcs.oct
+
+AAUUTTHHOORR
+       Greg Ward
+
+SSEEEE AALLSSOO
+       mkillum(1), rpict(1), rvu(1)
+
+
+
+RADIANCE                           04/11/05                        MKSOURCE(1)

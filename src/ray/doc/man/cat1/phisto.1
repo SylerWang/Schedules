@@ -1,0 +1,42 @@
+PHISTO(1)                                                            PHISTO(1)
+
+
+
+NNAAMMEE
+       phisto  -  compute a luminance histogram from one or more RADIANCE pic-
+       tures
+
+SSYYNNOOPPSSIISS
+       pphhiissttoo ppiiccttuurree ....
+
+DDEESSCCRRIIPPTTIIOONN
+       _P_h_i_s_t_o is a script that calls _p_f_i_l_t_(_1_)_, _r_c_a_l_c_(_1_) and _h_i_s_t_o_(_1_)  to  com-
+       pute  a  histogram  of  log  luminance values for foveal samples in the
+       given picture files.  A foveal sample covers  approximately  1  degree,
+       though this script does not use this exact area.  The minimum and maxi-
+       mum values are determined, and 100 histogram bins are uniformly divided
+       between these extrema.  Foveal samples less than 1e-7 candelas/sq.meter
+       are silently ignored.  If no picture is named on the command line,  the
+       standard input is read.
+
+       The primary function of this script is to precompute histograms for the
+       _p_c_o_n_d_(_1_) program, which may then be used to compute multiple, identical
+       exposures.   This is especially useful for animations and image compar-
+       isons.
+
+EEXXAAMMPPLLEE
+       To compute two identical tone mappings for image1.hdr and image2.hdr:
+
+         phisto image1.hdr image2.hdr > both.histo
+         pcond -I -h image1.hdr < both.histo > image1m.hdr
+         pcond -I -h image2.hdr < both.histo > image2m.hdr
+
+AAUUTTHHOORR
+       Greg Ward Larson
+
+SSEEEE AALLSSOO
+       histo(1), pcond(1), pfilt(1), pvalue(1), rcalc(1), total(1)
+
+
+
+RADIANCE                            3/12/98                          PHISTO(1)

@@ -1,0 +1,110 @@
+PCOMB(1)                                                              PCOMB(1)
+
+
+
+NNAAMMEE
+       pcomb - combine RADIANCE pictures
+
+SSYYNNOOPPSSIISS
+       ppccoommbb  [  --hh ][ --ww ][ --xx xxrreess ][ --yy yyrreess ][ --ff ffiillee ][ --ee eexxpprr ] [ [ --oo
+       ][ --ss ffaaccttoorr ][ --cc rr gg bb ] iinnppuutt ....  ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _P_c_o_m_b combines equal-sized RADIANCE pictures and sends  the  result  to
+       the  standard output.  By default, the result is just a linear combina-
+       tion of the input pictures multiplied by _-_s and _-_c coefficients, but an
+       arbitrary mapping can be assigned with the _-_e and _-_f options.  Negative
+       coefficients and functions are allowed, and _p_c_o_m_b  will  produce  color
+       values of zero where they would be negative.
+
+       The variables _r_o_, _g_o and _b_o specify the red, green and blue output val-
+       ues, respectively.  Alternatively, the single variable _l_o can  be  used
+       to  specify  a brightness value for black and white output.  The prede-
+       fined functions _r_i_(_n_)_, _g_i_(_n_) and _b_i_(_n_) give the  red,  green  and  blue
+       input  values for picture _n_.  To access a pixel that is nearby the cur-
+       rent one, these functions also accept optional x and  y  offsets.   For
+       example,  _r_i_(_3_,_-_2_,_1_)  would  return the red component of the pixel from
+       picture 3 that is left 2 and up 1 from the current position.   Although
+       x  offsets  may be as large as width of the picture, y offsets are lim-
+       ited to a small window (+/- 32 pixels)  due  to  efficiency  considera-
+       tions.   However, it is not usually necessary to worry about this prob-
+       lem -- if the requested offset is not available, the next best pixel is
+       returned instead.
+
+       For  additional convenience, the function _l_i_(_n_) is defined as the input
+       brightness for picture _n_.  This function also accepts x and y  offsets.
+
+       The  constant  _n_f_i_l_e_s  gives  the number of input files present, and _W_E
+       gives the white efficacy (lumens/brightness) for  pixel  values,  which
+       may  be used with the _-_o option or the le(n) values to convert to abso-
+       lute photometric units (see below).  The variables _x  and  _y  give  the
+       current output pixel location for use in spatially dependent functions,
+       the constants _x_m_a_x and _y_m_a_x give the input  resolution,  and  the  con-
+       stants  _x_r_e_s and _y_r_e_s give the output resolution (usually the same, but
+       see below).  The constant functions _r_e_(_n_)_, _g_e_(_n_)_, _b_e_(_n_)_, and _l_e_(_n_) give
+       the  exposure  values  for picture _n_, and _p_a_(_n_) gives the corresponding
+       pixel aspect ratio.  Finally, for pictures with stored view parameters,
+       the  functions  _O_x_(_n_)_,  _O_y_(_n_)  and _O_z_(_n_) return the ray origin in world
+       coordinates for the current pixel in picture _n_, and  _D_x_(_n_)_,  _D_y_(_n_)  and
+       _D_z_(_n_)  return  the normalized ray direction.  In addition, the function
+       _T_(_n_) returns the distance from the origin to the aft clipping plane (or
+       zero if there is no aft plane), and the function _S_(_n_) returns the solid
+       angle of the current pixel in  steradians  (always  zero  for  parallel
+       views).   If  the  current  pixel is outside the view region, _T_(_n_) will
+       return a negative value, and _S_(_n_) will return zero.
+
+       The _-_h option may be used to reduce the information header size,  which
+       can  grow  disproportionately after multiple runs of _p_c_o_m_b and/or _p_c_o_m_-
+       _p_o_s_(_1_)_.  The _-_w option can be used to suppress warning  messages  about
+       invalid calculations.  The _-_o option indicates that original pixel val-
+       ues are to be used for the next picture, undoing any previous  exposure
+       changes or color correction.
+
+       The _-_x and _-_y options can be used to specify the desired output resolu-
+       tion, _x_r_e_s and _y_r_e_s_, and can be expressions involving  other  constants
+       such  as _x_m_a_x and _y_m_a_x_.  The constants _x_r_e_s and _y_r_e_s may also be speci-
+       fied in a file or expression.  The default  output  resolution  is  the
+       same as the input resolution.
+
+       The _-_x and _-_y options must be present if there are no input files, when
+       the definitions of _r_o_, _g_o and _b_o will be used to  compute  each  output
+       pixel.   This  is useful for producing simple test pictures for various
+       purposes.  (Theoretically, one could write a  complete  renderer  using
+       just the functional language...)
+
+       The  standard  input  can  be specified with a hyphen ('-').  A command
+       that produces a RADIANCE picture can be given in place  of  a  file  by
+       preceeding it with an exclamation point ('!').
+
+EEXXAAMMPPLLEESS
+       To produce a picture showing the difference between pic1 and pic2:
+
+         pcomb  -e  'ro=ri(1)-ri(2);go=gi(1)-gi(2);bo=bi(1)-bi(2)' pic1 pic2 >
+         diff
+
+       Or, more efficiently:
+
+         pcomb pic1 -s -1 pic2 > diff
+
+       To precompute the gamma correction for a picture:
+
+         pcomb -e 'ro=ri(1)^.4;go=gi(1)^.4;bo=bi(1)^.4' inp.hdr > gam.hdr
+
+       To perform some special filtering:
+
+         pcomb -f myfilt.cal -x xmax/2 -y ymax/2 input.hdr > filtered.hdr
+
+       To make a picture of a dot:
+
+         pcomb          -x          100          -y           100           -e
+         'ro=b;go=b;bo=b;b=if((x-50)^2+(y-50)^2-25^2,0,1)' > dot
+
+AAUUTTHHOORR
+       Greg Ward
+
+SSEEEE AALLSSOO
+       getinfo(1), icalc(1), pcompos(1), pfilt(1), rpict(1)
+
+
+
+RADIANCE                            8/31/96                           PCOMB(1)

@@ -1,0 +1,44 @@
+GLARENDX(1)                                                        GLARENDX(1)
+
+
+
+NNAAMMEE
+       glarendx - calculate glare index
+
+SSYYNNOOPPSSIISS
+       ggllaarreennddxx --tt ttyyppee [ --hh ] [ ggllaarreeffiillee ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _G_l_a_r_e_n_d_x  computes  the selected glare index _t_y_p_e from the given _g_l_a_r_e_-
+       _f_i_l_e produced by _f_i_n_d_g_l_a_r_e_(_1_)_.  _G_l_a_r_e_n_d_x computes one  value  for  each
+       (indirect  illuminance)  angle  in  the input file.  If no _g_l_a_r_e_f_i_l_e is
+       given, _g_l_a_r_e_n_d_x reads from the standard input.  The _-_h  option  can  be
+       used to remove the information header from the output.
+
+       _G_l_a_r_e_n_d_x understands the following arguments for _t_y_p_e_:
+                guth_vcp   Guth Visual Comfort Probability
+                 cie_cgi   CIE Glare Index (Einhorn)
+                     ugr   Unified Glare Rating
+                  brs_gi   BRS Glare Index
+                     dgi   Daylight Glare Index
+                guth_dgr   Guth Disability Glare Rating
+                vert_dir   Direct Vertical Illuminance
+                vert_ill   Total Vertical Illuminance
+                vert_ind   Indirect Vertical Illuminance
+
+       Alternatively,  a  symbolic or hard link to the program with any of the
+       above names may be used in place of the _t_y_p_e argument.
+
+AAUUTTHHOORRSS
+       Greg Ward, Raphael Compagnon
+
+AACCKKNNOOWWLLEEDDGGEEMMEENNTT
+       Work on this program was initiated and sponsored by the LESO  group  at
+       EPFL in Switzerland.
+
+SSEEEE AALLSSOO
+       findglare(1), glare(1), igraph(1), rpict(1), xglaresrc(1), ximage(1)
+
+
+
+RADIANCE                            3/24/94                        GLARENDX(1)

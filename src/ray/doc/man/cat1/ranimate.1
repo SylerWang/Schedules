@@ -1,0 +1,375 @@
+RANIMATE(1)                                                        RANIMATE(1)
+
+
+
+NNAAMMEE
+       ranimate - compute a RADIANCE animation
+
+SSYYNNOOPPSSIISS
+       rraanniimmaattee [ --ss ][ --nn ][ --ee ][ --ww ] rraannffiillee
+
+DDEESSCCRRIIPPTTIIOONN
+       _R_a_n_i_m_a_t_e is an executive program that reads the given _r_a_n_f_i_l_e and makes
+       appropriate calls to _r_a_d_(_1_)_, _r_p_i_c_t_(_1_)_, _p_i_n_t_e_r_p_(_1_)_, and/or  _p_f_i_l_t_(_1_)  to
+       render  an  animation.   Variables  in  _r_a_n_f_i_l_e  indicate  input files,
+       process servers (execution hosts), output directories and  file  names,
+       and various other controls and options.
+
+       Normally,  commands  are echoed to the standard output as they are exe-
+       cuted.  The _-_s option tells _r_a_n_i_m_a_t_e to do its work silently.   The  _-_n
+       option  tells _r_a_n_i_m_a_t_e not to take any action (ie. not to actually exe-
+       cute any commands).  The _-_e option  tells  _r_a_n_i_m_a_t_e  to  explicate  all
+       variables  used  for the animation, including default values not speci-
+       fied in the input file, and print them on the standard output.
+
+       The _-_w option turns off warnings about multiply and  misassigned  vari-
+       ables.
+
+       Normally, _r_a_n_i_m_a_t_e will produce one animation frame for each view given
+       in the specified view file.  If an animation has ended or  been  killed
+       in an incomplete state, however, _r_a_n_i_m_a_t_e will attempt to pick up where
+       the earlier process left off.  If the process is still running, or  was
+       started  on  another machine, _r_a_n_i_m_a_t_e will report this information and
+       exit.
+
+       Animation variable assignments appear one per  line  in  _r_a_n_f_i_l_e_.   The
+       name  of  the  variable  is  followed  by  an equals sign ('=') and its
+       value(s).  The end of line may  be  escaped  with  a  backslash  ('\'),
+       though it is not usually necessary since additional variable values may
+       be given in multiple assignments.  Variables that should have only  one
+       value are given in upper case.  Variables that may have multiple values
+       are given in lower case.  Variables may be abbreviated by  their  first
+       three  letters,  except for "host", which must have all four.  Comments
+       in _r_a_n_f_i_l_e start with a pound sign ('#') and  proceed  to  the  end  of
+       line.
+
+       The  animation  variables, their interpretations and default values are
+       given below.
+
+       DDIIRREECCTTOORRYY The name of the animation  directory.   All  temporary  files
+                 generated  during the animation will be placed in this direc-
+                 tory, which will be created by _r_a_n_i_m_a_t_e if it does not exist.
+                 A  file  named  "STATUS" will also be created there, and will
+                 contain current  information  about  the  animation  process.
+                 This  variable  has  no  default  value,  and  its setting is
+                 required.
+
+       OOCCTTRREEEE    The name of the octree file for a static  scene  walk-through
+                 animation.   There is no default value for this variable, and
+                 any setting will be ignored if the _A_N_I_M_A_T_E variable  is  also
+                 set (see below).
+
+       AANNIIMMAATTEE   The  scene  generation command for a dynamic animation.  This
+                 command, if given, will be executed with the frame number  as
+                 the  final  argument, and on its standard output it must pro-
+                 duce the complete octree for that frame.  Care must be  taken
+                 that  this  command  does not create any temporary files that
+                 might collide with same-named files created by  other  anima-
+                 tion  commands running in parallel.  Also, the command should
+                 produce no output to the standard error, unless  there  is  a
+                 fatal  condition.   (I.e.,  switch  all warnings off; see the
+                 BUGS section, below.)  There is no default animation command,
+                 and  either this variable or the _O_C_T_R_E_E variable must be set.
+
+       VVIIEEWWFFIILLEE  This variable names a file from which  _r_a_n_i_m_a_t_e  may  extract
+                 the  view  for each frame in the animation.  This file should
+                 contain one valid view per frame, starting with  frame  1  on
+                 line  1, regardless of the setting of the _S_T_A_R_T variable.  An
+                 exception is made for a view file with only  a  single  view,
+                 which  is  used for every frame of a dynamic scene animation.
+                 This variable is required, and there is no default value.
+
+       SSTTAARRTT     The initial frame number in  this  animation  sequence.   The
+                 minimum  value  is 1, and if a later starting frame is given,
+                 _r_a_n_i_m_a_t_e assumes that the earlier frames are included in some
+                 other  _r_a_n_f_i_l_e_, which has been previously executed.  (See the
+                 _N_E_X_T_A_N_I_M variable, below.)  The default value is 1.
+
+       EENNDD       The final frame number in this sequence.  The  minimum  value
+                 is  equal  to  the _S_T_A_R_T frame, and the default value is com-
+                 puted from the number of views in the given _V_I_E_W_F_I_L_E_.
+
+       EEXXPPOOSSUURREE  This variable tells _r_a_n_i_m_a_t_e how to adjust the  exposure  for
+                 each  frame.   As in _p_f_i_l_t_, the exposure setting may be given
+                 either as a multiplier or as a number of  f-stop  adjustments
+                 (eg.  +2  or -1.5).  Alternatively, a file name may be given,
+                 which _r_a_n_i_m_a_t_e will interpret as having  one  exposure  value
+                 per  line  per frame, beginning with frame 1 at line 1.  (See
+                 also the _V_I_E_W_F_I_L_E variable,  above.)   There  is  no  default
+                 value  for  this  variable.   If  it is not given, an average
+                 level will be computed by _p_f_i_l_t for each frame.
+
+       BBAASSEENNAAMMEE  The base output file name for the final frames.  This  string
+                 will  be passed to the _-_o and _-_z options of rpict, along with
+                 appropriate suffixes, and thus  should  contain  a  _p_r_i_n_t_f_(_3_)
+                 style  integer  field  to  distinguish  one frame number from
+                 another.  The final frames will use this name with  a  ".hdr"
+                 suffix.  The default value is the assigned _D_I_R_E_C_T_O_R_Y followed
+                 by "/frame%03d".
+
+       hhoosstt      A host to use for command execution.  This  variable  may  be
+                 assigned  a host name, followed by an optional number of par-
+                 allel processes, followed by an optional directory  (relative
+                 to the user's home directory on that machine), followed by an
+                 alternate user name.  Multiple _h_o_s_t assignments  may  appear.
+                 It  is  not  advisable  to specify more than one process on a
+                 single-CPU host, as this just tends to slow things down.  The
+                 default  value  is "localhost", which starts a single process
+                 in the current directory of the local machine.
+
+       RRIIFF       This variable specifies a _r_a_d input file to use as  a  source
+                 of  rendering options and other variable settings.  If given,
+                 _r_a_n_i_m_a_t_e will execute _r_a_d and create an options file to later
+                 pass to _r_p_i_c_t or _r_t_r_a_c_e_.  Besides prepending the _r_e_n_d_e_r vari-
+                 able, _r_a_n_i_m_a_t_e will also extract  default  settings  for  the
+                 common  variables:  _O_C_T_R_E_E_,  _R_E_S_O_L_U_T_I_O_N_,  _E_X_P_O_S_U_R_E and _p_f_i_l_t_.
+                 Following the file name, overriding variable settings may  be
+                 given, which will be passed to _r_a_d on the command line.  Set-
+                 tings with spaces in them should be enclosed in quotes.   The
+                 execution of _r_a_d will also update the contents of the octree,
+                 if necessary.  There is no default value for this variable.
+
+       DDIISSKKSSPPAACCEE Specify the amount of disk space (in megabytes) available  on
+                 the destination file system for temporary file storage.  _R_a_n_-
+                 _i_m_a_t_e will coordinate its  batch  operations  based  on  this
+                 amount of storage, assuming that there is either enough addi-
+                 tional space for all the final  frames,  or  that  the  given
+                 _T_R_A_N_S_F_E_R  command will move the finished frames to some other
+                 location (see below).  The default value is 100 megabytes.
+
+       AARRCCHHIIVVEE   After each batch rendering is finished and checked  for  com-
+                 pleteness,  _r_a_n_i_m_a_t_e  will execute the given command, passing
+                 the names of all the original  pictures  and  z-buffer  files
+                 generated by _r_p_i_c_t_.  (The command is executed in the destina-
+                 tion directory, and file names will  be  simple.)   Normally,
+                 the  archive  command  copies  the  original  files to a tape
+                 device or somewhere that they can be retrieved in  the  event
+                 of  failure in the frame interpolation stages.  After the ar-
+                 chive command has successfully completed, the  original  ren-
+                 derings  are  removed.   There  is  no default value for this
+                 variable, meaning that the original  unfiltered  frames  will
+                 simply  be  removed.   Note that the last one or two rendered
+                 frames may not be copied, archived or removed in  case  there
+                 is a another sequence picking up where this one left off.
+
+       TTRRAANNSSFFEERR  The  command to transfer the completed animation frames.  The
+                 shell changes to the destination directory  and  appends  the
+                 names of all the finished frames to this command before it is
+                 executed.  Normally, the transfer command does something such
+                 as  convert  the frames to another format and/or copy them to
+                 tape or some other destination device before  removing  them.
+                 The  _f_i_e_l_d_c_o_m_b_(_1_)  script may be used to conveniently combine
+                 fields into frames for field-based animations.  If this vari-
+                 able  is not given, the final frames are left where they are.
+                 (See _B_A_S_E_N_A_M_E_, above.)
+
+       RRSSHH       The command to use instead  of  _s_s_h_(_1_)  to  execute  commands
+                 remotely  on  another machine.  The arguments and behavior of
+                 this program must be  identical  to  the  UNIX  _s_s_h  command,
+                 except  that  the _-_l option will always be used to specify an
+                 alternate user name rather  than  the  _u_s_e_r_@_h_o_s_t  convention.
+                 The  _-_l  option may or may not appear, but the _-_n option will
+                 always be used, and the expected starting directory  will  be
+                 that of the remote user, just as with _s_s_h_.
+
+       NNEEXXTTAANNIIMM  This  variable  specifies  the next _r_a_n_f_i_l_e to use after this
+                 sequence is completed.  This offers  a  convenient  means  to
+                 continue an animation that requires different control options
+                 in different segments.  It is important in this case to  cor-
+                 rectly  set  the  _S_T_A_R_T  and _E_N_D variables in each _r_a_n_f_i_l_e so
+                 that the segments do not overlap frames.
+
+       OOVVEERRSSAAMMPPLLEE
+                 This variable sets the multiplier of the original image  size
+                 relative  to the final size given by the _R_E_S_O_L_U_T_I_O_N variable.
+                 This determines the quality of  anti-aliasing  in  the  final
+                 frames.   A value of 1 means no anti-aliasing, and a value of
+                 3 produces very good anti-aliasing.  The default value is  2.
+                 (A  fractional  value  may  be used for previews, causing low
+                 resolution frames with large, blocky pixels to be produced.)
+
+       IINNTTEERRPPOOLLAATTEE
+                 This  variable  sets  the  number  of  frames  to interpolate
+                 between each rendered frame in a static  scene  walk-through.
+                 Z-buffers for each rendered frame will be generated by _r_p_i_c_t_,
+                 and _p_i_n_t_e_r_p will be called to perform the actual  "tweening."
+                 This  results  in  a  potentially  large savings in rendering
+                 time, but should be used with caution since certain  informa-
+                 tion  may  be lost or inaccurate, such as specular highlights
+                 and reflections, and objects may even break apart if too  few
+                 renderings  are  used  to  interpolate  too much motion.  The
+                 default value for this variable is 0, meaning  no  interpola-
+                 tion.   Interpolation  is  also  switched  off if the _A_N_I_M_A_T_E
+                 variable is specified.
+
+       MMBBLLUURR     This variable specifies the fraction of a frame time that the
+                 shutter is simulated as being open for motion blur.  A number
+                 of samples may be given as a second argument, which  controls
+                 the   number  of  additional  frames  computed  and  averaged
+                 together by _p_i_n_t_e_r_p_.  If this number is  less  than  2,  then
+                 bluring  is  performed  by  _r_p_i_c_t  only, resulting in greater
+                 noise than the combination of _r_p_i_c_t and _p_i_n_t_e_r_p  used  other-
+                 wise.   (The  default value for number of samples is 5.)  The
+                 default fraction is 0,  meaning  no  motion  blurring.   This
+                 option  does  not  currently  work with the _A_N_I_M_A_T_E variable,
+                 since pinterp only works for static environments.
+
+       DDBBLLUURR     This variable specifies the aperture diameter  for  depth-of-
+                 field  blurring,  in world units.  A number of samples may be
+                 given as a second argument,  which  controls  the  number  of
+                 additional  frames computed and averaged together by _p_i_n_t_e_r_p_.
+                 If this number is less than 2, then blurring is performed  by
+                 _r_p_i_c_t  only,  resulting in greater noise than the combination
+                 of _r_p_i_c_t and _p_i_n_t_e_r_p used otherwise.  (The default value  for
+                 number  of  samples is 5.)  To simulate a particular camera's
+                 aperture, divide the focal length of the lens by  the  f-num-
+                 ber,  then  convert  to  the  corresponding  world coordinate
+                 units.  For example, if you wish to simulate a 50mm  lens  at
+                 f/2.0  in  a scene modeled in meters, then you divide 50mm by
+                 2.0 to get 25mm, which corresponds to an  effective  aperture
+                 of  0.025  meters.   The  default  aperture  is 0, meaning no
+                 depth-of-field blurring.  This option does not currently work
+                 with  the  _A_N_I_M_A_T_E  variable,  since  pinterp  only works for
+                 static environments.
+
+       RRTTRRAACCEE    This boolean variable tells _r_a_n_i_m_a_t_e whether or not to employ
+                 _r_t_r_a_c_e  during  frame  interpolation  using the _-_f_r option to
+                 _p_i_n_t_e_r_p_.  If set to True, then the same rendering options and
+                 static  octree  are  passed to _r_t_r_a_c_e as are normally used by
+                 _r_p_i_c_t_.  The default value is False.  Note that this  variable
+                 only  applies  to  static environment walk-throughs (i.e., no
+                 _A_N_I_M_A_T_E command).
+
+       RREESSOOLLUUTTIIOONN
+                 This variable specifies the desired final picture resolution.
+                 If only a single number is given, this value will be used for
+                 both the horizontal and vertical picture dimensions.  If  two
+                 numbers are given, the first is the horizontal resolution and
+                 the second is the vertical resolution.  If three numbers  are
+                 given,  the  third is taken as the pixel aspect ratio for the
+                 final picture (a real value).  If the pixel aspect  ratio  is
+                 zero,  the  exact  dimensions  given  will be those produced.
+                 Otherwise, they will be used as a frame in  which  the  final
+                 image  must fit.  The default value for this variable is 640.
+
+       rreennddeerr    This variable may be used to specify  additional  options  to
+                 _r_p_i_c_t or _r_t_r_a_c_e_.  These options will appear after the options
+                 set automatically by _r_a_d_, and thus will override the  default
+                 values.
+
+       ppiinntteerrpp   This  variable  may  be used to specify additional options to
+                 _p_i_n_t_e_r_p_, which is used to interpolate  frames  for  a  static
+                 scene  walk-through.   (See  the  _p_i_n_t_e_r_p  man  page, and the
+                 _I_N_T_E_R_P_O_L_A_T_E variable.)  Do not use this variable to  set  the
+                 _p_i_n_t_e_r_p _-_f_r option, but use the _R_T_R_A_C_E setting instead.
+
+       ppffiilltt     This  variable  may  be used to specify additional options to
+                 _p_f_i_l_t_.  If this variable is given in the _r_a_n_f_i_l_e_, then  _p_f_i_l_t
+                 will always be used.  (Normally, _p_f_i_l_t is called only if _p_i_n_-
+                 _t_e_r_p is not needed or automatic exposure is  required.)   See
+                 the _p_f_i_l_t manual page for details.
+
+EEXXAAMMPPLLEESS
+       A minimal input file for _r_a_n_i_m_a_t_e might look like this:
+
+
+          ::::::::::
+          sample.ran
+          ::::::::::
+          # The rad input file for our static scene:
+          RIF= tutor.rif
+          # The spool directory:
+          DIRECTORY= anim1
+          # The view file containing one view per frame:
+          VIEWFILE= anim1.vf
+          # The amount of temporary disk space available:
+          DISKSPACE= 50  # megabytes
+
+       Note  that  most of the variables are not set in this file.  If we only
+       want to see what default values _r_a_n_i_m_a_t_e  would  use  without  actually
+       executing anything, we can invoke it thus:
+
+         ranimate -n -e sample.ran
+
+       This  will  print the variables we have given as well as default values
+       _r_a_n_i_m_a_t_e has assigned for us.  Also, we will see the list  of  commands
+       that _r_a_n_i_m_a_t_e would have executed had the _-_n option not been present.
+
+       Usually,  we  execute _r_a_n_i_m_a_t_e in the background, redirecting the stan-
+       dard output and standard error to a file:
+
+         ranimate sample.ran >& sample.err &
+
+       If we decide that the default values _r_a_n_i_m_a_t_e has chosen for our  vari-
+       ables  are not all appropriate, we can add some more assignments to the
+       file:
+
+
+          host= rays 3 ~greg/obj/tutor ray   # execute as ray on multi-host "rays"
+          host= thishost                # execute one copy on this host also
+          INTERP= 3                # render every fourth frame
+          RES= 1024                # shoot for 1024x resolution
+          MBLUR= .25                    # apply camera motion blur
+          EXP= anim1.exp                # adjust exposure according to file
+          pfilt= -r .9                  # use Gaussian filtering
+          ARCHIVE= tar cf /dev/nrtape        # save original renderings to tape
+
+       Note the use of abbreviation for variable names.
+
+FFIILLEESS
+       $(DIRECTORY)/STATUS animation  status  file   $(DIRECTORY)/*      other
+       temporary files $(BASENAME).hdr          final animation frames
+
+AAUUTTHHOORR
+       Greg Ward
+
+BBUUGGSS
+       Due  to  the  difficulty of controlling processes on multiple execution
+       hosts, the _-_n option of _r_a_n_i_m_a_t_e is not useful in the same way  as  _r_a_d
+       for  generating a script of executable commands to render the sequence.
+       It may give an idea of the sequence of events,  but  certain  temporary
+       files  and  so  forth  will  not  be  in  the correct state if the user
+       attempts to create a separate batch script.
+
+       If multiple processors are available on a given  host  and  the  _R_T_R_A_C_E
+       variable  is  set  to  True,  then  the  _-_P_P option of _r_t_r_a_c_e should be
+       employed, but it is not.  There is no easy way around this problem, but
+       it  has only minor consequences in most cases.  (The _-_P_P option is used
+       for _r_p_i_c_t_, however.)
+
+       The current implementation of the remote shell does not return the exit
+       status of the remote process, which makes it difficult to determine for
+       sure if there has been a serious error or not.  Because of this,  _r_a_n_i_-
+       _m_a_t_e  normally turns off warnings on all rendering processes, and takes
+       any output to standard error from a remote command as  a  sign  that  a
+       fatal  error  has  occurred.   (This  also  precludes the use of the _-_t
+       option to report rendering progress.)  If the error  was  caused  by  a
+       process  server  going down, the server is removed from the active list
+       and frame recovery takes place.   Otherwise,  _r_a_n_i_m_a_t_e  quits  at  that
+       point in the animation.
+
+       The  current execution environment, in particular the RAYPATH variable,
+       will not be passed during remote command execution, so it is  necessary
+       to  set  whatever  variables are important in the remote startup script
+       (e.g., ".cshrc" for the C-shell).  This requirement may be circumvented
+       by  substituting  the  _o_n_(_1_)  command  for _s_s_h_(_1_) using the _R_S_H control
+       variable, or by writing a custom remote execution script.
+
+       If a different remote user name is used,  _r_a_n_i_m_a_t_e  first  attempts  to
+       change  to  the original user's directory with a command of the form _c_d
+       _u_n_a_m_e _.  This works under _c_s_h_(_1_)_, but may fail under other shells  such
+       as _s_h_(_1_)_.
+
+       If  multiple hosts with different floating point formats are used, _p_i_n_-
+       _t_e_r_p will  fail  because  the  Z-buffer  files  will  be  inconsistent.
+       (Recall  that  _p_i_n_t_e_r_p  is  called  if  INTERPOLATE > 0 and/or MBLUR is
+       assigned.)  Since most modern machines use IEEE floating point, this is
+       not usually a problem, but it is something to keep in mind.
+
+SSEEEE AALLSSOO
+       fieldcomb(1),  pfilt(1),  pinterp(1),  pmblur(1),  rad(1), ran2tiff(1),
+       ranimove(1), rpict(1), ssh(1), rtrace(1)
+
+
+
+RADIANCE                            6/24/98                        RANIMATE(1)

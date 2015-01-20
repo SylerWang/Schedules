@@ -1,0 +1,85 @@
+TOTAL(1)                                                              TOTAL(1)
+
+
+
+NNAAMMEE
+       total - sum up columns
+
+SSYYNNOOPPSSIISS
+       ttoottaall  [ --mm ][ --ssEE | --pp | --uu | --ll ][ --ii{{ff||dd}}[[NN]] ][ --oo{{ff||dd}} ][ --ttCC ][ --NN
+       [ --rr ]] [ file ..  ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _T_o_t_a_l sums up columns of real numbers from one or more files and prints
+       out the result on its standard output.
+
+       By  default,  _t_o_t_a_l  computes the straigt sum of each input column, but
+       multiplication can be specified instead with the _-_p option.   Likewise,
+       the  _-_u  option means find the upper limit (maximum), and _-_l means find
+       the lower limit (minimum).
+
+       Sums of powers can be computed  by  giving  an  exponent  with  the  _-_s
+       option.  (Note that there is no space between the _-_s and the exponent.)
+       This exponent can be any real number, positive or negative.  The  abso-
+       lute value of the input is always taken before the power is computed in
+       order to avoid complex results.  Thus, _-_s_1 will produce a sum of  abso-
+       lute values.  The default power (zero) is interpreted as a straight sum
+       without taking absolute values.
+
+       The _-_m option can be used to compute the mean rather  than  the  total.
+       For sums, the arithmetic mean is computed.  For products, the geometric
+       mean is computed.  (A logarithmic sum of absolute  values  is  used  to
+       avoid overflow, and zero values are silently ignored.)
+
+       If  the  input  data  is binary, the _-_i_d or _-_i_f option may be given for
+       64-bit double or 32-bit float values, respectively.  Either option  may
+       be  followed  immediately  by  an  optional count, which defaults to 1,
+       indicating the number of double or float  binary  values  to  read  per
+       record  on  the  input file.  (There can be no space between the option
+       and this count.)  Similarly, the _-_o_d and  _-_o_f  options  specify  binary
+       double  or  float  output,  respectively.   These options do not need a
+       count, as this will be determined by the number of input channels.
+
+       A count can be given as the number of lines to read before computing  a
+       result.   Normally,  _t_o_t_a_l  reads each file to its end before producing
+       its result, but this behavior may  be  overridden  by  inserting  blank
+       lines in the input.  For each blank input line, total produces a result
+       as if the end-of-file had been reached.  If two blank lines immediately
+       follow  each  other, total closes the file and proceeds to the next one
+       (after reporting the result).  The _-_N option  (where  N  is  a  decimal
+       integer)  tells  _t_o_t_a_l  to  produce  a result and reset the calculation
+       after every N input lines.  In addition, the _-_r option can be specified
+       to  override  reinitialization  and  thus  give a running total every N
+       lines (or every blank line).  If the end of file is reached,  the  cur-
+       rent total is printed and the calculation is reset before the next file
+       (with or without the _-_r option).
+
+       The _-_t_C option can be used to specify the input and output tab  charac-
+       ter.  The default tab character is TAB.
+
+       If no files are given, the standard input is read.
+
+EEXXAAMMPPLLEE
+       To compute the RMS value of colon-separated columns in a file:
+
+         total -t: -m -s2 input
+
+       To produce a running product of values from a file:
+
+         total -p -1 -r input
+
+BBUUGGSS
+       If  the  input  files have varying numbers of columns, mean values will
+       certainly be off.  _T_o_t_a_l will ignore missing column entries if the  tab
+       separator  is  a  non-white  character, but cannot tell where a missing
+       column should have been if the tab character is white.
+
+AAUUTTHHOORR
+       Greg Ward
+
+SSEEEE AALLSSOO
+       cnt(1), neaten(1), rcalc(1), rlam(1), tabfunc(1)
+
+
+
+RADIANCE                            2/3/95                            TOTAL(1)

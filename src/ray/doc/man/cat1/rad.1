@@ -1,0 +1,431 @@
+RAD(1)                                                                  RAD(1)
+
+
+
+NNAAMMEE
+       rad - render a RADIANCE scene
+
+SSYYNNOOPPSSIISS
+       rraadd [ --ss ][ --nn||--NN nnpprr ][ --tt ][ --ee ][ --VV ][ --ww ][ --vv vviieeww ][ --oo ddeevviiccee ]
+       rrffiillee [ VVAARR==vvaalluuee ....  ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _R_a_d is an executive program that reads the given _r_f_i_l_e and makes appro-
+       priate calls to _o_c_o_n_v_(_1_)_, _m_k_i_l_l_u_m_(_1_)_, _r_p_i_c_t_(_1_)_, _p_f_i_l_t_(_1_)_, and/or _r_v_u_(_1_)
+       to render a specific scene.  Variables in _r_f_i_l_e give  input  files  and
+       qualitative  information  about  the rendering(s) desired that together
+       enable _r_a_d to intelligently set parameter values and control the  simu-
+       lation.
+
+       Normally,  commands  are echoed to the standard output as they are exe-
+       cuted.  The _-_s option tells _r_a_d to do its work silently.  The _-_n option
+       tells  _r_a_d not to take any action (ie. not to actually execute any com-
+       mands).  The _-_N option instructs _r_a_d to run as many  as  _n_p_r  rendering
+       processes  in  parallel.   The  _-_t  option tells _r_a_d to bring rendering
+       files up to date relative to the input (scene description) files, with-
+       out  performing  any  actual  calculations.  If no octree exists, it is
+       still necessary to run _o_c_o_n_v_(_1_) to create one, since the _-_t option will
+       not  create invalid (i.e. empty) files, and a valid octree is necessary
+       for the correct operation of _r_a_d_.  The _-_e option tells _r_a_d to explicate
+       all  variables  used  for  the simulation, including default values not
+       specified in the input file, and print them on the standard output.
+
+       Normally, _r_a_d will produce one picture for each view  given  in  _r_f_i_l_e_.
+       The  _-_v  option may be used to specify a single desired view.  The _v_i_e_w
+       argument may either be  a  complete  view  specification  (enclosed  in
+       quotes  and  beginning with an optional identifier) or a number or sin-
+       gle-word identifier to match a view defined in _r_f_i_l_e_.  If the  argument
+       is  one  of the standard view identifiers, it may or may not be further
+       elaborated in _r_f_i_l_e_.  (See "view" variable description, below.)  If the
+       argument  does not match any views in _r_f_i_l_e and is not one of the stan-
+       dard views, no rendering will take place.  This may be convenient  when
+       the  only  action  desired  of _r_a_d is the rebuilding of the octree.  In
+       particular, the argument "0" will never match a view.
+
+       If the _-_V option is given, each view will be printed  on  the  standard
+       output  before being applied, in a form suitable for use in a view file
+       or _r_p_i_c_t rendering sequence.   This  is  helpful  as  feedback  or  for
+       accessing  the _r_a_d view assignments without necessarily starting a ren-
+       dering.
+
+       By default, _r_a_d will run _r_p_i_c_t and _p_f_i_l_t to produce a picture for  each
+       view.  The _-_o option specifies an output device for _r_v_u (usually "x11")
+       and runs this interactive program instead,  using  the  first  view  in
+       _r_f_i_l_e or the view given with the _-_v option as the starting point.
+
+       Additional  variable settings may be added or overridden on the command
+       line following _r_f_i_l_e_.  Upper case variables specified  more  than  once
+       will result in a warning message (unless the _-_w option is present), and
+       the last value given will be the one used.
+
+       The _-_w option turns off warnings about multiply and  misassigned  vari-
+       ables.
+
+       Rendering  variable assignments appear one per line in _r_f_i_l_e_.  The name
+       of the variable is followed by an equals sign ('=') and  its  value(s).
+       The end of line may be escaped with a backslash ('\'), though it is not
+       usually necessary since additional variable values may be given in mul-
+       tiple assignments.  Variables that should have only one value are given
+       in upper case.  Variables that may have multiple values  are  given  in
+       lower case.  Variables may be abbreviated by their first three letters.
+       Comments in _r_f_i_l_e start with a pound sign ('#') and proceed to the  end
+       of line.
+
+       The  rendering  variables, their interpretations and default values are
+       given below.
+
+       OOCCTTRREEEE    The name of the octree file.  The default name is the same as
+                 _r_f_i_l_e  but  with  any suffix replaced by ".oct".  (The octree
+                 must be a file -- _r_a_d cannot work with commands that  produce
+                 octrees.)
+
+       ZZOONNEE      This variable specifies the volume of interest for this simu-
+                 lation.  The first word is either "Interior"  or  "Exterior",
+                 depending  on  whether  the  zone  is to be observed from the
+                 inside or the outside, respectively.  (A single letter may be
+                 given,  and case does not matter.)  The following six numbers
+                 are the minimum and maximum X coordinates, minimum and  maxi-
+                 mum  Y, and minimum and maximum Z for the zone perimeter.  It
+                 is important to give the zone as it is used to determine many
+                 of  the  rendering  parameters.  The default exterior zone is
+                 the bounding cube for the scene as computed by _o_c_o_n_v_.
+
+       EEXXPPOOSSUURREE  This variable tells _r_a_d how to adjust the exposure  for  dis-
+                 play.  It is important to set this variable properly as it is
+                 used to determine the ambient value.  An appropriate  setting
+                 may  be  discovered  by  running  _r_v_u and noting the exposure
+                 given by the "exposure =" command.  As in _r_v_u and _p_f_i_l_t_,  the
+                 exposure  setting may be given either as a multiplier or as a
+                 number of f-stop adjustments (eg. +2 or -1.5).  There  is  no
+                 default  value  for  this  variable.   If it is not given, an
+                 average level will be computed by _p_f_i_l_t and the ambient value
+                 will  be  set  to 10 for exterior zones and 0.01 for interior
+                 zones.
+
+       EEYYEESSEEPP    The interocular spacing for stereo viewing.  I.e., the  world
+                 distance  between the pupils of the left and right eyes.  The
+                 default value is the  sum  of  the  three  "ZONE"  dimensions
+                 divided by 100.
+
+       sscceennee     This  variable  is  used  to  specify one or more scene input
+                 files.  These files will be given together with the materials
+                 file(s)  and any options specified by the "oconv" variable to
+                 _o_c_o_n_v to produce the octree given by the  "OCTREE"  variable.
+                 In-line  commands  may  be  specified  in quotes instead of a
+                 file, beginning with  an  exclamation  mark  ('!').   If  the
+                 "scene" variable is not present, then the octree must already
+                 exist in order for _r_a_d to work.  Even  if  this  variable  is
+                 given, _o_c_o_n_v will not be run unless the octree is out of date
+                 with respect to the input files.   Note  that  the  order  of
+                 files  in  this variable is important for _o_c_o_n_v to work prop-
+                 erly, and files given  in  later  variable  assignments  will
+                 appear after previous ones on the _o_c_o_n_v command line.
+
+       mmaatteerriiaallss This  variable  is  used to specify files that, although they
+                 must appear on the _o_c_o_n_v command  line,  do  not  affect  the
+                 actual  octree  itself.   Keeping  the  materials in separate
+                 files allows them to be modified without requiring the octree
+                 to  be  rebuilt  (a sometimes costly procedure).  These files
+                 should not contain any geometry, and the _-_f option  must  not
+                 be given in the "oconv" variable for this to work.
+
+       iilllluumm     This  variable  is  used to specify files with surfaces to be
+                 converted into illum sources by _m_k_i_l_l_u_m_(_1_)_.  When this  vari-
+                 able  is  given,  additional  octree files will be created to
+                 contain the scene before and after illum  source  conversion.
+                 These files will be named according to the (default) value of
+                 the _O_C_T_R_E_E_E variable, with either a '0' or  a  '1'  appearing
+                 just before the file type suffix (usually ".oct").
+
+       oobbjjeeccttss   This  variable  is  used for files that, although they do not
+                 appear on the _o_c_o_n_v command line, contain geometric  informa-
+                 tion  that  is  referenced indirectly by the scene files.  If
+                 any of these files is changed, the octree  will  be  rebuilt.
+                 (The _r_a_d_d_e_p_e_n_d_(_1_) command may be used to find these dependen-
+                 cies automatically.)
+
+       vviieeww      This variable is used to specify  a  desired  view  for  this
+                 zone.  Any number of "view" lines may be given, and each will
+                 result in a rendered picture (unless the _-_v or _-_o  option  is
+                 specified).  The value for this variable is an optional iden-
+                 tifier followed by any number of view options  (see  _r_p_i_c_t_(_1_)
+                 for a complete listing).  The identifier is used in file nam-
+                 ing and associating a desired view with the _-_v  command  line
+                 option.   Also,  there  are several standard view identifiers
+                 defined by  _r_a_d_.   These  standard  views  are  specified  by
+                 strings of the form "[Xx]?[Yy]?[Zz]?[vlcahs]?".  (That is, an
+                 optional upper or lower case X followed by an optional  upper
+                 or lower case Y followed by an optional upper or lower case Z
+                 followed by an optional lower case V, L, C,  A  or  H.)   The
+                 letters  indicate the desired view position, where upper case
+                 X means maximum X, lower case means minimum and so  on.   The
+                 final  letter is the view type, where 'v' is perspective (the
+                 default), 'l' is parallel, 'c' is a cylindrical panorama,  is
+                 a  planisphere  (stereographic)  fisheye.  A perspective view
+                 from maximum X, minimum Y would be "Xy" or "Xyv".  A parallel
+                 view  from maximum Z would be "Zl".  If "ZONE" is an interior
+                 zone, the standard views will be inside the perimeter.  If it
+                 is  an  exterior  zone,  the  standard views will be outside.
+                 Note that the  standard  views  are  best  used  as  starting
+                 points, and additional arguments may be given after the iden-
+                 tifier to modify a standard view to suit a particular  model.
+                 The  default view is "X" if no views are specified.  A single
+                 specified view of "0" means no views  will  be  automatically
+                 generated.
+
+       UUPP        The  vertical  axis  for  this scene.  A negative axis may be
+                 specified with a minus sign (eg. "-Y").  There is no  default
+                 value for this variable, although the standard views assume Z
+                 is up if no other axis is specified.
+
+       RREESSOOLLUUTTIIOONN
+                 This variable specifies the desired final picture resolution.
+                 If only a single number is given, this value will be used for
+                 both the horizontal and vertical picture dimensions.  If  two
+                 numbers are given, the first is the horizontal resolution and
+                 the second is the vertical resolution.  If three numbers  are
+                 given,  the  third is taken as the pixel aspect ratio for the
+                 final picture (a real value).  If the pixel aspect  ratio  is
+                 zero,  the  exact  dimensions  given  will be those produced.
+                 Otherwise, they will be used as a frame in  which  the  final
+                 image  must fit.  The default value for this variable is 512.
+
+       QQUUAALLIITTYY   This variable sets the overall rendering quality desired.  It
+                 can  have  one  of  three  values, "LOW", "MEDIUM" or "HIGH".
+                 These may be abbreviated by their first letter, and may be in
+                 upper  or  lower case.  Most of the rendering options will be
+                 affected by this setting.  The default value is "L".
+
+       PPEENNUUMMBBRRAASS This is a boolean variable indicating whether or  not  penum-
+                 bras are desired.  A value of "TRUE" will result in penumbras
+                 (soft shadows), and a value of  "FALSE"  will  result  in  no
+                 penumbras  (sharp shadows).  True and false may be written in
+                 upper or lower case, and may be abbreviated by a single  let-
+                 ter.  Renderings generally proceed much faster without penum-
+                 bras.  The default value is "F".
+
+       IINNDDIIRREECCTT  This variable indicates  how  many  diffuse  reflections  are
+                 important  in  the  general  lighting of this zone.  A direct
+                 lighting system (eg. fluorescent  troffers  recessed  in  the
+                 ceiling)  corresponds to an indirect level of 0.  An indirect
+                 lighting system  (eg.  hanging  fluorescents  directed  at  a
+                 reflective ceiling) corresponds to an indirect level of 1.  A
+                 diffuse light shelf  reflecting  sunlight  onto  the  ceiling
+                 would  correspond  to an indirect level of 2.  The setting of
+                 this variable partially determines how many  interreflections
+                 will be calculated.  The default value is 0.
+
+       PPIICCTTUURREE   This  is  the  root name of the output picture file(s).  This
+                 name will have appended the view identifier (or a  number  if
+                 no  id  was  used)  and a ".hdr" suffix.  If a picture corre-
+                 sponding to a specific view exists and is  not  out  of  date
+                 with respect to the given octree, it will not be re-rendered.
+                 The default value for this variable is the  root  portion  of
+                 _r_f_i_l_e_.
+
+       RRAAWWFFIILLEE   This is the root name of the finished, raw _r_p_i_c_t output file.
+                 If specified, _r_a_d will rename the original _r_p_i_c_t output  file
+                 once  it  is  finished  and filtered rather than removing it,
+                 which is the default action.  The given  root  name  will  be
+                 expanded  in  the  same way as the "PICTURE" variable, and if
+                 the "RAWFILE" and "PICTURE" variables are identical, then  no
+                 filtering will take place.
+
+       ZZFFIILLEE     This  is  the  root name of the raw distance file produced by
+                 the _-_z option of _r_p_i_c_t_.  To this  root  name,  an  underscore
+                 plus the view name plus a ".zbf" suffix will be added.  If no
+                 "ZFILE" is specified, none will be produced.
+
+       AAMMBBFFIILLEE   This is the name of  the  file  where  "ambient"  or  diffuse
+                 interreflection  values  will  be  stored  by  _r_p_i_c_t  or _r_v_u_.
+                 Although it is not required, an ambient file should be  given
+                 whenever  an  interreflection  calculation is expected.  This
+                 will optimize successive runs  and  minimize  artifacts.   An
+                 interreflection  calculation  will take place when the "QUAL-
+                 ITY" variable is set to HIGH, or when the "QUALITY"  variable
+                 is  set  to  MEDIUM  and "INDIRECT" is positive.  There is no
+                 default value for this variable.
+
+       DDEETTAAIILL    This variable specifies the level of visual  detail  in  this
+                 zone,  and  is  used  to determine image sampling rate, among
+                 other things.  If there are few surfaces and simple  shading,
+                 then  this should be set to LOW.  For a zone with some furni-
+                 ture it might be set to MEDIUM.  If the space is  very  clut-
+                 tered  or  contains  a  lot of geometric detail and textures,
+                 then it should be set to HIGH.  The default value is "M".
+
+       VVAARRIIAABBIILLIITTYY
+                 This variable tells _r_a_d how much light varies over  the  sur-
+                 faces  of  this  zone, and is used to determine what level of
+                 sampling is necessary in the indirect  calculation.   For  an
+                 electric  lighting  system  with  uniform coverage, the value
+                 should be set to LOW.  For a space with spot  lighting  or  a
+                 window with sky illumination only, it might be set to MEDIUM.
+                 For a space with penetrating sunlight casting bright  patches
+                 in a few places, it should be set to HIGH.  The default value
+                 is "L".
+
+       OOPPTTFFIILLEE   This is the name of a file in which _r_a_d will place the appro-
+                 priate rendering options.  This file can later be accessed by
+                 _r_p_i_c_t or _r_v_u in subsequent  manual  runs  using  the  at-sign
+                 ('@')  file  insert option.  (Using an "OPTFILE" also reduces
+                 the length of the rendering command, which  improves  appear-
+                 ance and may even be necessary on some systems.)  There is no
+                 default value for this variable.
+
+       RREEPPOORRTT    This variable may be used to specify a reporting interval for
+                 batch  rendering.  Given in minutes, this value is multiplied
+                 by 60 and passed to _r_p_i_c_t with the _-_t option.  If a  filename
+                 is  given  after  the  interval, it will be used as the error
+                 file for reports and error messages instead of  the  standard
+                 error.   (See the _-_e option of _r_p_i_c_t_(_1_)_.  There is no default
+                 value for this variable.
+
+       ooccoonnvv     This variable may be  used  to  specify  special  options  to
+                 _o_c_o_n_v_.  If the first word of the first instance of this vari-
+                 able is not an option, it  will  be  used  in  place  of  the
+                 default  command path, "oconv".  See the _o_c_o_n_v_(_1_) manual page
+                 for a list of valid options.
+
+       mmkkiilllluumm   This variable may be used to specify  additional  options  to
+                 _m_k_i_l_l_u_m_.   If  the  first  word of the first instance of this
+                 variable is not an option, it will be used in  place  of  the
+                 default  command  path,  "mkillum".  See the _r_t_r_a_c_e_(_1_) manual
+                 page for a list of valid options.
+
+       rreennddeerr    This variable may be used to specify  additional  options  to
+                 _r_p_i_c_t  or  _r_v_u_.   These options will appear after the options
+                 set automatically by _r_a_d_, and thus will override the  default
+                 values.
+
+       rrppiicctt     This  variable may be used to specify overriding options spe-
+                 cific to _r_p_i_c_t_.  If the first word of the first  instance  of
+                 this  variable  is not an option, it will be used in place of
+                 the default command path, "rpict".  See the _r_p_i_c_t_(_1_) man page
+                 for a list of valid options.
+
+       rrvvuu       This  variable may be used to specify overriding options spe-
+                 cific to _r_v_u_.  If the first word of  the  first  instance  of
+                 this  variable  is not an option, it will be used in place of
+                 the default command path, "rvu".  See the _r_v_u_(_1_) man page for
+                 a list of valid options.
+
+       ppffiilltt     This  variable  may  be used to specify additional options to
+                 _p_f_i_l_t_.  If the first word of the first instance of this vari-
+                 able  is  not  an  option,  it  will  be used in place of the
+                 default command path, "pfilt".  See the _p_f_i_l_t_(_1_) manual  page
+                 for details.
+
+EEXXAAMMPPLLEESS
+       A minimal input file for _r_a_d might look like this:
+
+
+          ::::::::::
+          sample.rif
+          ::::::::::
+          # The octree we want to use:
+          OCTREE= tutor.oct        # w/o this line, name would be "sample.oct"
+          # Our scene input files:
+          scene= sky.rad outside.rad room.rad srcwindow.rad
+          # The interior zone cavity:
+          ZONE= I  0 3  0 2  0 1.75          # default would be scene bounding cube
+          # The z-axis is up:
+          UP= Z                    # no default - would use view spec.
+          # Our exposure needs one f-stop boost:
+          EXPOSURE= +1             # default is computed ex post facto
+
+       Note that we have not specified any views in the file above.  The stan-
+       dard default view "X" would be used if we were to run _r_a_d on this file.
+       If  we only want to see what default values _r_a_d would use without actu-
+       ally executing anything, we can invoke it thus:
+
+         rad -n -e sample.rif
+
+       This will print the variables we have given as well as  default  values
+       _r_a_d  has  assigned for us.  Also, we will see the list of commands that
+       _r_a_d would have executed had the _-_n option not been present.   (Note  if
+       the  octree, "tutor.oct", is not present, an error will result as it is
+       needed to determine some of the opiton settings.)
+
+       Different option combinations have specific uses, ie:
+
+
+         rad -v 0 sample.rif OPT=samp.opt   # build  octree,  put  options  in
+         "sample.opt"
+         rad -n -e -s sample.rif > full.rif # make a complete rad file
+         rad -n sample.rif > script.sh # make a script of commands
+         rad -V -v Zl -n -s sample.rif > plan.vf # make a plan view file
+         rad -t sample.rif        # update files after minor change to input
+         rad -s sample.rif &      # execute silently in the background
+
+       If  we  decide that the default values _r_a_d has chosen for our variables
+       are not all appropriate, we can add some more assignments to the file:
+
+
+          QUAL= MED      # default was low
+          DET= low       # default was medium - our space is almost empty
+          PEN= True      # we want to see soft shadows from our window
+          VAR= hi        # daylight can result in fairly harsh lighting
+          view= XYa -vv 120   # let's try a fisheye view
+          PICT= tutor         # our picture name will be "tutor_XYa.hdr"
+
+       Note the use of abbreviations, and the modification of a standard view.
+       Now  we  can  invoke _r_a_d to take a look at our scene interactively with
+       _r_v_u_:
+
+         rad -o x11 sample.rif
+
+       _R_a_d will run _o_c_o_n_v first to create  the  octree  (assuming  it  doesn't
+       already  exist),  then _r_v_u with a long list of options.  Let's say that
+       from within _r_v_u_, we wrote out the view files "view1.vp" and "view2.vp".
+       We could add these to "sample.rif" like so:
+
+
+         view= vw1 -vf view1.vp        # Our first view
+         view= vw2 -vf view2.vp        # Our second view
+         RESOLUTION= 1024         # Let's go for a higher resolution result
+
+       To start _r_v_u again using vw2 instead of the default, we use:
+
+         rad -o x11 -v vw2 sample.rif
+
+       Once  we  are  happy with the variable settings in our file, we can run
+       _r_a_d in the background to produce one image for each view:
+
+         rad sample.rif REP=5 >& errfile &
+
+       This will report progress every five minutes to "errfile".
+
+FFIILLEESS
+       $(PICTURE)_$(view).unf   Unfinished output of _r_p_i_c_t
+
+AAUUTTHHOORR
+       Greg Ward
+
+BBUUGGSS
+       Incremental building of octrees is not supported as it would  add  con-
+       siderable  complexity to _r_a_d_.  Complicated scene builds should still be
+       left to _m_a_k_e_(_1_)_, which has a robust mechanism for handling hierarchical
+       dependencies.   If _m_a_k_e is used in this fashion, then only the "OCTREE"
+       variable of _r_a_d is needed.
+
+       The use of some _p_f_i_l_t options is awkward, since the "EXPOSURE" variable
+       results  in  a  single  pass invocation (the _-_1 option of _p_f_i_l_t and two
+       passes are necessary for certain effects, such as star  patterns.   The
+       way  around  this problem is to specify a "RAWFILE" that is the same as
+       the "PICTURE" variable so that no  filtering  takes  place,  then  call
+       _p_f_i_l_t manually.  This is preferable to leaving out the "EXPOSURE" vari-
+       able, since the exposure level is needed to  accurately  determine  the
+       ambient value for _r_p_i_c_t_.
+
+       The  use  of  upper and lower case naming for the standard views may be
+       problematic on systems that don't distinguish case in filenames.
+
+SSEEEE AALLSSOO
+       glrad(1), make(1), mkillum(1), objview(1), oconv(1),  pfilt(1),  radde-
+       pend(1),  ranimate(1), rholo(1), rpict(1), rtrace(1), rvu(1), touch(1),
+       vgaimage(1), ximage(1)
+
+
+
+RADIANCE                            2/1/99                              RAD(1)

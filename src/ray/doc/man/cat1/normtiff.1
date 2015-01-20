@@ -1,0 +1,115 @@
+NORMTIFF(1)                                                        NORMTIFF(1)
+
+
+
+NNAAMMEE
+       normtiff  -  tone-map and convert RADIANCE picture or HDR TIFF to stan-
+       dard TIFF
+
+SSYYNNOOPPSSIISS
+       nnoorrmmttiiffff [ ooppttiioonnss ] iinnppuutt oouuttppuutt..ttiiff
+
+DDEESSCCRRIIPPTTIIOONN
+       _N_o_r_m_t_i_f_f prepares a Radiance picture or  high  dynamic-range  TIFF  for
+       output  to  a display or hard copy device.  If the dynamic range of the
+       scene exceeds that of the display (as is usually  the  case),  _n_o_r_m_t_i_f_f
+       will  compress the dynamic range of the picture such that both dark and
+       bright regions are visible.  In addition, certain limitations in  human
+       vision may be mimicked in order to provide an appearance similar to the
+       experience one might have in the actual scene.
+
+       Output is always an uncompressed RGB TIFF, which must be named  on  the
+       command line along with the input file.  If the input file has a ".tif"
+       or ".tiff" extension, _n_o_r_m_t_i_f_f attempts to read it as a  TIFF.   Other-
+       wise, _n_o_r_m_t_i_f_f first tries opening it as a RADIANCE picture, only open-
+       ing it as a TIFF if it fails header inspection.   (See  the  _g_e_t_i_n_f_o_(_1_)
+       program.)   If  the  input  is  neither  a  RADIANCE picture nor a high
+       dynamic-range TIFF, the program reports an error and exits.
+
+       The following command line options are understood.  Since this  program
+       is very similar to _p_c_o_n_d_(_1_)_, several of the switches are identical.
+
+       --bb        Toggle 8-bit black and white (grayscale) TIFF output.  If the
+                 input is a  grayscale  TIFF,  this  switch  is  automatically
+                 selected.  Otherwise, the output defaults to 24-bit RGB.
+
+       --zz        Output LZW-compressed TIFF (smaller file).
+
+       --hh        Mimic  human visual response in the output.  The goal of this
+                 process is to produce output that correlates strongly with  a
+                 person's subjective impression of a scene.  This switch turns
+                 on both the _-_s and _-_c switches, described below.
+
+       --ss        Toggle the use of the human contrast sensitivity function  in
+                 determining  the exposure for the image.  A darker scene will
+                 have relatively lower exposure with  lower  contrast  than  a
+                 well-lit scene.
+
+       --cc        Toggle  mesopic  color correction.  If parts of the image are
+                 in the mesopic or scotopic range where the  cone  photorecep-
+                 tors  lose  their efficiency, this switch will cause a corre-
+                 sponding loss of color visibility in the output and  a  shift
+                 to a scotopic (blue-dominant) response function.
+
+       --ll        Toggle the use of a linear response function versus the stan-
+                 dard dynamic range compression algorithm.  This may make some
+                 parts of the resulting image too dark or too bright to see.
+
+       --uu _L_d_m_a_x  Specifies  the top of the luminance range for the target out-
+                 put device.  That is, the luminance (in candelas/m^2) for  an
+                 output  pixel value of (R,G,B)=(255,255,255).  This parameter
+                 affects tone mapping only when the  _-_s  switch  is  on.   The
+                 default value is 100 cd/m^2.
+
+       --dd _L_d_d_y_n  Specifies  the  dynamic  range  for the target output device,
+                 which is the ratio of the maximum and minimum usable  display
+                 luminances.   The  default  value is 32, which is typical for
+                 CRT monitors.
+
+       --pp _x_r _y_r _x_g _y_g _x_b _y_b _x_w _y_w
+                 Specifies the RGB primaries for  the  target  output  device.
+                 These  are  the  1931  CIE (x,y) chromaticity values for red,
+                 green, blue and white, respectively.
+
+       --gg _g_a_m_m_a  Specifies the output  device  gamma  correction  value.   The
+                 default value is 2.2, which is appropriate for most CRT moni-
+                 tors.  (A value of 1.8 is common in color prepress and  color
+                 printers.)
+
+EEXXAAMMPPLLEESS
+       To convert a RADIANCE picture to an 8-bit grayscale TIFF:
+
+         normtiff -b scene.hdr sceneb.tif
+
+       To  condition  a high dynamic-range TIFF for a particular film recorder
+       with known color primaries, dynamic range and gamma response:
+
+         pcond -d 50 -g 2.5 -p  .580  .340  .281  .570  .153  .079  .333  .333
+         orig.tif filmrgb.tif
+
+       To simulate human visual response on a monitor with known maximum lumi-
+       nance:
+
+         normtiff -h -u 80 scene.hdr sceneh.tif
+
+RREEFFEERREENNCCEE
+       Greg Ward Larson, Holly Rushmeier,  Christine  Piatko,  ``A  Visibility
+       Matching  Tone  Reproduction  Operator for High Dynamic Range Scenes,''
+       _I_E_E_E _T_r_a_n_s_a_c_t_i_o_n_s _o_n _V_i_s_u_a_l_i_z_a_t_i_o_n _a_n_d  _C_o_m_p_u_t_e_r  _G_r_a_p_h_i_c_s  _,  December
+       1997.
+
+       http://positron.cs.berkeley.edu/gwlarson/pixformat/
+
+AAUUTTHHOORR
+       Greg Ward Larson
+
+AACCKKNNOOWWLLEEDDGGMMEENNTT
+       This work was supported by Silicon Graphics, Inc.
+
+SSEEEE AALLSSOO
+       getinfo(1),  pcond(1),  pflip(1),  pvalue(1),  protate(1),  ra_xyze(1),
+       rpict(1), ximage(1)
+
+
+
+RADIANCE                            2/25/99                        NORMTIFF(1)

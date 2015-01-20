@@ -1,0 +1,40 @@
+X11META(1)                                                          X11META(1)
+
+
+
+NNAAMMEE
+       x11meta - output metafile graphics to X11
+
+SSYYNNOOPPSSIISS
+       xx1111mmeettaa [ --cc || --rr ] file ..
+
+DDEESSCCRRIIPPTTIIOONN
+       _X_1_1_m_e_t_a  reads  each  metafile  _f_i_l_e  in  sequence  and sends it to the
+       default X window system.  If the option _c is specified, the input files
+       are  only conditioned for output, ie.  expanded and sorted (see pexpand
+       and psort).  If the option _r is instead specified, the input is assumed
+       already  to be conditioned.  If no input files are specified, the stan-
+       dard input is read.
+
+       --cc        Condition the input only.
+
+       --rr        Input is already conditioned, output only.
+
+EEXXAAMMPPLLEE
+       To plot the chart example.bar:
+
+         bgraph example.plt | x11meta
+
+FFIILLEESS
+       see pexpand(1) and psort(1)
+
+AAUUTTHHOORR
+       Greg Ward
+
+SSEEEE AALLSSOO
+       bgraph(1), cv(1),  igraph(1),  meta2bmp(1),  meta2tga(1),  metafile(5),
+       pexpand(1), psmeta(1), psort(1)
+
+
+
+                                                                    X11META(1)

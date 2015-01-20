@@ -1,0 +1,171 @@
+TMESH2RAD(1)                                                      TMESH2RAD(1)
+
+
+
+NNAAMMEE
+       tmesh2rad - convert a triangular mesh to a RADIANCE scene description
+
+SSYYNNOOPPSSIISS
+       ttmmeesshh22rraadd [ --oo oobbjj ][ --mm mmaatt ][ --pp ppaatt ] [ iinnppuutt ....  ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _T_m_e_s_h_2_r_a_d  converts one or more triangle-mesh files to a RADIANCE scene
+       description.  The _-_o option may be used  to  assign  a  default  object
+       name.  The single letter "T" is used if no name is given on the command
+       line or in the file.  The _-_m option may be used  to  assign  a  default
+       material name.  The non-material "void" is used as a default if none is
+       given on the command line or in the file.  The _-_p option may be used to
+       assign  a  default  picture for a surface pattern.  If none is given on
+       the command line or in the file, the surface will not have  an  associ-
+       ated pattern.
+
+FFIILLEE FFOORRMMAATT
+       A  triangle-mesh  is a free-format ASCII file composed of the following
+       eight primitive types.  Each primitive is begun with a  single,  white-
+       space-delimited letter:
+
+       ## _C_o_m_m_e_n_t Whatever follows up until the end of line is passed as a com-
+                 ment to the output.  Note that there must  be  at  least  one
+                 space or tab following the pound-sign.
+
+       oo _n_a_m_e    The white-space-delimited string _n_a_m_e is used as a prefix for
+                 all following output triangles.
+
+       mm _m_a_t_e_r_i_a_l
+                 The white-space-delimited string _m_a_t_e_r_i_a_l is used as the mod-
+                 ifier name for all following output triangles.
+
+       pp _p_i_c_t_u_r_e The  white-space-delimited string _p_i_c_t_u_r_e is used as the name
+                 of the RADIANCE picture file to be used as a pattern for  all
+                 following  output  triangles  with properly defined vertices.
+                 (See _i primitive below.)
+
+       vv _i_d _x _y _z
+                 Defines the vertex _i_d with 3-dimensional coordinates _x_, _y and
+                 _z_.  The identifier, _i_d must be some small, non-negative inte-
+                 ger value.  If the same integer is used for  a  later  vertex
+                 definition,  this  definition will be lost, though any trian-
+                 gles using the vertex prior to its redefinition will be unaf-
+                 fected.
+
+       nn _n_x _n_y _n_z
+                 Defines a surface normal vector with the 3-dimensional compo-
+                 nents _n_x_, _n_y and _n_z_.  This vector will be associated with the
+                 most recently defined vertex, and is often placed on the same
+                 line as the vertex definition for clarity.  The  vector  need
+                 not be normalized.
+
+       ii _u _v     Defines a picture index for the most recently defined vertex.
+                 The _u value will be used to lookup the horizontal pixel coor-
+                 dinate in the currently defined picture.  The _v value will be
+                 used to lookup the vertical pixel coordinate.  (See the RADI-
+                 ANCE  reference manual for details on picture coordinate val-
+                 ues.)  As with associated surface  normals,  picture  indices
+                 are  interpolated  using barycentric coordinates based on the
+                 triangle vertices.  If these coordinates are calculated  cor-
+                 rectly,  this  should result in a smooth mapping of a pattern
+                 onto the surface mesh.
+
+       tt _i_d_1 _i_d_2 _i_d_3
+                 Create a triangle connecting the three vertices identified by
+                 _i_d_1_,  _i_d_2  and _i_d_3_.  The right-hand rule is used to determine
+                 the default surface normal orientation, and this  should  not
+                 be  too far from the associated vertex normals (if any).  All
+                 three vertices must have an associated normal if the triangle
+                 is  to  be  smoothed.   If  a picture file is defined and all
+                 three vertices have pattern  indices  associated  with  them,
+                 then  this  picture  will  be used as a pattern to modify the
+                 triangle's color.
+
+       We realize there are many similar T-mesh file formats in existence, and
+       that  it  would  have been just as easy to support one of these formats
+       directly.  The disadvantage to supporting an existing  format  is  that
+       conversion  from  other formats might prove difficult.  It was our hope
+       to provide a "greatest common multiple" format that would  support  all
+       similar  T-mesh formats, rather than supporting WaveFront's .obj format
+       (for example) and being unable to associate a pattern with  an  object.
+       Converting from other formats should be relatively straightforward.  In
+       many cases, an _a_w_k_(_1_)_, _r_c_a_l_c_(_1_) or even a _s_e_d_(_1_) script should be  suf-
+       ficient.
+
+EEXXAAMMPPLLEE
+       Here is an example T-mesh file:
+
+              # Our object name:
+              o test_object
+              # Our material:
+              m puce
+              # Our vertices:
+              v 1  10   15   5
+              v 2  10   -15  5
+              v 3  0    -15  0
+              v 4  -10  15   -5
+              # Two triangles joined together:
+              t 1 2 3
+              t 2 3 4
+
+       Which generates the following output:
+
+              ## T-mesh read from: <stdin>
+
+              # Our material:
+
+              # Our vertices:
+
+              # Two triangles joined together:
+
+              puce polygon test_object.1
+              0
+              0
+              9
+                              10                 15                  5
+                              10                -15                  5
+                               0                -15                  0
+
+              puce polygon test_object.2
+              0
+              0
+              9
+                              10                -15                  5
+                               0                -15                  0
+                             -10                 15                 -5
+
+
+       Here is another example:
+
+              # A partial cylinder:
+              m BluePlastic
+              v 1 -14.673 -3.119    50 n -0.95677 -0.203374 1.17936e-10
+              v 2 -12.136 -8.817   -50 n -0.791363 -0.574922 4.84915e-10
+              v 3 -12.136 -8.817    50 n -0.791363 -0.574922 4.84915e-10
+              t 1 2 3
+              m OrangePlastic
+              v 1 -7.501 -12.991    50 n -0.549094 -0.812427 -1.45812e-09
+              v 2 -12.136 -8.817    50 n -0.791363 -0.574922 4.84915e-10
+              v 3 -12.136 -8.817   -50 n -0.791363 -0.574922 4.84915e-10
+              t 1 2 3
+              m BluePlastic
+              v 1 -1.568 -14.918    50 n -0.171094 -0.965568 -5.69788e-09
+              v 2 -7.501 -12.991    50 n -0.549094 -0.812427 -1.45812e-09
+              v 3 -7.501 -12.991   -50 n -0.429001 -0.881759 -3.6502e-09
+              t 1 2 3
+
+       Note  that  the same three vertices were used repeatedly, and intermin-
+       gled with the triangle definitions.
+
+AAUUTTHHOORR
+       Greg Ward
+
+BBUUGGSS
+       Triangle smoothing doesn't work very well for glass or  trans  material
+       types  in Radiance, since textures cause distorted transmission through
+       these materials.  It is best to use the  dielectric  material  type  if
+       smooth transmission is desired.
+
+SSEEEE AALLSSOO
+       arch2rad(1),   awk(1),   ies2rad(1),  thf2rad(1),  oconv(1),  rcalc(1),
+       sed(1), xform(1)
+
+
+
+RADIANCE                            3/18/96                       TMESH2RAD(1)

@@ -1,0 +1,58 @@
+RHOPTIMIZE(1)                                                    RHOPTIMIZE(1)
+
+
+
+NNAAMMEE
+       rhoptimize - optimize beam locations in holodeck file
+
+SSYYNNOOPPSSIISS
+       rrhhooppttiimmiizzee [ --uu ] ssrrcc__hhoolloo [ ddeesstt__hhoolloo ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _R_h_o_p_t_i_m_i_z_e  optimizes  beam  positions and eliminates fragment waste in
+       the holodeck file _s_r_c___h_o_l_o_, writing the result to  _d_e_s_t___h_o_l_o_,  or  back
+       into  _s_r_c___h_o_l_o if only one argument is given.  This may improve render-
+       ing speed on large holodecks, which tend to have widely dispersed  beam
+       positions that cause delays due to long file seeks.  It may also reduce
+       the size of the file, since large holodecks become fragmented  as  they
+       fill  up with new ray samples.  (Use the _r_h_i_n_f_o_(_1_) program to determine
+       holodeck file fragmentation.)  The _-_u option adds a check to make  sure
+       that  each  ray  sample is unique, i.e., the same sample is never given
+       twice.  This check is usually unnecessary, but may eliminate  redundant
+       samples from some holodeck files.
+
+EEXXAAMMPPLLEE
+       To optimize the beam order in old.hdk and write the results to new.hdk:
+
+         rhoptimize old.hdk new.hdk
+
+       To optimize beam order in scene.hdk:
+
+         rhoptimize scene.hdk
+
+NNOOTTEESS
+       If _r_h_o_p_t_i_m_i_z_e is given only one file argument, it creates  a  temporary
+       file in the same directory, and moves it onto the original file once it
+       has successfully completed its operation.  If the operation  fails  for
+       some reason, the temporary file is removed and the original holodeck is
+       left unchanged.
+
+       This program generally takes several  minutes  to  run  and  offers  no
+       progress reports.
+
+FFIILLEESS
+       rho????.hdk    temporary file to hold new holodeck
+
+AAUUTTHHOORR
+       Greg Ward Larson
+
+AACCKKNNOOWWLLEEDDGGMMEENNTT
+       This work was supported by Silicon Graphics, Inc.
+
+SSEEEE AALLSSOO
+       getinfo(1),   pfilt(1),   psign(1),   rhcopy(1),  rhinfo(1),  rholo(1),
+       rpict(1)
+
+
+
+RADIANCE                            1/25/99                      RHOPTIMIZE(1)

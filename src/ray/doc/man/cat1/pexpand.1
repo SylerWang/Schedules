@@ -1,0 +1,47 @@
+PEXPAND(1)                                                          PEXPAND(1)
+
+
+
+NNAAMMEE
+       pexpand - expand requested commands in metafile
+
+SSYYNNOOPPSSIISS
+       ppeexxppaanndd [ ++//--EEPPDDOOCCSSUURRIIllrrttmmvvsspp ] file ..
+
+DDEESSCCRRIIPPTTIIOONN
+       _P_e_x_p_a_n_d  reads  each metafile _f_i_l_e in sequence and expands any commands
+       specified in a '+' option, and deletes any commands specified in a  '-'
+       option.   This  is necessary because most drivers will not support many
+       metafile commands such as 'v' (vector string) and  'O',  'C',  and  's'
+       (segments).   _P_e_x_p_a_n_d  will expand '+' instances into the corresponding
+       primitives which are supported, and delete all '-' instances.
+
+       Certain commands are currently considered basic, and must be  supported
+       by  all  drivers.   The commands 'D', 'E', 'S', 'U', 'R', 'l', 'r', and
+       't' are basic (see metafile(5)).
+
+       If no input files are specified, the standard input is read.
+
+       ++EEPPDDOOCCSSUURRIIllrrttmmvvsspp
+                 Expand the requested command(s).
+
+       --EEPPDDOOCCSSUURRIIllrrttmmvvsspp
+                 Delete the requested command(s).
+
+EEXXAAMMPPLLEE
+       To expand vector strings and segements, and delete pauses from "meta":
+
+         pexpand +vOCs -P meta
+
+FFIILLEESS
+       /usr/lib/meta/vchars.mta  (see metafile(5))
+
+AAUUTTHHOORR
+       Greg Ward
+
+SSEEEE AALLSSOO
+       metafile(5), psort(1)
+
+
+
+RADIANCE                            6/24/98                         PEXPAND(1)

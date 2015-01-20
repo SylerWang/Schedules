@@ -1,0 +1,210 @@
+RVU(1)                                                                  RVU(1)
+
+
+
+NNAAMMEE
+       rvu - generate RADIANCE images interactively
+
+SSYYNNOOPPSSIISS
+       rrvvuu  [  rrppiicctt  ooppttiioonnss  ][ --nn nnpprroocc ][ --oo ddeevv ][ --bb ][ --ppee eexxppoossuurree ] [
+       $$EEVVAARR ] [ @@ffiillee ] ooccttrreeee
+       rrvvuu [[ ooppttiioonnss ]] --ddeeffaauullttss
+       rrvvuu --ddeevviicceess
+
+DDEESSCCRRIIPPTTIIOONN
+       _R_v_u generates RADIANCE images using _o_c_t_r_e_e_.  (The octree may  be  given
+       as  the output of a command enclosed in quotes and preceded by a `!'.)
+       Options specify the viewing parameters as well as giving  some  control
+       over  the calculation.  Options may be given on the command line and/or
+       read from the environment and/or read from a file.  A command  argument
+       beginning  with a dollar sign ('$') is immediately replaced by the con-
+       tents of the given environment variable.  A command argument  beginning
+       with  an  at  sign ('@') is immediately replaced by the contents of the
+       given file.  The options are the same  as  for  rpict(1),  with  a  few
+       notable  exceptions.   The  _-_r_,  _-_z_, _-_S_, _-_P_, _-_P_P and _-_t options are not
+       supported, and _-_o specifies which output device is being  used  instead
+       of  the output file.  The _-_x_, _-_y and _-_p_a options are unnecessary, since
+       _r_v_u scales the display image to the specified output device.  Addition-
+       ally, the _-_b option improves the display on greyscale monitors, and _-_p_e
+       may be used to set an initial exposure value.
+
+       The _-_n option may be used to specify multiple processes, to  accelerate
+       rendering.
+
+       In the second form, the default values for the options are printed with
+       a brief explanation.  In the third form, the list of  supported  output
+       devices is displayed.
+
+       _r_v_u  starts  rendering the image from the selected viewpoint and gradu-
+       ally improves the resolution of the display until interrupted  by  key-
+       board input.  _r_v_u then issues a prompt (usually ':') and accepts a com-
+       mand line from the user.  _r_v_u may also stop its  calculation  and  wait
+       for command input if the resolution of the display has reached the res-
+       olution of the graphics device.   At  this  point,  it  will  give  the
+       'done:' prompt and await further instructions.  If _r_v_u runs out of mem-
+       ory due to lack of resources to store its computed image, it will  give
+       the  'out  of  memory:'  prompt.  At this prompt, the user can save the
+       image, quit, or even restart a new image, although this is  not  gener-
+       ally recommended on virtual memory machines for efficiency reasons.
+
+       _r_v_u  is  not meant to be a rendering program, and we strongly recommend
+       that _r_p_i_c_t_(_1_) be used instead for that purpose.   Since  _r_p_i_c_t_(_1_)  does
+       not  store  its image in memory or update any display of its output, it
+       is much faster and less wasteful of its resources  than  _r_v_u_.   _r_v_u  is
+       intended  as  a  quick  interactive program for deciding viewpoints and
+       debugging scene descriptions and is not suited for  producing  polished
+       images.
+
+CCOOMMMMAANNDDSS
+       Once  the  program  starts, a number of commands can be used to control
+       it.  A command is given by its name, which can be abbreviated, followed
+       by its arguments.
+
+       aaiimm _[ _m_a_g _[ _x _y _z _] _]
+                 Zoom  in by _m_a_g on point _x _y _z _.  The view point is held con-
+                 stant; only the view direction and size are changed.  If _x  _y
+                 _z  is  missing, the cursor is used to select the view center.
+                 A negative magnification factor means zoom out.  The  default
+                 factor is one.
+
+       ^^CC        Interrupt.  Go to the command line.
+
+       eexxppoossuurree _[ _s_p_e_c _]
+                 Adjust  exposure.   The  number  _s_p_e_c is a multiplier used to
+                 compensate the average exposure.  A value of  1  renormalizes
+                 the  image  to  the  computed  average, which is usually done
+                 immediately after startup.  If _s_p_e_c begins with a '+' or '-',
+                 the  compensation is interpreted in f-stops (ie. the power of
+                 two).  If _s_p_e_c begins with an '=',  an  absolute  setting  is
+                 performed.   An '=' by itself permits interactive display and
+                 setting of the exposure.  If _s_p_e_c begins  with  an  '@',  the
+                 exposure  is  adjusted  to present similar visibility to what
+                 would be experienced in the real  environment.   If  _s_p_e_c  is
+                 absent,  or an '@' is followed by nothing, then the cursor is
+                 used to pick a specific image location for normalization.
+
+       ffooccuuss _[_d_i_s_t_a_n_c_e_]
+                 Set focus distance for depth-of-field sampling.   If  a  dis-
+                 tance in world coordinates is absent, then the cursor is used
+                 to choose a point in the scene on which to focus.  (The focus
+                 distance  setting does not affect rendering in _r_v_i_e_w_, but can
+                 be used in _r_p_i_c_t with the _-_p_d option  to  simulate  depth-of-
+                 field on views saved from _r_v_i_e_w_._)
+
+       ffrraammee _[ _x_m_i_n _y_m_i_n _x_m_a_x _y_m_a_x _]
+                 Set  frame  for  refinement.   If coordinates are absent, the
+                 cursor is used to pick frame boundaries.  If ``all'' is spec-
+                 ified, the frame is reset to the entire image.
+
+       ffrreeee      Free cached object structures and associated data.  This com-
+                 mand may be useful when memory is low and a  completely  dif-
+                 ferent view is being generated from the one previous.
+
+       llaasstt _[ _f_i_l_e _]
+                 Restore  the  previous  view.   If  a view or picture _f_i_l_e is
+                 specified, the parameters are taken from the last view  entry
+                 in the file.
+
+       LL _[ _v_w _[ _r_f_i_l_e _] _]
+                 Load  parameters  for  view  _v_w  from  the _r_a_d_(_1_) input file,
+                 _r_f_i_l_e_.  Both _v_w and _r_f_i_l_e must be given the first  call,  but
+                 subsequent  calls  will  use the last _r_f_i_l_e as a default, and
+                 "1" as the default view (ie.  the  first  view  appearing  in
+                 _r_f_i_l_e_)_.   If _r_v_u was started by _r_a_d_, then the _r_f_i_l_e parameter
+                 will initially default to the rad input file used.
+
+       mmoovvee _[ _m_a_g _[ _x _y _z _] _]
+                 Move camera _m_a_g times closer to point _x _y _z _.  For a perspec-
+                 tive  projection  (or  fisheye  view), only the view point is
+                 changed; the view direction and size  remain  constant.   The
+                 view  size must be modified in a parallel projection since it
+                 determines magnification.  If _x _y _z is missing, the cursor is
+                 used  to  select  the  view center.  A negative magnification
+                 factor decreases the object size.  The default factor is one.
+                 Care  must  be  taken  to avoid moving behind or inside other
+                 objects.
+
+       nneeww _[ _n_p_r_o_c _]
+                 Restart the image, using the specified  number  of  rendering
+                 processes.  Usually used after the "set" command.
+
+       ppiivvoott _a_n_g_l_e _[ _e_l_e_v _[ _m_a_g _[ _x _y _z _] _] _]
+                 Similar  to  the  "move" command, but pivots the view about a
+                 selected point.  The _a_n_g_l_e is measured in degrees around  the
+                 view  up vector using the right hand rule.  The optional _e_l_e_v
+                 is the elevation in degrees from the  pivot  point;  positive
+                 raises  the  view  point to look downward and negative lowers
+                 the view point to look upward.
+
+       qquuiitt      Quit the program.
+
+       ^^RR        Redraw the image.  Use when the display gets  corrupted.   On
+                 some  displays,  occassionally  forcing  a redraw can improve
+                 appearance, as more color information is  available  and  the
+                 driver can make a better color table selection.
+
+       rroottaattee _a_n_g_l_e _[ _e_l_e_v _[ _m_a_g _] _]
+                 Rotate  the camera horizontally by _a_n_g_l_e degrees.  If an ele-
+                 vation is specified, the camera looks  upward  _e_l_e_v  degrees.
+                 (Negative means look downward.)
+
+       sseett _[ _v_a_r _[ _v_a_l _] _]
+                 Check/change program variable.  If _v_a_r is absent, the list of
+                 available variables is displayed.  If _v_a_l is absent, the cur-
+                 rent  value of the variable is displayed and changed interac-
+                 tively.  Otherwise, the variable _v_a_r assumes the  value  _v_a_l_.
+                 Variables  include:  ambient value (av), ambient value weight
+                 (aw), ambient bounces (ab), ambient  accuracy  (aa),  ambient
+                 divisions  (ad),  ambient  radius (ar), ambient samples (as),
+                 black&white (b), back face  visibility  (bv),  direct  jitter
+                 (dj),  direct  sampling  (ds),  direct threshold (dt), direct
+                 visibility (dv), irradiance (i),  limit  weight  (lw),  limit
+                 recursion  (lr),  medium extinction (me), medium albedo (ma),
+                 medium eccentricity (mg), medium sampling (ms), pixel  sample
+                 (ps),  pixel  threshold  (pt), specular jitter (sj), specular
+                 threshold (st), and uncorrelated sampling (u).  Once a  vari-
+                 able  has  been  changed,  the  "new"  command can be used to
+                 recompute the image with the new parameters.   If  a  program
+                 variable  is  not  available  here, it may show up under some
+                 other command or it may be impossible to change once the pro-
+                 gram is running.
+
+       ttrraaccee _[ _x_b_e_g _y_b_e_g _z_b_e_g _x_d_i_r _y_d_i_r _z_d_i_r _]
+                 Trace a ray.  If the ray origin and direction are absent, the
+                 cursor is used to pick a location in the image to trace.  The
+                 object  intersected  and its material, location and value are
+                 displayed.
+
+       vviieeww _[ _f_i_l_e _[ _c_o_m_m_e_n_t_s _] _]
+                 Check/change view parameters.  If _f_i_l_e is present,  the  view
+                 parameters  are  appended  to a file, followed by _c_o_m_m_e_n_t_s if
+                 any.  Alternatively, view options may be  given  directly  on
+                 the  command line instead of an output view file.  Otherwise,
+                 view parameters are displayed and changed interactively.
+
+       VV _[ _v_w _[ _r_f_i_l_e _] _]
+                 Append the current view as view _v_w in  the  rad  file  _r_f_i_l_e_.
+                 Compliment  to  _L  command.   Note  that  the  view is simply
+                 appended to the file, and previous views with the  same  name
+                 should be removed before using the file with _r_a_d_.
+
+       wwrriittee _[ _f_i_l_e _]
+                 Write  picture  to _f_i_l_e_.  If argument is missing, the current
+                 file name is used.
+
+       ^^ZZ        Stop the program.  The screen will be redrawn when  the  pro-
+                 gram resumes.
+
+EENNVVIIRROONNMMEENNTT
+       RAYPATH        the  directories  to  check  for  auxiliary files.  DIS-
+       PLAY_GAMMA       the value to use for monitor gamma correction.
+
+AAUUTTHHOORR
+       Greg Ward
+
+SSEEEE AALLSSOO
+       getinfo(1), lookamb(1), oconv(1), pfilt(1), rad(1), rpict(1), rtrace(1)
+
+
+
+RADIANCE                            1/1/04                              RVU(1)

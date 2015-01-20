@@ -1,0 +1,77 @@
+REPLMARKS(1)                                                      REPLMARKS(1)
+
+
+
+NNAAMMEE
+       replmarks - replace triangular markers in a RADIANCE scene description
+
+SSYYNNOOPPSSIISS
+       rreeppllmmaarrkkss [ --ee ][ --mm nneewwmmoodd ][ --ss ssccaallee ] { --xx oobbjjffiillee | --ii ooccttrreeee | --II
+       mmeesshh } mmooddnnaammee ....  [ ffiillee ....  ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _R_e_p_l_m_a_r_k_s replaces triangular markers identified by the  modifier  _m_o_d_-
+       _n_a_m_e  in each scene description _f_i_l_e and writes the result to the stan-
+       dard output.  The _-_x  option  indicates  that  each  marker  should  be
+       replaced  by an appropriate _x_f_o_r_m_(_1_) command on _o_b_j_f_i_l_e_.  The _-_i option
+       indicates that each marker should be replaced by an instance of _o_c_t_r_e_e_.
+       The  _-_I  option  indicates  that  each  marker should be replaced by an
+       instance of the Radiance mesh _m_e_s_h_.  One of these  three  options  must
+       appear  on  the  command line, along with _m_o_d_n_a_m_e_, the modifier used by
+       markers in the file.
+
+       Multiple modifiers may be given, as long as each one is preceded by its
+       own _-_x or _-_i option.
+
+       The  transformation  for  each marker is determined by its location and
+       orientation.  A marker should be a right triangle pointing like a half-
+       arrow in the direction of the transformed x-axis, x'.  The longest side
+       is the hypoteneuse, the second longest side is  the  x'-axis,  and  the
+       third  longest  side indicates the direction of the y'-axis.  Any addi-
+       tional sides will be ignored (ie. a quadrilateral may be  used  instead
+       of  a  triangle if the extra side is small).  The z'-axis is determined
+       by the cross product of the x' and y' axes, and the origin is the  com-
+       mon vertex between x' and y'.
+
+       The  size  of the marker is ignored unless the _-_s option is used, where
+       _s_c_a_l_e is a multiplier for the x'-axis  length  to  indicate  the  total
+       scale  factor.  For example, a _s_c_a_l_e value of 5 with a marker length of
+       .5 would result in a total scale factor of 2.5 to be used in the trans-
+       formation.
+
+       The  _-_e  option  causes  commands  in  the  file to be expanded, and is
+       required to replace markers from commands in the input file.  Even with
+       this  option, _r_e_p_l_m_a_r_k_s will not examine objects for markers.  Specifi-
+       cally, an object included by _r_e_p_l_m_a_r_k_s as a result of  a  _-_x  expansion
+       will  be  transferred  verbatim, without regard to any surfaces therein
+       that might have been considered as marks  if  they  were  on  the  main
+       input.
+
+       The _-_m option causes all replaced objects to be given the modifier _n_e_w_-
+       _m_o_d_.  Otherwise, the new object  surfaces  will  use  their  originally
+       defined  modifiers.   A different replacement modifier may be given for
+       each marker type.  The marker modifier name  itself  is  only  used  to
+       identify markers, and will not appear in the output in any form.
+
+       If no input _f_i_l_e is given, the standard input is read.
+
+EEXXAAMMPPLLEE
+       To  replace  all polygons with the modifier ``knobs'' in the file input
+       with a transformed ``knob.rad'' and write the result to output:
+
+         replmarks -x knob.rad knobs input > output
+
+       To use instances of ``tree.oct'' with scaling set to  three  times  the
+       tree marker length:
+
+         replmarks -s 3 -i tree.oct tree input > output
+
+AAUUTTHHOORR
+       Greg Ward
+
+SSEEEE AALLSSOO
+       arch2rad(1), ies2rad(1), xform(1)
+
+
+
+RADIANCE                            3/24/94                       REPLMARKS(1)

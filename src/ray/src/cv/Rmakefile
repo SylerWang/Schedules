@@ -1,0 +1,156 @@
+# RCSid $Id: Rmakefile,v 2.45 2013/11/26 17:35:59 greg Exp $
+#
+# Makefile for conversion programs
+#
+
+OPT = -O
+
+MACH = -DBSD
+
+CFLAGS = -I../common -L../lib $(OPT) $(MACH)
+METACFLAGS = -I../meta
+
+CC = cc
+
+MLIB = -lm
+
+INSTDIR = /usr/local/bin
+
+LIBDIR = /usr/local/lib/ray
+
+PROGS = ies2rad nff2rad lampcolor tmesh2rad obj2rad \
+mgf2rad rad2mgf mgf2meta mgfilt mgf2inv 3ds2mgf \
+pabopto2bsdf bsdf2ttree bsdf2klems pkgBSDF epw2wea
+
+LIBFILES = source.cal tilt.cal lamp.tab window.cal
+
+all:	$(PROGS)
+
+install:	$(PROGS) $(LIBFILES) optics2rad.csh
+	cp $(PROGS) $(INSTDIR)
+	cp optics2rad.csh $(INSTDIR)/optics2rad
+	chmod 755 $(INSTDIR)/optics2rad
+	cd $(LIBDIR) && rm -f $(LIBFILES)
+	cp $(LIBFILES) $(LIBDIR)
+
+clean:
+	set nonomatch; rm -f $(PROGS) *.o core
+
+ies2rad:	ies2rad.o
+	$(CC) $(CFLAGS) -o ies2rad ies2rad.o -lrtrad $(MLIB)
+
+arch2rad:	arch2rad.o trans.o
+	$(CC) $(CFLAGS) -o arch2rad arch2rad.o trans.o -lrtrad
+
+nff2rad:	nff2rad.o
+	$(CC) $(CFLAGS) -o nff2rad nff2rad.o
+
+lampcolor:	lampcolor.o
+	$(CC) $(CFLAGS) -o lampcolor lampcolor.o -lrtrad
+
+tmesh2rad:	tmesh2rad.o
+	$(CC) $(CFLAGS) -o tmesh2rad tmesh2rad.o -lrtrad $(MLIB)
+
+obj2rad:	obj2rad.o trans.o
+	$(CC) $(CFLAGS) -o obj2rad obj2rad.o trans.o -lrtrad $(MLIB)
+
+mgf2rad:	mgf2rad.o
+	$(CC) $(CFLAGS) -o mgf2rad mgf2rad.o -lmgf -lrtrad $(MLIB)
+
+rad2mgf:	rad2mgf.o
+	$(CC) $(CFLAGS) -o rad2mgf rad2mgf.o -lrtrad $(MLIB)
+
+mgf2meta:	mgf2meta.o
+	$(CC) $(CFLAGS) -o mgf2meta mgf2meta.o -lmgf -lmeta -lrtrad $(MLIB)
+
+mgfilt:	mgfilt.o
+	$(CC) $(CFLAGS) -o mgfilt mgfilt.o -lmgf -lrtrad $(MLIB)
+
+mgf2inv:	mgf2inv.o
+	$(CC) $(CFLAGS) -o mgf2inv mgf2inv.o -lmgf -lrtrad $(MLIB)
+
+3ds2mgf:	3ds2mgf.o rayopt3ds.o vect3ds.o
+	$(CC) $(CFLAGS) -o 3ds2mgf 3ds2mgf.o rayopt3ds.o vect3ds.o \
+-lmgf -lrtrad $(MLIB)
+
+pabopto2bsdf:	pabopto2bsdf.o bsdfrep.o bsdfrbf.o bsdfmesh.o
+	$(CC) $(CFLAGS) -o pabopto2bsdf pabopto2bsdf.o bsdfrep.o \
+bsdfrbf.o bsdfmesh.o -lrtrad $(MLIB)
+
+pabopto2rad:	pabopto2rad.o bsdfrep.o bsdfrbf.o bsdfmesh.o
+	$(CC) $(CFLAGS) -o pabopto2rad pabopto2rad.o bsdfrep.o \
+bsdfrbf.o bsdfmesh.o -lrtrad $(MLIB)
+
+pabopto2rad.o:	pabopto2bsdf.c bsdfrep.h
+	$(CC) $(CFLAGS) -c -DTEST_MAIN -o pabopto2rad.o pabopto2bsdf.c
+
+bsdf2rad:	bsdf2rad.o bsdfrep.o bsdfinterp.o
+	$(CC) $(CFLAGS) -o bsdf2rad bsdf2rad.o bsdfrep.o bsdfinterp.o \
+-lrtrad $(MLIB)
+
+hemi:	hemi.o bsdfrep.o bsdfinterp.o
+	$(CC) $(CFLAGS) -o hemi hemi.o bsdfrep.o bsdfinterp.o \
+-lrtrad $(MLIB)
+
+bsdfquery:	bsdfquery.o bsdfrep.o bsdfinterp.o
+	$(CC) $(CFLAGS) -o bsdfquery bsdfquery.o bsdfrep.o bsdfinterp.o \
+-lrtrad $(MLIB)
+
+bsdf2ttree:	bsdf2ttree.o bsdfrep.o bsdfinterp.o
+	$(CC) $(CFLAGS) -o bsdf2ttree bsdf2ttree.o bsdfrep.o bsdfinterp.o \
+-lrtrad $(MLIB)
+
+bsdf2klems:	bsdf2klems.o bsdfrep.o bsdfinterp.o
+	$(CC) $(CFLAGS) -o bsdf2klems bsdf2klems.o bsdfrep.o bsdfinterp.o \
+-lrtrad $(MLIB)
+
+pkgBSDF:	pkgBSDF.o
+	$(CC) $(CFLAGS) -o pkgBSDF pkgBSDF.o -lrtrad $(MLIB)
+
+epw2wea:	epw2wea.o
+	$(CC) $(CFLAGS) -o epw2wea epw2wea.o
+
+mgf2rad.o:	mgf2rad.c ../common/mgf_parser.h ../common/tmesh.h \
+../common/color.h
+	$(CC) $(CFLAGS) -c mgf2rad.c
+
+mgf2meta.o:	mgf2meta.c ../common/mgf_parser.h
+	$(CC) $(CFLAGS) $(METACFLAGS) -c mgf2meta.c
+
+arch2rad.o trans.o:	trans.h
+
+ies2rad.o lampcolor.o:	../common/color.h
+
+ies2rad.o:	../common/paths.h
+
+obj2rad.o tmesh2rad.o:	../common/tmesh.h \
+../common/standard.h ../common/rtmisc.h ../common/rtio.h \
+../common/rtmath.h ../common/rterror.h ../common/mat4.h \
+../common/fvect.h
+
+obj2rad.o:	trans.h
+
+rad2mgf.o:	../common/standard.h ../common/mat4.h ../common/fvect.h \
+../common/object.h ../common/color.h ../common/lookup.h
+
+mgfilt.o:	../common/mgf_parser.h ../common/ccolor.h
+
+mgf2inv.o:	../common/mgf_parser.h ../common/ccolor.h
+
+3ds2mgf.o rayopt3ds.o:	rayopt3ds.h
+
+3ds2mgf.o rayopt3ds.o vect3ds.o:	vect3ds.h
+
+pkgBSDF.o:	../common/bsdf.h ../common/fvect.h ../common/ccolor.h \
+../common/paths.h
+
+bsdf2ttree.o bsdfinterp.o bsdfmesh.o bsdfrbf.o bsdfrep.o bsdf2rad.o hemi.o \
+pabopto2bsdf.o:	bsdfrep.h ../common/bsdf.h ../common/fvect.h ../common/ccolor.h
+
+bsdf2ttree.o pabopto2bsdf.o:	../common/platform.h
+
+bsdfrep.o:	../common/resolu.h ../common/rtio.h
+
+bsdf2rad.o hemi.o bsdf2ttree.o:	../common/rtprocess.h
+
+bsdf2klems.o bsdf2ttree.o mgf2meta.o:	../common/random.h

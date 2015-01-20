@@ -1,0 +1,44 @@
+LOOKAMB(1)                                                          LOOKAMB(1)
+
+
+
+NNAAMMEE
+       lookamb - examine ambient file values
+
+SSYYNNOOPPSSIISS
+       llooookkaammbb [ --dd ][ --rr ][ --hh ] [ aammbbffiillee ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _L_o_o_k_a_m_b  examines  an  ambient file produced by _r_p_i_c_t_(_1_)_, _r_t_r_a_c_e_(_1_)_, or
+       _r_v_u_(_1_)_.  The  default  mode  prints  the  position,  direction,  level,
+       weight,  radius,  value,  position  gradient and direction gradient for
+       each stored ambient value preceded by a  label  appropriate  for  human
+       interpretation.  The _-_d option prints the same quantities in 18 columns
+       without any expanatory text,  and  is  more  appropriate  as  input  to
+       another program.
+
+       The  _-_r  option  performs  the reverse conversion, taking the output of
+       lookamb and reproducing the original ambient file on the standard  out-
+       put.
+
+       The _-_h option causes lookamb not to print out the header information on
+       the output, or not to expect it on the input with the _-_r option.
+
+       If no file is given, _l_o_o_k_a_m_b reads from the standard input.
+
+NNOOTTEESS
+       Before release 2.2 of Radiance, ambient files were in a  machine-depen-
+       dent  format.   Since that is no longer the case, ambient files can now
+       be moved freely between machines without any  conversions.   Thus,  the
+       only reason to use _l_o_o_k_a_m_b now is to examine the contents of an ambient
+       file.
+
+AAUUTTHHOORR
+       Greg Ward
+
+SSEEEE AALLSSOO
+       getinfo(1), oconv(1), pfilt(1), pinterp(1), rpict(1), rtrace(1), rvu(1)
+
+
+
+RADIANCE                           11/15/93                         LOOKAMB(1)

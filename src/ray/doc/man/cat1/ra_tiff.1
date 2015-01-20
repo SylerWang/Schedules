@@ -1,0 +1,77 @@
+RA_TIFF(1)                                                          RA_TIFF(1)
+
+
+
+NNAAMMEE
+       ra_tiff  -  convert  RADIANCE picture to/from a TIFF color or greyscale
+       image
+
+SSYYNNOOPPSSIISS
+       rraa__ttiiffff [ --zz||--LL||--ll||--ff||--ww ][ --bb ][ --ee ++//--ssttooppss ][ --gg ggaammmmaa ] {  iinn..hhddrr||--
+       } oouutt..ttiiff
+       rraa__ttiiffff --rr [ --xx ][ --gg ggaammmmaa ][ --ee ++//--ssttooppss ] iinn..ttiiff [ oouutt..hhddrr||-- ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _R_a___t_i_f_f  converts  between  RADIANCE  and  TIFF  image formats.  The _-_g
+       option specifies the exponent used in  gamma  correction;  the  default
+       value is 2.2, which is the recommended value for TIFF images.
+
+       The  _-_b  option  can  be used to specify an 8-bit greyscale TIFF output
+       file.  The type of input file is determined automatically.
+
+       The _-_z option will result in LZW compression of the TIFF  output  file.
+       The  _-_L  option  specifies  SGILOG compression, which is recommended to
+       capture the full dynamic range of the Radiance picture.  However, since
+       many TIFF readers do not yet support this format, use this option under
+       advisement.  The _-_l option specifies SGILOG24 compressed output,  which
+       has  less  dynamic range than SGILOG, but may be smaller in some cases.
+       (It is usually larger.)  The _-_f option specifies 32-bit IEEE  floating-
+       point/primary  output,  which  is  the  highest  resolution  format but
+       results in very large files, since each RGB pixel  takes  96  bits  (12
+       bytes) and does not compress well.  The _-_w option specifies 16-bit/pri-
+       mary output, which is understood by some photo editing  software,  such
+       as Adobe Photoshop.  Decompression is automatically determined for TIFF
+       input.
+
+       The _-_e option specifies an exposure compensation in f-stops (powers  of
+       two).  Only integer stops are allowed, for efficiency.
+
+       The  _-_r  option  invokes  a  reverse conversion, from a TIFF image to a
+       RADIANCE picture.  The RADIANCE picture file  can  be  taken  from  the
+       standard  input  or sent to the standard output by using a hyphen ('-')
+       in place of the file name, but the TIFF image must  be  to  or  from  a
+       file.   The  _-_x  option  can be used to specify an XYZE Radiance output
+       file, rather than the default RGBE.
+
+EEXXAAMMPPLLEESS
+       To convert a Radiance picture to SGILOG-compressed TIFF format:
+
+         ra_tiff -L scene1.hdr scene1.tif
+
+       To later convert this image back into Radiance and display using  human
+       visibility tone-mapping:
+
+         ra_tiff -r scene1.tif scene1.hdr
+         ximage -e human scene1.hdr
+
+AAUUTTHHOORR
+       Greg Ward Larson
+       Sam Leffler
+
+AACCKKNNOOWWLLEEDDGGEEMMEENNTT
+       Work  on  this program was initiated and sponsored by the LESO group at
+       EPFL in Switzerland.  Additions for the SGILOG data encoding were spon-
+       sored by Silicon Graphics, Inc.
+
+BBUUGGSS
+       Many TIFF file subtypes are not supported.
+       A  gamma value other than 2.2 is not properly recorded or understood if
+       recorded in the TIFF file.
+
+SSEEEE AALLSSOO
+       pfilt(1),  ra_bmp(1),  ra_bn(1),   ra_ppm(1),   ra_pr(1),   ra_pr24(1),
+       ra_t8(1), ra_t16(1), ximage(1)
+
+
+
+RADIANCE                            8/29/97                         RA_TIFF(1)

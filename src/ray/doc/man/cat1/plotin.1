@@ -1,0 +1,32 @@
+PLOTIN(1)                                                            PLOTIN(1)
+
+
+
+NNAAMMEE
+       plotin - convert plot(5) to metafile(5) primitives
+
+SSYYNNOOPPSSIISS
+       pplloottiinn file ..
+
+DDEESSCCRRIIPPTTIIOONN
+       _P_l_o_t_i_n  reads  each  plot(5) _f_i_l_e in sequence and converts it to output
+       suitable for use by the metafile filters.  If no input files are speci-
+       fied, the standard input is read.
+
+EEXXAAMMPPLLEE
+       To plot the graph example.grf to the imagen:
+
+         graph < example.grf | plotin | impress | ipr
+
+FFIILLEESS
+       see pexpand(1)
+
+AAUUTTHHOORR
+       Greg Ward
+
+SSEEEE AALLSSOO
+       graph(1G), metafile(5), plot(1), plot(5), plotout(1)
+
+
+
+RADIANCE                            6/24/98                          PLOTIN(1)

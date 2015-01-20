@@ -1,0 +1,465 @@
+RHOLO(1)                                                              RHOLO(1)
+
+
+
+NNAAMMEE
+       rholo - generate/view a RADIANCE holodeck
+
+SSYYNNOOPPSSIISS
+       rrhhoolloo [ --nn nnpprr ][ --oo ddeevv ][ --ww ][ --ii ][ --ff | --rr ] hhddkkffiillee [ vvaarrffiillee || ++
+       || -- [ VVAARR==vvaalluuee ....  ] ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _R_h_o_l_o is a program for generating and viewing holodeck files.   Similar
+       to  _r_v_u_(_1_)_,  _r_h_o_l_o  can compute views interactively, but unlike _r_v_u_, it
+       reuses any and all information that was previously computed in this  or
+       earlier runs using the given holodeck file, _h_d_k_f_i_l_e_.
+
+       The  _-_n  option sets the number of _r_t_r_a_c_e_(_1_) processes to start for the
+       calculation.  It defaults to zero, which means that no new rays will be
+       calculated.   In  general,  it  is  unwise to start more processes than
+       there are processors on the system.  On a multiprocessing system with 4
+       or  more processors, a value one less than the total should yield opti-
+       mal interactive rates on a lightly loaded system.
+
+       The -o option sets the output device to use  for  display.   Currently,
+       there  are  at least two display drivers available, _x_1_1 and _g_l_x_.  If no
+       output device is specified, then _r_h_o_l_o will start a global  calculation
+       of  the  holodeck,  filling  it in as time goes by.  The quality of the
+       final holodeck will depend on how long _r_h_o_l_o runs before it  is  inter-
+       rupted  or  runs  out  of file space or time, according to the variable
+       settings described in the control variable section, below.  If no  out-
+       put  device  and  no  processes  are  specified, _r_h_o_l_o creates an empty
+       holodeck using the given _v_a_r_f_i_l_e_, if present.
+
+       The _-_i option provides for reading from the standard input.  Without  a
+       display  driver,  the input should consist only of views, which will be
+       used to limit which parts of the holodeck are rendered in a batch  cal-
+       culation.   With  a  display driver, most of the commands understood by
+       the driver can be issued either from the operating window or the  stan-
+       dard  input.   These  commands are described together with their window
+       equivalents in the display driver section following the  control  vari-
+       able section.
+
+       The _-_f option permits the given holodeck to be clobbered.  Without this
+       option, giving both the holodeck file and a variable file (or "-") will
+       result  in  an  error message if the holodeck exists, since giving both
+       implies that a new holodeck is being created.  (When reusing an  exist-
+       ing  holodeck,  the variable values are taken from the holodeck header,
+       though some may be overriden by giving a "+" in place of  the  variable
+       file.)   Also,  attempts  to  clear  the holodeck using the interactive
+       "clobber" command will be permitted only if the _-_f option is  given  on
+       the initial command line.
+
+       The _-_r option tells _r_h_o_l_o to open the holodeck file read-only, which is
+       the default if there are no ray calculation processes.  If one or  more
+       _r_t_r_a_c_e  processes  are  started with the _-_n option and the _-_r option is
+       given or the specified holodeck is not writable by the user,  then  any
+       additional  rays  computed  during the session will be discarded rather
+       than saved to the holodeck file.
+
+       One or more holodeck section boundaries are defined  along  with  other
+       parameters  in  the holodeck file or, if the holodeck is being created,
+       the _r_h_o_l_o control variable file,  _v_a_r_f_i_l_e_.   These  section  boundaries
+       define  where you may move, or at least, where you will be able to see,
+       since they determine where computed rays are stored.  Additional  vari-
+       able  settings may be added or overridden on the command line following
+       _v_a_r_f_i_l_e_.  If no _v_a_r_f_i_l_e is needed, a holodeck may still be  created  by
+       giving a "-" on the command line in place of the variable file.  If you
+       wish to override some of the variable settings in an existing holodeck,
+       use  a  "+",  followed  by the new settings on the command line.  Upper
+       case variables specified more than once will result in a  warning  mes-
+       sage  (unless  the _-_w option is present), and the last value given will
+       be the one used, unless it would conflict with something in an existing
+       holodeck  that  cannot  be  changed,  such  as  the section boundaries.
+       Changing section boundaries requires  creating  a  new  holodeck  using
+       _r_h_o_l_o without a _-_n or _-_o option, then running _r_h_c_o_p_y_(_1_) to fill the new
+       holodeck with the old holodeck's contents.
+
+       The _-_w option turns off warnings about multiply and  misassigned  vari-
+       ables.
+
+       Rendering  variable  assignments  appear  one per line in _v_a_r_f_i_l_e_.  The
+       name of the variable is followed  by  an  equals  sign  ('=')  and  its
+       value(s).   The  end  of  line  may  be escaped with a backslash ('\'),
+       though it is not usually necessary.  Variables that  should  have  only
+       one  value  are  given in upper case.  Variables that may have multiple
+       values are given in lower case.  Variables may be abbreviated by  their
+       first three letters.  Comments in _v_a_r_f_i_l_e start with a pound sign ('#')
+       and proceed to the end of line.
+
+CCOONNTTRROOLL VVAARRIIAABBLLEESS
+       The control variables, their interpretations  and  default  values  are
+       given below.
+
+       OOCCTTRREEEE    The name of the octree file.  The default name is the same as
+                 _h_d_k_f_i_l_e but with any suffix replaced by ".oct".   This  vari-
+                 able  may  also  be read from _r_a_d_(_1_) if the "RIF" variable is
+                 set.  (See below.)
+
+       RRIIFF       This variable specifies a _r_a_d input file to use as  a  source
+                 of  rendering options and other variable settings.  If given,
+                 _r_h_o_l_o will execute _r_a_d and get the rendering options to later
+                 pass  to  _r_t_r_a_c_e_.   Besides  prepending  the _r_e_n_d_e_r variable,
+                 _r_h_o_l_o will also  extract  default  settings  for  the  common
+                 "OCTREE"  variable, and the "EYESEP" variable.  Following the
+                 file name, overriding variable settings may be  given,  which
+                 will  be  passed  to  _r_a_d on the command line.  Settings with
+                 spaces in them should be enclosed in quotes.   The  execution
+                 of _r_a_d will also update the contents of the octree, if neces-
+                 sary.  There is no default value for this variable.
+
+       EEYYEESSEEPP    The interocular spacing for stereo viewing.  I.e., the  world
+                 distance  between  the  pupils  of  the  left and right eyes.
+                 There is no default value for this variable.
+
+       sseeccttiioonn   A section is a 6-sided parallel prism given by an origin  and
+                 three  axis  vectors (i.e., 12 floating point values in world
+                 coordinates).   The  axis  vectors  define  the  three  edges
+                 attached  to  the origin vertex, and the other edges and ver-
+                 tices are determined by  the  parallel  wall  constraint.   A
+                 holodeck  section  is  a  region in which the user may freely
+                 move about to obtain a view of what is outside  that  region.
+                 In  object  rendering  mode,  a section may instead contain a
+                 detailed object to be viewed  from  the  outside.   The  grid
+                 dimensions  for  each  axis  may also be given by three addi-
+                 tional integer arguments following the  prism  axes.   Other-
+                 wise, if the grid dimensions are left out or any are unspeci-
+                 fied or zero, the "GRID" variable will be used  to  determine
+                 them  from  the section axis lengths.  (See below.)  There is
+                 no default value for this variable, and it is  required.   If
+                 multiple  values  are  given,  they will be used for multiple
+                 rendering sections, which may or may not  be  connected,  but
+                 should generally not overlap.  The starting view for interac-
+                 tive display will be the center of the first  section  facing
+                 the  positive  X  direction  unless  "OBSTRUCTIONS" is set to
+                 True, when the view will be placed outside the first section.
+                 (See  below  for this variable's definition.)  The third axis
+                 of the first section is also used as the  default  "view  up"
+                 vector.
+
+       ggeeoommeettrryy  This  variable  is  used to associate geometry from an octree
+                 file with one or more sections.  The specified octree will be
+                 used  by  certain drivers (e.g., the "ogl" driver) to display
+                 simplified geometry using hardware  lighting  during  motion.
+                 If  this  variable is not set, such drivers will use the main
+                 octree file, which contains all the scene geometry.  This can
+                 be  slow  if the scene is complex, so use simplified geometry
+                 with portals (described below) or specify a non-existent file
+                 to turn geometry rendering off.  If there is just one setting
+                 of this variable, it will be used for all sections.  If there
+                 are  multiple settings, they will correspond to multiple sec-
+                 tions.
+
+       ppoorrttaallss   This variable is used to associate portal geometry  with  one
+                 or more sections, as required for simplified geometry in some
+                 drivers (e.g., "ogl").  The portal geometry itself  is  given
+                 in one or more RADIANCE scene files or quoted commands begin-
+                 ning with an exclamation mark ('!'), and the input may or may
+                 not  include material definitons.  (I.e., the surfaces may be
+                 modified by "void" if there are no materials.)  A  portal  is
+                 an  imaginary surface that intervenes between a view and some
+                 detailed geometry not included in the current section.   (See
+                 the  "geometry"  variable  definition,  above.)   Portals are
+                 often placed in doorways, windows and in  front  of  mirrors.
+                 Portal geometry may also be placed around local geometry that
+                 has been culled due to its complexity.  This specification is
+                 necessary  in  order  that  the detail geometry be drawn cor-
+                 rectly, and that mirrors will work  with  virtual  distances.
+                 (See  the definition of "VDISTANCE," below.)  The orientation
+                 of the portal surface  geometry  is  ignored,  so  they  have
+                 effect no matter which way they are facing.  If there is just
+                 one setting of this variable, it will be used  for  all  sec-
+                 tions.   If there are multiple settings, they will correspond
+                 to multiple sections.
+
+       GGRRIIDD      The default section grid size in world  distance  units.   If
+                 any  section axis grid is unspecified, the length of the axis
+                 will be divided by this number and rounded  up  to  the  next
+                 larger integer.  The grid size is a very important determiner
+                 of holodeck performance, since the  holodeck  beam  index  is
+                 proportional  to  average  axis  grid dimension to the fourth
+                 power!  If the beam index is too large, poor file and  memory
+                 performance will result.  If the beam index is too small, the
+                 holodeck resolution will suffer  and  objects  will  tend  to
+                 break  up.  In general, the grid size should divide each sec-
+                 tion wall into 64 or fewer  cells  for  optimal  performance.
+                 The  default  value  for this variable is the maximum section
+                 axis length divided by 8.
+
+       OOBBSSTTRRUUCCTTIIOONNSS
+                 This boolean variable tells _r_h_o_l_o whether or not  to  compute
+                 intersections  with  objects inside holodeck sections.  If it
+                 is set to "False", then only  objects  outside  the  holodeck
+                 sections  will be visible.  This is appropriate when you know
+                 all sections to be devoid of geometry, or when some secondary
+                 method  is  available for rendering geometry inside each sec-
+                 tion.  If it is set to "True," all inside  geometry  will  be
+                 visible.   There is no default for this variable, which means
+                 that rays will  be  started  at  random  points  within  each
+                 holodeck  section, allowing interior geometry to be partially
+                 sampled.
+
+       VVDDIISSTTAANNCCEE This boolean variable determines whether the actual  distance
+                 to  objects  is  computed, or the virtual distance.  If it is
+                 set to "True," the virtual distance will be used, which  will
+                 make reflections and refractions through smooth, flat objects
+                 clear, but will blur the boundaries of those  objects.   Note
+                 that  some  drivers cannot render virtual samples without the
+                 proper placement of "portals" in the scene.  (See  above  for
+                 the  definition  of the "portals" variable.)  If it is set to
+                 "False," the reflections and refractions will be blurred, but
+                 object  boundaries  will remain sharp.  The default value for
+                 this variable is "False."
+
+       CCAACCHHEE     The memory cache size to use for ray samples during  interac-
+                 tive  rendering,  in Megabytes.  This tuning parameter deter-
+                 mines the tradeoff between memory use and  disk  access  time
+                 for  interactive  display.  This value will not affect memory
+                 use or performance for global holodeck rendering if there  is
+                 no  display process.  The default cache is effectively set to
+                 16 Megabytes.  If this variable is set to zero, no limit will
+                 be placed on memory use and the process will grow to accommo-
+                 date all the beams that have been accessed.
+
+       DDIISSKKSSPPAACCEE Specifies the maximum holodeck file size, in Megabytes.  Once
+                 the  holodeck  file  reaches this size, _r_t_r_a_c_e will exit.  If
+                 there is no display  process,  _r_h_o_l_o  will  also  exit.   The
+                 default value for this variable is 0, which is interpreted as
+                 no size limit.
+
+       TTIIMMEE      Sets the maximum time to run rtrace, in decimal hours.  After
+                 this  length  of time, _r_t_r_a_c_e will exit.  If there is no dis-
+                 play process, _r_h_o_l_o will also exit.  If there  is  a  display
+                 process,  and _r_t_r_a_c_e is restarted with the "restart" command,
+                 then the time clock will be restarted as well.   The  default
+                 value for this variable is 0, which is interpreted as no time
+                 limit.
+
+       RREEPPOORRTT    This variable may be used to specify a interval for  progress
+                 reports  in  minutes.   If  this value is zero, then progress
+                 reports will not be given in intervals, but a final report of
+                 the  file size and fragmentation will be issued when the pro-
+                 gram terminates, along with the number of  rays  and  packets
+                 computed.  If a filename is given after the interval, it will
+                 be used as the error file  for  reports  and  error  messages
+                 instead of the standard error.  There is no default value for
+                 this variable.
+
+       rreennddeerr    This variable may be used to specify  additional  options  to
+                 _r_t_r_a_c_e_.   These  options  will  appear  after the options set
+                 automatically by _r_a_d_, and thus will override the default val-
+                 ues.
+
+DDIISSPPLLAAYY DDRRIIVVEERR
+       _R_h_o_l_o may be started in interactive mode using the _-_o option to specify
+       an output display driver.  Currently, three drivers  are  supported  on
+       most machines, _g_l_x_, _o_g_l and _x_1_1_.  (In addition, there are variations on
+       the first two drivers for stereo displays, local objects and human tone
+       mapping.   These are accessed with some combination of the 's', 'o' and
+       'h' suffixes, always in that order.  E.g.,  the  OpenGL  stereo  driver
+       with  human tone mapping would be "oglsh".)  Each driver accepts simple
+       one-character commands and mouse view control in its operating  window.
+       If  the  _-_i  option is also given, then the driver will also listen for
+       commands entered on the standard input.  (It is unwise to  use  the  _-_i
+       option  when rholo is run in the background, because it will occassion-
+       ally stop the process when input is available on the controlling termi-
+       nal.)   The  commands and their single-key window equivalents are given
+       below.
+
+       VVIIEEWW==    ((mmoouussee))
+                 Modify the current view with the specified parameters.   (See
+                 the  _-_v_* view options in the _r_p_i_c_t_(_1_) manual page for parame-
+                 ter details.)  There is no one-character equivalent for  this
+                 command in the display window.  Instead, the mouse is used to
+                 control the current view in the following ways:
+
+                 CONTROL   MOUSE     ACTION
+                 (none)    left Move forward towards cursor position
+                 (none)    middle    Rotate in place (usually safe)
+                 (none)    right     Move backward away from cursor position
+                 shift     left Orbit left around cursor position
+                 shift     middle    Orbit skyward
+                 cntl middle    Orbit earthward
+                 shift     right     Orbit right around cursor position
+                 cntl+shift     any       Frame focus by dragging rectangle
+
+                 For all movements but rotating in place, the cursor  must  be
+                 placed  over  some  bit  of  visible  geometry, otherwise the
+                 driver has no reference point from which to work.  It is best
+                 to just experiment with these controls until you learn to fly
+                 safely in your model.  And  if  you  run  into  trouble,  the
+                 "last" command is very useful.  (See below.)
+
+       llaasstt    ''ll''
+                 Return  to the previous view.  Some drivers will save up mul-
+                 tiple views in a history, but you  are  guaranteed  at  least
+                 one.
+
+       wwhheerree    ''vv''
+                 Print  the  current  view  parameters to the standard output.
+                 This is useful for finding out where you are, or  for  saving
+                 specific views in a keyframe file for animations or returning
+                 to later.
+
+       ffrraammee     ''ff''
+                 Change the calculation focus.   If  the  "frame"  command  is
+                 given  with no arguments on the standard input, it is equiva-
+                 lent to the interactive 'F' command, which releases the  cur-
+                 rent  calculation  focus.  If the "frame" command is followed
+                 by a relative horizontal and vertical position (specified  as
+                 floating point values between 0 and 1), then the new focus is
+                 about this position on the screen (where 0 0 is at the  lower
+                 left  of the display).  This is equivalent to the interactive
+                 'f' command, which sets the focus about  the  current  window
+                 cursor  position.   If  four  relative coordinates are given,
+                 they are assumed to mean the minimum horizontal and  vertical
+                 positon, and the maximum horizontal and vertical position, in
+                 that order.  This is equivalent to dragging the mouse over  a
+                 rectangular area with the 'cntl+shift' keys held down.
+
+       ppaauussee    ''pp''
+                 Pause the ray calculation temporarily.
+
+       rreessuummee    <<ccrr>>
+                 Resume the ray calculation.
+
+       rreeddrraaww    ^^LL
+                 Redraw  the current view from values calculated and stored in
+                 the holodeck.  When executed  from  the  display  window  via
+                 '^L',  the effect may be slightly different, since all stored
+                 information will be flushed.
+
+       kkiillll    ''KK''
+                 Terminate the  ray  calculation  process.   This  is  usually
+                 unnecessary,  but  is  provided  for special purpose applica-
+                 tions.
+
+       rreessttaarrtt    ''RR''
+                 Restart the ray calculation process.  If the  "RIF"  variable
+                 has been set, _r_a_d will be run first to assure that the octree
+                 is up to date.
+
+       cclloobbbbeerr    ''CC''
+                 Clobber the holodeck contents, deleting  all  that  has  been
+                 calculated before.  To get an interactive dissolve of changes
+                 to the scene description, use the sequence "kill," "clobber,"
+                 "restart."   This command will be honored by _r_h_o_l_o only if it
+                 was started with the _-_f option.
+
+       qquuiitt    ''qq''
+                 Quit _r_h_o_l_o_.  The ray tracing calculation  is  terminated  and
+                 all  values  are  flushed  to the holodeck file.  This is the
+                 normal way to exit the program.
+
+       In addition to these standard commands, all drivers offer the following
+       supplimentary controls.
+
+       ''hh''       Fix  the head height.  All mouse-controlled view motions will
+                 be adjusted so that the head height does  not  change  (where
+                 vertical is determined by the current view up vector).
+
+       ''HH''       Release  the  head height, allowing it to change again during
+                 mouse-controlled movements.
+
+       ^^RR        Redraw the current view, recomputing the tone mapping in  the
+                 process.   This is useful if the current view is too light or
+                 too dark.  (On an 8-bit  display,  it  may  be  necessary  to
+                 redraw  the screen a couple of times to get the best image.)
+                 The "^L" command is a stronger type of redraw, since it  will
+                 use  only rays in the current view to determine the tone map-
+                 ping, rather than a history of  rays  drawn  from  the  _r_h_o_l_o
+                 server.
+
+EEXXAAMMPPLLEESS
+       The following shows a minimal holodeck control variable file:
+
+
+          RIF= sample.rif                       # rad input file
+          section= 2 2 4  5 0 0  0 7 0  0 0 3   # section prism boundaries
+
+       Technically,  the  "RIF"  setting is not necessary, but the results are
+       much better when _r_h_o_l_o is used in association with _r_a_d to  control  the
+       rendering parameters.
+
+       Here is a slightly more sophisticated example:
+
+
+          RIF=electric.rif
+          section= 7 4 3.5  15 0 0  0 10 0  0 0 5
+          GRID= .75
+          CACHE= 20 # cache size in megabytes
+          TIME= 120 # maximum time in hours
+          DISK= 200 # maximum file size in megabytes
+          REPORT= 60 elect.her
+          OBST= False
+          VDIST= False
+
+       We  can  invoke _r_h_o_l_o on the above file to compute a hologram overnight
+       in batch mode:
+
+         rholo -n 1 elect.hdk elect.hif TIME=12 &
+
+       This will report progress every hour to "elect.her".
+
+       The next morning, we can look at the holodeck interactively:
+
+         rholo-n 1 -o x11 elect.hdk &
+
+       If the previous command were still running,  the  above  command  would
+       fail  because  the  permissions on the holodeck would not grant access.
+       To terminate _r_h_o_l_o without losing any  computed  information,  use  the
+       _k_i_l_l_(_1_)  command  to send an interrupt or terminate signal to the _r_h_o_l_o
+       process listed by _p_s_(_1_)_.  If the system goes  down  or  something  dire
+       happens  to _r_h_o_l_o_, it may be necessary to restore read/write permission
+       on the holodeck using _c_h_m_o_d_(_1_)_.  Do not do this,  however,  unless  you
+       are  absolutely  sure  that _r_h_o_l_o is no longer running on the holodeck.
+       (See the _p_s man page on how to check for running processes.   The  file
+       modification date as reported by _l_s_(_1_) is another clue.)
+
+       To  view the holodeck without invoking a new ray calculation, leave off
+       the _-_n option.  To compute the holodeck with multiple  processes  on  a
+       multiprocessing  system, use a higher number for the _-_n option.  (Don't
+       use more processes than you have  processors,  though,  because  you'll
+       only slow things down.)
+
+       To allow interactive control of _r_h_o_l_o from another process, the follow-
+       ing invocation will  override  the  file  size  limit  and  permit  the
+       holodeck to be clobbered by a command entered on the standard input:
+
+         rholo -n 1 -o x11 -i -f elect.hdk + DISK=0
+
+       To create an empty holodeck from settings on the command line:
+
+         rholo new.hdk - RIF=sample.rif "section=2 2 4  8 0 0  0 10 0  0 0 3"
+
+NNOOTTEESS
+       Each  time  rays  are  added  to  a  beam,  that beam's position in the
+       holodeck file is released and a new position is found.  After  substan-
+       tial  computation  on  a  holodeck,  especially  over several runs, the
+       holodeck file may become fragmented, leaving holes that take  up  space
+       without  contributing useful information.  The percentage fragmentation
+       is reported when the REPORT variable is set and  some  calculation  has
+       taken place.  When this percentage gets high on a large holodeck (above
+       15% or so), it is a good idea to run  the  _r_h_o_p_t_i_m_i_z_e_(_1_)  program  once
+       batch  rendering  is  complete to close the gaps and collect beams into
+       groups for quicker rendering access.  Rholo will print  periodic  warn-
+       ings when the fragmentation exceeds 20%.
+
+AAUUTTHHOORR
+       Greg Ward Larson
+
+AACCKKNNOOWWLLEEDDGGMMEENNTT
+       This work was supported by Silicon Graphics, Inc.
+
+BBUUGGSS
+       Global participating media are not handled correctly, though local par-
+       ticipating media will usually work.
+
+SSEEEE AALLSSOO
+       chmod(1), ls(1),  ps(1),  rad(1),  ranimate(1),  rhcopy(1),  rhinfo(1),
+       rhoptimize(1), rhpict(1), rpict(1), rtrace(1), rvu(1)
+
+
+
+RADIANCE                            1/14/99                           RHOLO(1)

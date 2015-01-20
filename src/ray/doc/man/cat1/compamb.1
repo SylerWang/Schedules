@@ -1,0 +1,37 @@
+COMPAMB(1)                                                          COMPAMB(1)
+
+
+
+NNAAMMEE
+       compamb - compute good ambient value for a rad input file
+
+SSYYNNOOPPSSIISS
+       ccoommppaammbb [ --cc ][ --ee ] rraadd__iinnppuutt__ffiillee
+
+DDEESSCCRRIIPPTTIIOONN
+       _C_o_m_p_a_m_b computes a good ambient value for the specified _r_a_d_(_1_) variable
+       file and appends it to the file as a "render= -av" option.  If  the  _-_c
+       option  is  specified,  then  _c_o_m_p_a_m_b includes color information in the
+       computed ambient value, rather than estimating a grey  value  to  avoid
+       rendering  color  shifts.   If the _-_e option is specified, then _c_o_m_p_a_m_b
+       also computes a good exposure value for this scene, and appends  it  to
+       the _r_a_d file as well.
+
+       _C_o_m_p_a_m_b  is  a shell script that makes calls to other RADIANCE programs
+       and utilities to do the actual work.  A substantial amount of time  may
+       be  required  to  complete this script, since _c_o_m_p_a_m_b calls _r_p_i_c_t_(_1_) to
+       render low resolution frames for each view in  the  _r_a_d  file,  setting
+       "QUALITY=High" to compute interreflections.  The resulting ambient file
+       is thrown away, since it would disagree with the new -av  setting  used
+       for the final renderings.  This method is preferable to setting the _-_a_w
+       option of _r_p_i_c_t_, which frequently results in splotchy artifacts.
+
+AAUUTTHHOORR
+       Greg Ward Larson
+
+SSEEEE AALLSSOO
+       lookamb(1), rad(1), rpict(1)
+
+
+
+RADIANCE                            1/23/98                         COMPAMB(1)

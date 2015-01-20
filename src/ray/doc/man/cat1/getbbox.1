@@ -1,0 +1,49 @@
+GETBBOX(1)                                                          GETBBOX(1)
+
+
+
+NNAAMMEE
+       getbbox - compute bounding box for RADIANCE scene
+
+SSYYNNOOPPSSIISS
+       ggeettbbbbooxx [ --ww ][ --hh ] [ iinnppuutt ....  ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _G_e_t_b_b_o_x  reads  each  scene  description _i_n_p_u_t and computes the minimum
+       axis-aligned parallelopiped that will enclose all of the objects.  Each
+       _i_n_p_u_t  can  be either a file name, or a command (enclosed in quotes and
+       preceded by a `!').  If no arguments are given, the standard  input  is
+       read.   A hyphen ('-') can also be used to indicate the standard input.
+
+       The _-_w option suppresses warnings.  The _-_h option suppresses the header
+       line "xmin xmax ymin ymax zmin zmax".
+
+EEXXAAMMPPLLEE
+       To compute the bounding box for the object ``thingy'':
+
+         getbbox thingy
+
+       To preview ``scene'':
+
+         preview -v FOUR -b `getbbox -h scene` scene
+
+NNOOTTEESS
+       Since expanding a scene can require considerable overhead, it is better
+       to use the bounding cube produced by _o_c_o_n_v_(_1_) and read by _g_e_t_i_n_f_o_(_1_) if
+       an  octree  exists  for  the scene.  However, there are certain circum-
+       stances, such as foreign object placement,  that  require  knowing  the
+       bounding box rather than just the bounding cube.
+
+AAUUTTHHOORR
+       Greg Ward
+
+AACCKKNNOOWWLLEEDDGGEEMMEENNTT
+       Work  on  this  program  was  sponsored  by  the  LESO group at EPFL in
+       Switzerland.
+
+SSEEEE AALLSSOO
+       getinfo(1), oconv(1), xform(1)
+
+
+
+RADIANCE                           11/15/93                         GETBBOX(1)

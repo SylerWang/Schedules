@@ -1,0 +1,61 @@
+MGF2META(1)                                                        MGF2META(1)
+
+
+
+NNAAMMEE
+       mgf2meta  -  convert  Materials  and  Geometry  Format file to Metafile
+       graphics
+
+SSYYNNOOPPSSIISS
+       mmggff22mmeettaa [ --tt tthhrreesshhoolldd ] {{xx||yy||zz}} xxmmiinn xxmmaaxx yymmiinn yymmaaxx zzmmiinn zzmmaaxx [ iinnppuutt
+       ....  ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _M_g_f_2_m_e_t_a converts one or more Materials and Geometry Format (MGF) files
+       to a 2-D  orthographic  projection  along  the  selected  axis  in  the
+       _m_e_t_a_f_i_l_e_(_1_)  graphics format.  All geometry is clipped to the specified
+       bounding box, and the resulting orientation is as follows:
+            Projection     Orientation
+            ==========     ===========
+            x         Y-axis right, Z-axis up
+            y         Z-axis right, X-axis up
+            z         X-axis right, Y-axis up
+
+       If multiple input files are given, the first file prints in black,  the
+       second  prints  in  red, the third in green and the fourth in blue.  If
+       more than four input files are given, they  cycle  through  the  colors
+       again in three other line types:  dashed, dotted and dot-dashed.
+
+       The  _-_t option may be used to randomly throw out line segments that are
+       shorter than the given _t_h_r_e_s_h_o_l_d (given  as  a  fraction  of  the  plot
+       width).   Segments  are included with a probability equal to the square
+       of the line length over the square of the threshold.  This can  greatly
+       reduce  the  number  of lines in the drawing (and therefore improve the
+       drawing speed) with only a modest loss in quality.  A typical value for
+       this parameter is 0.005.
+
+       All MGF material information is ignored on the input.
+
+EEXXAAMMPPLLEE
+       To project two MGF files along the Z-axis and display them under X11:
+
+         mgf2meta z 0 10 0 15 0 9 building1.mgf building2.mgf | x11meta -r
+
+       To  convert a RADIANCE scene to a line drawing in RADIANCE picture for-
+       mat:
+
+         rad2mgf scene.rad | mgf2meta x `getbbox -h scene.rad`  |  meta2tga  |
+         ra_t8 -r > scene.hdr
+
+AAUUTTHHOORR
+       Greg Ward
+
+SSEEEE AALLSSOO
+       getbbox(1),    meta2bmp(1),   meta2tga(1),   metafile(5),   mgf2rad(1),
+       pflip(1), protate(1), psmeta(1), ra_t8(1), rad2mgf(1), x11meta(1)
+
+       MGF web site "http://radsite.lbl.gov/mgf/HOME.html"
+
+
+
+RADIANCE                           11/20/95                        MGF2META(1)

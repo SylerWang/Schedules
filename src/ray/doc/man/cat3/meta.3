@@ -1,0 +1,110 @@
+META(3)                                                                META(3)
+
+
+
+NNAAMMEE
+       libmeta.a - simplified interface to metafile(5)
+
+SSYYNNOOPPSSIISS
+       eexxtteerrnn FFIILLEE **ppoouutt;;
+
+       mmlliinnee((xx,, yy,, ttyyppee,, tthhiicckk,, ccoolloorr))
+
+       mmppoollyy((xx,, yy,, bboorrddeerr,, ppaatt,, ccoolloorr))
+
+       mmddrraaww((xx,, yy))
+
+       mmtteexxtt((xx,, yy,, ss,, ccppii,, ccoolloorr))
+       cchhaarr **ss;;
+
+       mvstr(xmin, ymin, xmax, ymax, s, d, thick, color)
+       cchhaarr **ss;;
+
+       mrectangle(xmin, ymin, xmax, ymax, pat, color)
+
+       mtriangle(xmin, ymin, xmax, ymax, d, pat, color)
+
+       msegment(xmin, ymin, xmax, ymax, sname, d, thick, color)
+       cchhaarr **ssnnaammee;;
+
+       mmsseettppaatt((ppaatt,, ppaatttteerrnn))
+       cchhaarr **ppaatttteerrnn;;
+
+       mmooppeennsseegg((ssnnaammee))
+       cchhaarr **ssnnaammee;;
+
+       mmcclloosseesseegg(())
+
+       mmiinncclluuddee((ffnnaammee))
+       cchhaarr **ffnnaammee;;
+
+       mmeennddppaaggee(())
+
+       mmddoonnee(())
+
+DDEESSCCRRIIPPTTIIOONN
+       The  routines  in _l_i_b_m_e_t_a provide a simple interface to the metafile(5)
+       2D graphics stream.  Output from these routines is sent to _p_o_u_t_.   _P_o_u_t
+       defaults to the standard output, and should be piped to the appropriate
+       device driver.
+
+       All coordinates range from 0 to 16383 and map to a square area  on  the
+       output device.  _D values are one of 'r', 'u', 'l' and 'd' corresponding
+       to right, up, left, and down respectively.  _C_o_l_o_r values range  from  0
+       to  3  and normally correspond to black, cyan, green and blue.  _P_a_t_t_e_r_n
+       values range from 0 to 3 and default to solid, thick lines, thin lines,
+       and candystripe.  Pattern value mapping may be changed via _s_e_t_p_a_t_.  All
+       strings are null-terminated, and do not contain newlines.
+
+       _M_l_i_n_e starts a line at the given coordinates.  The line _t_y_p_e is a  num-
+       ber from 0 to 3 corresponding to solid, dashed, dotted, and dot-dashed.
+       The line thickness, _t_h_i_c_k_, is a number from 0 to  3.   Connected  lines
+       are drawn with successive calls to _m_d_r_a_w_.
+
+       _M_p_o_l_y  starts  a  polygon at the given coordinates.  The boolean _b_o_r_d_e_r
+       specifies whether or not a border is desired around the polygon.  _M_d_r_a_w
+       is  used  to  add  vertices to the polygon.  The polygon will be closed
+       automatically after the last call.
+
+       _M_t_e_x_t prints a string of hardware  characters  starting  at  the  given
+       coordinates.  The characters per inch are _c_p_i_.  Text is always oriented
+       to the right.
+
+       _M_v_s_t_r places a vector character string  within  the  given  boundaries.
+       The string is oriented according to _d_.  The character line thickness is
+       given by _t_h_i_c_k_.
+
+       _M_r_e_c_t_a_n_g_l_e fills the given box with _p_a_t_.  _M_t_r_i_a_n_g_l_e fills the  half-box
+       with  orientation  _d  in  the given boundaries.  Right corresponds to a
+       triangle in the lower right half of the box.  Up corresponds to a  tri-
+       angle in the upper right, left is upper left, and down is lower left.
+
+       _M_s_e_g_m_e_n_t  places  an  instance  of  the  segment _s_n_a_m_e within the given
+       boundaries.  The segment is oriented according to _d_, where 'r' is  null
+       rotation.   If either _t_h_i_c_k or _c_o_l_o_r is nonzero, its value will replace
+       corresponding values in the segment  primitives.   (For  area  filling,
+       thick changes the fill pattern.)
+
+       _M_s_e_t_p_a_t  maps  _p_a_t  to  _p_a_t_t_e_r_n_.   _P_a_t_t_e_r_n is a string of the form "Pn"
+       where n is a number between 0 and 11.
+
+       _M_o_p_e_n_s_e_g opens the segment named _s_n_a_m_e_.  All graphics  calls  up  to  a
+       matching  call to _m_c_l_o_s_e_s_e_g are stored under _s_n_a_m_e_.  An instance of the
+       segment is obtained with a call to _m_s_e_g_m_e_n_t_.  Segments can be nested to
+       any  level,  and  redefining  segments  is allowed.  Beware of calls to
+       _m_t_e_x_t within a segment, since text will not rotate or scale.
+
+       _M_i_n_c_l_u_d_e includes the graphics metafile _f_n_a_m_e  in  the  output  stream.
+       _M_e_n_d_p_a_g_e  advances to the next screen or page.  On a terminal, the bell
+       rings and a line is read to prevent premature erasure.  _M_d_o_n_e completes
+       metafile output, and is the only required call.
+
+DDIIAAGGNNOOSSTTIICCSS
+       None.
+
+SSEEEE AALLSSOO
+       t4014(1), mx80(1), impress(1), primout(3), metafile(5)
+
+
+
+Radiance                           11/15/93                            META(3)

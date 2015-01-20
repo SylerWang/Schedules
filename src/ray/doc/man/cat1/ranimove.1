@@ -1,0 +1,254 @@
+RANIMOVE(1)                                                        RANIMOVE(1)
+
+
+
+NNAAMMEE
+       ranimove - render a RADIANCE animation with motion
+
+SSYYNNOOPPSSIISS
+       rraanniimmoovvee  [  --ss  ][ --ee ][ --ww ][ --ff bbeegg,,eenndd ][ --nn nnpprrooccss ][ --tt sseecc ][ --dd
+       jjnndd ] rrnnmmffiillee
+
+DDEESSCCRRIIPPTTIIOONN
+       _R_a_n_i_m_o_v_e is a program for progressive animation  rendering.   Variables
+       in the given _r_n_m_f_i_l_e indicate input files, output file names, and vari-
+       ous other controls and options.
+
+       Normally, progress reports are written to the standard output, but  the
+       _-_s  option tells _r_a_n_i_m_o_v_e to do its work silently.  The _-_e option tells
+       _r_a_n_i_m_o_v_e to explicate all variables used for the  animation,  including
+       default  values  not specified in the input file, and print them on the
+       standard output.  The _-_w option turns off warnings about  multiply  and
+       misassigned variables and non-fatal rendering problems.
+
+       Normally, _r_a_n_i_m_o_v_e will produce one animation frame for each view given
+       in the specified view file.  If the _-_f option is specified, the  anima-
+       tion  will  resume  at  the given frame, and continue to the end of the
+       sequence, or to the second frame if one is given  (separated  from  the
+       first by a comma but no space).
+
+       The  _-_n  option specifies the number of processes to use for rendering.
+       The default value is 1, which is appropriate  for  most  machines  that
+       have  a  single central processing unit (CPU).  If you are running on a
+       machine with multiple CPUs, a larger value up to the number of  proces-
+       sors  may  be  used to improve rendering speed, depending on the system
+       load.
+
+       Because _r_a_n_i_m_o_v_e renders each frame progressively, it needs some crite-
+       ria  for  when  to  proceed to the next frame in the animation.  The _-_t
+       option is used to specify the maximum number of seconds to spend on any
+       one frame.  The default value for this option is 60 seconds.  Addition-
+       ally, the _-_d option may be used to specify a termination  threshold  in
+       just-noticeable-differences.   If  the  error can be reduced below this
+       number of JNDs over the whole  frame  before  the  time  allocation  is
+       spent,  _r_a_n_i_m_o_v_e  will  then proceed to the next frame.  A value of 2.0
+       JNDs is the point at which 75% of the people will notice a  difference,
+       and  this  is  the  level usually selected for such a termination test.
+       There is no default value for this option, which means  that  rendering
+       will proceed until the time allocation is spent for each frame, regard-
+       less.  If _-_t is set to 0, _r_a_n_i_m_o_v_e will spend as much time as it  takes
+       to reduce the visible error below the value set by the _-_d option.
+
+       _R_a_n_i_m_o_v_e  renders  each  frame  in three stages.  In the first stage, a
+       low-quality image is rendered using one ray sample per 16  pixels.   In
+       the  second  stage,  pixels from the previous frame are extrapolated to
+       their corresponding positions in this one, based on  the  given  camera
+       and object movements.  A set of heuristics is applied to prevent errors
+       in specular highlights and shadows, avoiding some of the errors typical
+       with the _p_i_n_t_e_r_p_(_1_) program.  In the third stage, additional high-qual-
+       ity samples are used to refine important regions of the image that  are
+       judged to have visible errors.  This proceeds until the stopping crite-
+       ria specified by the _-_t and _-_d options are met, when the frame is  fil-
+       tered and written to the designated picture file.
+
+       The  chief  differences  between  this program and _r_a_n_i_m_a_t_e_(_1_) are that
+       motion blur is computed for objects as well as camera movement, and its
+       progressive  rendering  allows better control over the tradeoff between
+       frame accuracy and rendering time.  Fewer  controls  are  provided  for
+       managing  the picture files produced by _r_a_n_i_m_o_v_e_, and no facilities for
+       distributed rendering are available other than  executing  _r_a_n_i_m_o_v_e  on
+       different  machines using the _-_f option to manually partition the work.
+
+       Animation variable assignments appear one per  line  in  _r_n_m_f_i_l_e_.   The
+       name  of  the  variable  is  followed  by  an equals sign ('=') and its
+       value(s).  The end of line may  be  escaped  with  a  backslash  ('\'),
+       though it is not usually necessary since additional variable values may
+       be given in multiple assignments.  Variables that should have only  one
+       value are given in upper case.  Variables that may have multiple values
+       are given in lower case.  Variables may be abbreviated by  their  first
+       three  letters.   Comments in _r_n_m_f_i_l_e start with a pound sign ('#') and
+       proceed to the end of line.
+
+       The animation variables, their interpretations and default  values  are
+       given below.
+
+       OOCCTTRREEEE    The  name  of the base octree file, which should be generated
+                 by the _o_c_o_n_v_(_1_) command using the _-_f  option.   There  is  no
+                 default  value  for  this  variable.   If  no _R_I_F variable is
+                 given, the octree must be specified.
+
+       RRIIFF       This variable specifies a _r_a_d_(_1_)  input  file  to  use  as  a
+                 source  of rendering options and other variable settings.  If
+                 given, _r_a_n_i_m_a_t_e will execute _r_a_d and create an  options  file
+                 to  control rendering parameters.  _R_a_n_i_m_a_t_e will also extract
+                 default settings for the common  variables:  _O_C_T_R_E_E_,  _R_E_S_O_L_U_-
+                 _T_I_O_N_,  and  _E_X_P_O_S_U_R_E_.   Following  the  file name, overriding
+                 variable settings may be given, which will be passed  to  _r_a_d
+                 on  the command line.  Settings with spaces in them should be
+                 enclosed in quotes.  The execution of _r_a_d  will  also  update
+                 the  contents  of  the  octree,  if  necessary.   There is no
+                 default value for this variable.
+
+       mmoovvee      This variable specifies an object (or objects)  with  a  spe-
+                 cific motion and/or rendering priority.  Four value arguments
+                 are expected for each appearance of this variable.  The first
+                 is  the  name of a parent move object, or "void" if none.  If
+                 given, the object's transformation will be prepended to  that
+                 of  its  parent.   The  second  argument  is the name of this
+                 object, which will be used to name surfaces it contains,  and
+                 as  a  modifier for any child objects that reference it.  The
+                 third argument is the transformation string or file for  this
+                 object.   If  this  argument is enclosed in quotes and begins
+                 with a hyphen ('-'), then it will be interpreted as a  static
+                 transform  specification a la _x_f_o_r_m_(_1_)_.  Otherwise, the argu-
+                 ment will be taken as the name of a file  that  contains  one
+                 such  transform  specification  per  line,  corresponding  to
+                 frames in the animation.  A period ('.') may be given  if  no
+                 object transformation is desired.  The fourth argument is the
+                 name of a _R_A_D_I_A_N_C_E scene file (or files) to be given to _x_f_o_r_m
+                 for transformation.  If this argument begins with an exclama-
+                 tion point ('!'), then it will be interpreted  as  a  command
+                 rather  than a file.  A final word corresponding to the frame
+                 number will be appended to the command, and its  output  will
+                 be  passed  to the input of _x_f_o_r_m for each frame.  An optinal
+                 fifth argument specifies  the  rendering  priority  for  this
+                 object.   Values  greater  than 1 will result in preferential
+                 rendering of this object over other  portions  of  the  image
+                 when  it  appears  in a frame.  Values less than 1 will cause
+                 the rendering to neglect this object in favor of other  parts
+                 of  the  image.   A value of 3.0 can be interpreted as saying
+                 the viewer is three times more likely to look at this  object
+                 than  the  background.   A  file  may  be given rather than a
+                 floating point value, and this file must contain one floating
+                 point  number per line, corresponding to frames in the anima-
+                 tion.
+
+       VVIIEEWWFFIILLEE  This variable names a file from which  _r_a_n_i_m_o_v_e  may  extract
+                 the  view  for each frame in the animation.  This file should
+                 contain one valid view per frame, starting with  frame  1  on
+                 line  1.   An  exception  is made for a view file with only a
+                 single view, which is used for every frame of the  animation.
+                 In  this case, the _E_N_D variable must also be specified.  This
+                 variable is required, and there is no default value.
+
+       EENNDD       The final frame number in the animation.  The  default  value
+                 is  computed  from the number of views in the given _V_I_E_W_F_I_L_E_.
+                 Normally, this variable will only be given  if  the  view  is
+                 static.
+
+       EEXXPPOOSSUURREE  This  variable  tells _r_a_n_i_m_a_t_e how to adjust the exposure for
+                 each frame.  As in _p_f_i_l_t_, the exposure setting may  be  given
+                 either  as  a multiplier or as a number of f-stop adjustments
+                 (eg. +2 or -1.5).  Alternatively, a file name may  be  given,
+                 which  _r_a_n_i_m_a_t_e  will  interpret as having one exposure value
+                 per line per frame, beginning with frame 1 at line  1.   (See
+                 also  the  _V_I_E_W_F_I_L_E  variable,  above.)   There is no default
+                 value for this variable.  If it is  not  given,  no  exposure
+                 adjustments will be made.
+
+       BBAASSEENNAAMMEE  The  base output file name for the final frames.  This string
+                 should contain a _p_r_i_n_t_f_(_3_) style integer field to distinguish
+                 one  frame  number  from  another.  The final frames will use
+                 this name  with  a  ".hdr"  suffix.   The  default  value  is
+                 "frame%03d".
+
+       MMBBLLUURR     This variable specifies the fraction of a frame time that the
+                 shutter is simulated as being open for motion  blur.   Motion
+                 blur  is  computed  by  _r_a_n_i_m_o_v_e  using image-based rendering
+                 methods, and will not be exact.   The  default  value  is  0,
+                 meaning no motion blurring.
+
+       RRAATTEE      This  variable  specifies the animation frame rate, in frames
+                 per second.  This is needed to compute  the  animation  error
+                 visibility.  The default value is 8.
+
+       RREESSOOLLUUTTIIOONN
+                 This variable specifies the desired final picture resolution.
+                 If only a single number is given, this value will be used for
+                 both  the horizontal and vertical picture dimensions.  If two
+                 numbers are given, the first is the horizontal resolution and
+                 the  second is the vertical resolution.  If three numbers are
+                 given, the third is taken as the pixel aspect ratio  for  the
+                 final  picture  (a real value).  If the pixel aspect ratio is
+                 zero, the exact dimensions  given  will  be  those  produced.
+                 Otherwise,  they  will  be used as a frame in which the final
+                 image must fit.  The default value for this variable is  640.
+
+       lloowwqq      This  variable  may  be used to specify rendering options for
+                 the initial, low-quality ray samples.  It may be given either
+                 as  a  list  of  rendering parameter settings, or as variable
+                 settings for the _r_a_d command, in which case the _R_I_F  variable
+                 must also be specified.
+
+       hhiigghhqq     This  variable  may  be used to specify rendering options for
+                 the final, high-quality ray samples.  It may be given  either
+                 as  a  list  of  rendering parameter settings, or as variable
+                 settings for the _r_a_d command, in which case the _R_I_F  variable
+                 must also be specified.
+
+       ooccoonnvv     This  variable  may  be  used  to specify special options for
+                 _o_c_o_n_v_.  See the _o_c_o_n_v_(_1_) manual page  for  a  list  of  valid
+                 options.  (The _-_f option is specified by default.)
+
+EEXXAAMMPPLLEESS
+       A minimal input file for _r_a_n_i_m_o_v_e might look like this:
+
+
+          ::::::::::
+          sample.rnm
+          ::::::::::
+          # The rad input file for our static scene:
+          RIF= tutor.rif
+          # The view file containing one view per frame:
+          VIEWFILE= anim1.vf
+          # Our central character and its motion:
+          move= void myguy myguy.xf myguy.rad 2.0
+
+       Note  that  most of the variables are not set in this file.  If we only
+       want to see what default values _r_a_n_i_m_o_v_e  would  use  without  actually
+       executing anything, we can invoke it thus:
+
+         ranimove -n 0 -e sample.rnm
+
+       This  will  print the variables we have given as well as default values
+       _r_a_n_i_m_o_v_e has assigned for us.
+
+       Usually, we execute _r_a_n_i_m_o_v_e in the background, redirecting  the  stan-
+       dard output and standard error to a file:
+
+         ranimove sample.rnm >& sample.err &
+
+       If  we decide that the default values _r_a_n_i_m_o_v_e has chosen for our vari-
+       ables are not all appropriate, we can add some more assignments to  the
+       file:
+
+
+          RES= 1024                # shoot for 1024x resolution
+          MBLUR= .25                    # apply camera motion blur
+          RATE= 15                 # 15 frames/second
+          EXP= anim1.exp                # adjust exposure according to file
+          lowq= QUAL=Low                # low quality ray sampling
+          highq= QUAL=Med                    # high quality ray sampling
+
+       Note the use of abbreviation for variable names.
+
+AAUUTTHHOORR
+       Greg Ward
+
+SSEEEE AALLSSOO
+       fieldcomb(1), oconv(1), pfilt(1), pinterp(1), rad(1), ran2tiff(1), ran-
+       imate(1), rpict(1), xform(1)
+
+
+
+RADIANCE                            1/30/03                        RANIMOVE(1)

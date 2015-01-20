@@ -1,0 +1,169 @@
+PCOND(1)                                                              PCOND(1)
+
+
+
+NNAAMMEE
+       pcond - condition a RADIANCE picture for output
+
+SSYYNNOOPPSSIISS
+       ppccoonndd [ ooppttiioonnss ] iinnppuutt [ oouuttppuutt ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _P_c_o_n_d  conditions  a  Radiance  picture for output to a display or hard
+       copy device.  If the dynamic range of the scene  exceeds  that  of  the
+       display (as is usually the case), _p_c_o_n_d will compress the dynamic range
+       of the picture such that both dark and bright regions are visible.   In
+       addition,  certain limitations in human vision may be mimicked in order
+       to provide an appearance similar to the experience one  might  have  in
+       the actual scene.
+
+       Command line switches turn flags off and on, changing program behavior.
+       A switch given by itself toggles the flag from off to on or on  to  off
+       depending  on its previous state.  A switch followed by a '+' turns the
+       option on explicitly.  A switch followed by a '-' turns the option off.
+       The  default  is all switches off.  Other options specify output device
+       parameters in order to get more accurate color and contrast.
+
+       --hh_[_+_-_]    Mimic human visual response in the output.  The goal of  this
+                 process  is to produce output that correlates strongly with a
+                 person's subjective impression of a scene.  This switch is  a
+                 bundle of the _-_a_, _-_v_, _-_s and _-_c options.
+
+       --aa_[_+_-_]    Defocus  darker regions of the image to simulate human visual
+                 acuity loss.  This option will not affect well-lit scenes.
+
+       --vv_[_+_-_]    Add veiling glare due to very bright regions  in  the  image.
+                 This  simulates  internal  scattering in the human eye, which
+                 results in a loss of visible contrast near bright sources.
+
+       --ss_[_+_-_]    Use the human contrast sensitivity  function  in  determining
+                 the  exposure  for the image.  A darker scene will have rela-
+                 tively lower exposure with lower  contrast  than  a  well-lit
+                 scene.
+
+       --cc_[_+_-_]    If  parts  of  the image are in the mesopic or scotopic range
+                 where the cone photoreceptors  lose  their  efficiency,  this
+                 switch will cause a corresponding loss of color visibility in
+                 the output and a shift to a scotopic (blue-dominant) response
+                 function.
+
+       --ww_[_+_-_]    Use  a  center-weighted  average for the exposure rather than
+                 the default uniform average.  This may improve  the  exposure
+                 for scenes with high or low peripheral brightness.
+
+       --ii _f_i_x_f_r_a_c
+                 Set  the  relative  importance of fixation points to _f_i_x_f_r_a_c_,
+                 which is a value between 0 and 1.  If _f_i_x_f_r_a_c  is  zero  (the
+                 default), then no fixation points are used in determining the
+                 local or global adaptation.  If _f_i_x_f_r_a_c is greater than zero,
+                 then  a  list  of  fixation  points is read from the standard
+                 input.  These points are given as tab-separated (x,y) picture
+                 coordinates, such as those produced by the _-_o_p option of _x_i_m_-
+                 _a_g_e_(_1_)_.  The foveal samples about these fixation points  will
+                 then  be  weighted  together with the global averaging scheme
+                 such that the fixations receive _f_i_x_f_r_a_c of the total  weight.
+                 If  _f_i_x_f_r_a_c is one, then only the fixation points are consid-
+                 ered for adaptation.
+
+       --II_[_+_-_]    Rather than computing a histogram of foveal samples from  the
+                 source picture, use the precomputed histogram provided on the
+                 standard input.  This data should be given in  pairs  of  the
+                 base-10 logarithm of world luminance and a count for each bin
+                 in ascending order, as  computed  by  the  _p_h_i_s_t_o_(_1_)  script.
+                 This  option  is  useful for producing identical exposures of
+                 multiple pictures (as in an animation), and provides  greater
+                 control over the histogram computation.
+
+       --ll_[_+_-_]    Use  a  linear  response  function  rather  than the standard
+                 dynamic range compression algorithm.  This will  prevent  the
+                 loss  of  usable  physical  values  in  the  output  picture,
+                 although some parts of the resulting image may be too dark or
+                 too bright to see.
+
+       --ee _e_x_p_v_a_l Set  the exposure adjustment for the picture to _e_x_p_v_a_l_.  This
+                 may either be a real multiplier, or a (fractional) number  of
+                 f-stops  preceeded  by  a  '+' or '-'.  This option implies a
+                 linear response (see the _-_l option above).
+
+       --uu _L_d_m_a_x  Specifies the top of the luminance range for the target  out-
+                 put  device.  That is, the luminance (in candelas/m^2) for an
+                 output pixel value of (R,G,B)=(1,1,1).  The default value  is
+                 100 cd/m^2.
+
+       --dd _L_d_d_y_n  Specifies  the  dynamic  range  for the target output device,
+                 which is the ratio of the maximum and minimum usable  display
+                 luminances.  The default value is 32.
+
+       --pp _x_r _y_r _x_g _y_g _x_b _y_b _x_w _y_w
+                 Specifies  the  RGB  primaries  for the target output device.
+                 These are the 1931 CIE (x,y)  chromaticity  values  for  red,
+                 green, blue and white, respectively.
+
+       --ff _m_a_c_b_e_t_h_._c_a_l
+                 Use  the  given  output file from _m_a_c_b_e_t_h_c_a_l_(_1_) to precorrect
+                 the color and contrast for the target  output  device.   This
+                 does  a  more  thorough  job than a simple primary correction
+                 using the _-_p option.  Only one of _-_f or _-_p may be given.
+
+       --xx _m_a_p_f_i_l_e
+                 Put out the final mapping from  world  luminance  to  display
+                 luminance to _m_a_p_f_i_l_e_.  This file will contain values from the
+                 minimum usable world luminance  to  the  maximum  (in  cande-
+                 las/m^2) in one column, and their corresponding display lumi-
+                 nance values (also in candelas/m^2)  in  the  second  column.
+                 This  file may be used for debugging purposes, or to plot the
+                 mapping function created by _p_c_o_n_d_.
+
+EEXXAAMMPPLLEESS
+       To display an image as a person might perceive it in the actual scene:
+
+         pcond -h final.hdr > display.hdr
+         ximage display.hdr ; rm display.hdr &
+
+       To do the same on a 24-bit display with known primary values:
+
+         setenv DISPLAY_PRIMARIES ".580 .340 .281 .570 .153 .079 .333 .333"
+         pcond -h -p $DISPLAY_PRIMARIES final.hdr | ximage &
+
+       To prepare a picture to be sent to a film recorder destined  eventually
+       for  a  slide  projector with a minimum and maximum screen luminance of
+       1.5 and 125 candelas/m^2, respectively:
+
+         pcond -d 83 -u 125 final.hdr > film.hdr
+
+       To  do  the  same  if  the  output  colors  of   the   standard   image
+       "ray/lib/lib/macbeth_spec.hdr" have been measured:
+
+         macbethcal -c mbfilm.xyY > film.cal
+         pcond -d 83 -u 125 -f film.cal final.hdr > film.hdr
+
+       To  further  tweak the exposure to bring out certain areas indicated by
+       dragging the right mouse button over them in _x_i_m_a_g_e_:
+
+         ximage -op -t 75 final.hdr | pcond -i .5 -d 83  -u  125  -f  film.cal
+         final.hdr > film.hdr
+
+       To use a histogram computed on every 10th animation frame:
+
+         phisto frame*0.hdr > global.hist
+         pcond -I -s -c frame0352.hdr < global.hist | ra_tiff - frame0352.tif
+
+RREEFFEERREENNCCEE
+       Greg  Ward  Larson,  Holly  Rushmeier, Christine Piatko, ``A Visibility
+       Matching Tone Reproduction Operator for High  Dynamic  Range  Scenes,''
+       _I_E_E_E  _T_r_a_n_s_a_c_t_i_o_n_s  _o_n  _V_i_s_u_a_l_i_z_a_t_i_o_n  _a_n_d _C_o_m_p_u_t_e_r _G_r_a_p_h_i_c_s _, December
+       1997.
+
+       http://www.sgi.com/Technology/pixformat/Larsonetal.html
+
+AAUUTTHHOORR
+       Greg Ward Larson
+
+SSEEEE AALLSSOO
+       getinfo(1),   macbethcal(1),   normtiff(1),    pcompos(1),    pflip(1),
+       phisto(1),   pinterp(1),  pvalue(1),  protate(1),  ra_xyze(1),  rad(1),
+       rpict(1), ximage(1)
+
+
+
+RADIANCE                           10/27/98                           PCOND(1)

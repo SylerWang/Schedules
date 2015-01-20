@@ -1,0 +1,47 @@
+GENBLINDS(1)                                                      GENBLINDS(1)
+
+
+
+NNAAMMEE
+       genblinds - generate a RADIANCE description of venetian blinds
+
+SSYYNNOOPPSSIISS
+       ggeennbblliinnddss mmaatt nnaammee ddeepptthh wwiiddtthh hheeiigghhtt nnssllaattss aannggllee [ --rr||++rr rrccuurrvv ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _G_e_n_b_l_i_n_d_s  produces  a  RADIANCE scene description of a set of venetian
+       blinds.  The _d_e_p_t_h of the blinds (X dimension) is given first, followed
+       by  the _w_i_d_t_h (Y dimension), followed by the _h_e_i_g_h_t (Z dimension).  The
+       number of slats to place evenly within this height is given as  _n_s_l_a_t_s_.
+       The  _a_n_g_l_e of the blind, where zero is perfectly horizontal and a posi-
+       tive angle tilts the positive X edge upwards, is given in degrees.  The
+       blinds are initially situated so that the corner of the bottom blind is
+       _h_e_i_g_h_t_/_n_s_l_a_t_s_/_2 above the XY plane, and all coordinates  are  positive.
+       Each new slat is placed _h_e_i_g_h_t_/_n_s_l_a_t_s above the previous one, until the
+       top slat is at _h_e_i_g_h_t _- _h_e_i_g_h_t_/_n_s_l_a_t_s_/_2 _.  The blinds may of course  be
+       moved from this starting point with the _x_f_o_r_m_(_1_) command.
+
+       If  curved  blinds are desired, a radius of curvature may be given with
+       the _+_/_-_r option.  If given as _+_r_, The curvature is upward (which is the
+       usual configuration).  If the option is given as _-_r_, then the curvature
+       is downward.  The radius indicates how far from each slat its effective
+       cylindrical  center  resides.   Each  slat  will be broken into as many
+       polygons as is necessary to keep the delta changes in angle  less  than
+       10  degrees.   (Note  that  this may result in a rather large number of
+       polygons.)
+
+EEXXAAMMPPLLEE
+       To produce a curved set of blinds with 25 slats at 15 degrees:
+
+         genblinds white blind 1 46 88 25 15 -r 1 > blinds.rad
+
+AAUUTTHHOORR
+       Jean-Louis Scartezzini and Greg Ward
+
+SSEEEE AALLSSOO
+       genbox(1),  genrev(1),  gensurf(1),   genworm(1),   rpict(1),   rvu(1),
+       xform(1)
+
+
+
+RADIANCE                           10/10/94                       GENBLINDS(1)

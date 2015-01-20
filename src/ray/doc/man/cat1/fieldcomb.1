@@ -1,0 +1,55 @@
+FIELDCOMB(1)                                                      FIELDCOMB(1)
+
+
+
+NNAAMMEE
+       fieldcomb - combine two or more field frames for video animation
+
+SSYYNNOOPPSSIISS
+       ffiieellddccoommbb  [ --ee||--oo ][ --rr ] [ --ff ccoommbbiinneedd..hhddrr ] ffiieelldd00..hhddrr ffiieelldd11..hhddrr ....
+
+DDEESSCCRRIIPPTTIIOONN
+       _F_i_e_l_d_c_o_m_b combines two or more field frames into  half  as  many  final
+       video  frames for field-based animations.  Normally, the even scanlines
+       in the output are given over to the first, third, fifth, etc.  pictures
+       given on the input, and the odd scanlines are given over to the second,
+       fourth, sixth, etc. pictures on the input.  This  behavior  corresponds
+       to  the  _-_e option, which is set by default.  To reverse this ordering,
+       the _-_o option must be specified.
+
+       Normally, _f_i_e_l_d_c_o_m_b will name output frames by dividing the numbers  on
+       the  input field file names by 2, inserting a 'C' right before the num-
+       ber, adding leading zeroes to make it always four digits.  For example,
+       the command:
+
+         fieldcomb anim12.hdr anim13.hdr anim14.hdr anim15.hdr
+
+       will produce two output pictures:
+
+         animC0006.hdr & animC0007.hdr
+
+       If  an odd number of input files is given on the command line, the last
+       file is held over and used as the first file in the next invocation  of
+       _f_i_e_l_d_c_o_m_b  in  the same directory.  In this way, the program works well
+       with the "TRANSFER" facility of _r_a_n_i_m_a_t_e_(_1_)_, which does  not  guarantee
+       an even number of frames will be passed every time.
+
+       If only two input files are given, the _-_f option may be used to specify
+       a different output name of the user's choosing.
+
+       If the _-_r option is specified, then the input  files  will  be  removed
+       once they have been combined.
+
+AAUUTTHHOORR
+       Greg Ward
+
+AACCKKNNOOWWLLEEDDGGEEMMEENNTT
+       Work on this program was sponsored by Iebele Abel.
+
+SSEEEE AALLSSOO
+       getinfo(1),  pcomb(1),  pfilt(1),  phisto(1), ran2tiff(1), ranimate(1),
+       rpict(1)
+
+
+
+RADIANCE                           9/6/2005                       FIELDCOMB(1)

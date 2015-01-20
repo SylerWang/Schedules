@@ -1,0 +1,109 @@
+GLRAD(1)                                                              GLRAD(1)
+
+
+
+NNAAMMEE
+       glrad - render a RADIANCE scene using OpenGL
+
+SSYYNNOOPPSSIISS
+       ggllrraadd [ --ww ][ --bb ][ --ss ][ --SS ][ --vv vviieeww ] rrffiillee [ VVAARR==vvaalluuee ....  ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _G_l_r_a_d  renders  a Radiance scene description in OpenGL.  Its syntax and
+       behavior is similar to _r_a_d_(_1_) with the  _-_o  option,  where  the  output
+       device is assumed to be an X11 server with GLX extensions.
+
+       The _-_w option turns off warnings.  The _-_s option tells _g_l_r_a_d to run _r_a_d
+       silently, not echoing _o_c_o_n_v_(_1_) command.  The _-_b option turns  off  back
+       face  visibility (i.e., enables back face culling).  This is equivalent
+       to the _-_b_v option of _r_p_i_c_t_(_1_) and _r_v_u_(_1_)_.  The _-_S option turns on full-
+       screen   stereo  for  displays  that  support  it.   (Be  sure  to  run
+       _/_u_s_r_/_g_f_x_/_s_e_t_m_o_n_(_1_)  or  its  equivalent  to  set  STR_TOP  or  STR_BOT,
+       first.)   The  _-_v option may be used to specify a starting view, either
+       by symbolic name as entered in the _v_i_e_w assignments in _r_f_i_l_e_, or  by  a
+       complete  view specification, enclosed in quotes.  If no view is speci-
+       fied, then the first standard view from _r_f_i_l_e is used to start.
+
+       Variables permitted in _r_f_i_l_e are described  in  the  _r_a_d  manual  page.
+       Additional  or  overriding assignments may be given on the command line
+       following _r_f_i_l_e_.
+
+       The view is controlled via the mouse and simple one-character commands,
+       listed below:
+
+       ((mmoouussee))   Modify  the  current  view.  The mouse is used to control the
+                 current view in the following ways:
+
+                 CONTROL   MOUSE     ACTION
+                 (none)    left Move forward towards cursor position
+                 (none)    right     Move backward away from cursor position
+                 (none)    middle    Rotate in place (usually safe)
+                 shift     left Orbit left around cursor position
+                 shift     right     Orbit right around cursor position
+                 shift     middle    Orbit skyward
+                 cntl middle    Orbit earthward
+
+                 For all movements but rotating in place, the cursor  must  be
+                 placed  over some bit of visible geometry, otherwise the pro-
+                 gram has no reference point from which to work.  It  is  best
+                 to just experiment with these controls until you learn to fly
+                 safely in your model.  And if you run into trouble,  the  'l'
+                 command is very useful.  (See below.)
+
+       ''++''       Zoom in on the current cursor position.  (Beware of repeating
+                 keys that go faster than the display updates.)
+
+       ''--''       Zoom out from the current cursor position.
+
+       ''ll''       Return to the last saved  view.   Each  time  a  new  command
+                 changes  the current view, the last view is saved, and may be
+                 recalled with this command.  Multiple uses of the  same  com-
+                 mand  (e.g.,  rotation,  zoom) will save only the view before
+                 the first such command.  This way, it is easy to get back  to
+                 where you were before a sequence of view changes.
+
+       ''hh''       Fix  the head height.  All mouse-controlled view motions will
+                 be adjusted so that the head height does  not  change  (where
+                 vertical is determined by the current view up vector).
+
+       ''HH''       Release  the  head height, allowing it to change again during
+                 mouse-controlled movements.
+
+       ''vv''       Print the current view parameters  to  the  standard  output.
+                 This  is  useful for finding out where you are, or for saving
+                 specific views in a keyframe file for animations or returning
+                 to later.
+
+       ''VV''       Append  the  current  view  to the original _r_f_i_l_e_.  This view
+                 will be unnamed, but can be referred to by number or the user
+                 may  add  a  name later with a text editor.  The current view
+                 number becomes the last standard view.  (See the 'n' and  'p'
+                 commands, below.)
+
+       ''nn''       Go  to  the  next standard view stored in _r_f_i_l_e_.  If the last
+                 view is currently displayed, then cycle to the first one.
+
+       ''pp''       Go to the previous standard view stored  in  _r_f_i_l_e_.   If  the
+                 first  view  is  currently  displayed, then cycle to the last
+                 one.
+
+       ''qq''       Quit _g_l_r_a_d_.  This is the normal way to exit the program.
+
+AAUUTTHHOORR
+       Greg Ward Larson
+
+BBUUGGSS
+       It would be nice if _g_l_r_a_d set the appropriate video format  for  stereo
+       viewing  automatically,  but the process is different on different sys-
+       tems and there is no single, sure-fire way to do it  for  all  systems.
+       On  systems  that  do not support stereo extensions, the program may be
+       compiled with the -DNOSTEREO option, which will avoid undefined  symbol
+       errors.
+
+SSEEEE AALLSSOO
+       chmod(1), getinfo(1), ls(1), objview(1), oconv(1), ps(1), rad(1), rani-
+       mate(1), rhcopy(1), rholo(1), rpict(1), rtrace(1), rvu(1), setmon(1)
+
+
+
+RADIANCE                            6/10/98                           GLRAD(1)

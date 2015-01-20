@@ -1,0 +1,76 @@
+GENSURF(1)                                                          GENSURF(1)
+
+
+
+NNAAMMEE
+       gensurf - generate a RADIANCE or Wavefront description of a curved sur-
+       face
+
+SSYYNNOOPPSSIISS
+       ggeennssuurrff mmaatt nnaammee ''xx((ss,,tt))'' ''yy((ss,,tt))'' ''zz((ss,,tt))'' mm nn [ --ee eexxpprr ][ --ff ffiillee ][
+       --ss ][ --oo ]
+       ggeennssuurrff mmaatt nnaammee ''xx((ss,,tt))'' ''yy((ss,,tt))'' ddffiillee mm nn [ --ee eexxpprr ][ --ff ffiillee ][ --ss
+       ][ --oo ]
+       ggeennssuurrff mmaatt nnaammee ddffiillee ddffiillee ddffiillee mm nn [ --ss ][ --oo ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _G_e_n_s_u_r_f produces either a RADIANCE scene  description  or  a  Wavefront
+       .OBJ  file  of a functional surface defined by the parametric equations
+       _x_(_s_,_t_)_, _y_(_s_,_t_)_, and _z_(_s_,_t_)_.  The surface normal is defined by the right
+       hand  rule  as  applied  to _(_s_,_t_)_.  _S will vary from 0 to 1 in steps of
+       _1_/_m_, and _t will vary from 0 to 1 in steps of _1_/_n_.  The surface will  be
+       composed  of  _2_*_m_*_n or fewer triangles and quadrilaterals.  The expres-
+       sions are of the same type used in RADIANCE function files.   Auxiliary
+       expressions  and/or  files  may be specified in any number of _-_e and _-_f
+       options.  The _-_s option adds smoothing (surface  normal  interpolation)
+       to  the  surface.   The _-_o option produces a Wavefront .OBJ file rather
+       than a RADIANCE scene description.  This is most useful as input to the
+       _o_b_j_2_m_e_s_h_(_1_)  program  for producing a compiled mesh.  A single "usemtl"
+       statement will appear at the beginning of the .OBJ output, echoing  the
+       modifier given on the command line.
+
+       Rough  holes  may be cut in the mesh by defining a valid(s,t) function.
+       Where this function is positive, polygon  vertices  will  be  produced.
+       Where  it  is  negative,  no  geometry  will be output.  Surface normal
+       interpolation will ignore any invalid vertices.
+
+       The second invocation form reads z data values  from  the  file  _d_f_i_l_e_.
+       This  file must give either m*n or (m+1)*(n+1) floating point z values.
+       If m*n values are given, then the values correspond to the centroid  of
+       each  quadrilateral  region.  If (m+1)*(n+1) values are given, then the
+       values correspond to the vertices of each  quadrilateral  region.   The
+       ordering of the data in the file is such that the s values are changing
+       faster than the t values.  If a minus ('-') is given  for  _d_f_i_l_e_,  then
+       the values are read from the standard input.
+
+       The  third  invocation  form is used to read coordinate triplets from a
+       file or the standard input.  The three _d_f_i_l_e arguments must all be  the
+       same, and the corresponding file must contain three floating point val-
+       ues for each point location.  The ordering and other  details  are  the
+       same as those described for z value files above.
+
+EEXXAAMMPPLLEE
+       To generate a tesselated sphere:
+
+         gensurf     crystal    ball    'sin(PI*s)*cos(2*PI*t)'    'cos(PI*s)'
+         'sin(PI*s)*sin(2*PI*t)' 7 10
+
+       To generate a 10x20 smoothed height field from  12  recorded  vertex  z
+       values:
+
+         gensurf dirt ground '10*s' '20*t' height.dat 2 3 -s
+
+AAUUTTHHOORR
+       Greg Ward
+
+BBUUGGSS
+       The  smoothing  operation requires that functions be defined beyond the
+       [0,1] boundaries of s and t.
+
+SSEEEE AALLSSOO
+       genbox(1), genrev(1), genworm(1),  icalc(1),  obj2mesh(1),  obj2rad(1),
+       rpict(1), rvu(1), xform(1)
+
+
+
+RADIANCE                           11/15/93                         GENSURF(1)

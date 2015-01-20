@@ -1,0 +1,38 @@
+GLARE(1)                                                              GLARE(1)
+
+
+
+NNAAMMEE
+       glare - perform glare and visual comfort calculations
+
+SSYYNNOOPPSSIISS
+       ggllaarree [ ggllaarreeffiillee [ ppiiccttuurree [ ooccttrreeee ] ] ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _G_l_a_r_e  is  an  interactive script for executing programs used to locate
+       glare sources and compute glare indices and visual comfort probability.
+       If  no  _g_l_a_r_e_f_i_l_e is given, the program prompts the user for a one.  If
+       the file does not exist, _g_l_a_r_e asks the user some questions  about  the
+       scene  in question then runs _f_i_n_d_g_l_a_r_e_(_1_) to compute values to store in
+       the file.  _G_l_a_r_e then presents the user a menu of available glare index
+       calculations.   After choosing a calculation, _g_l_a_r_e offers to store the
+       result (usually not useful) or plot the information (but only for  mul-
+       tiple glare angles).
+
+       If  you  are  creating  a new _g_l_a_r_e_f_i_l_e_, it usually works best to start
+       with a displayed image for reference during the interrogation.
+
+AAUUTTHHOORR
+       Greg Ward
+
+AACCKKNNOOWWLLEEDDGGEEMMEENNTT
+       Work on this program was initiated and sponsored by the LESO  group  at
+       EPFL in Switzerland.
+
+SSEEEE AALLSSOO
+       dayfact(1),    findglare(1),    glarendx(1),    igraph(1),    rpict(1),
+       xglaresrc(1), ximage(1)
+
+
+
+RADIANCE                            5/2/95                            GLARE(1)

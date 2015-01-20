@@ -1,0 +1,120 @@
+RA_PS(1)                                                              RA_PS(1)
+
+
+
+NNAAMMEE
+       ra_ps - convert RADIANCE picture to a PostScript file
+
+SSYYNNOOPPSSIISS
+       rraa__ppss  [  --bb||cc ][ --AA||BB||CC ][ --nn nnccooppiieess ][ --ee ++//--ssttooppss ][ --gg ggaammmmaa ][ --pp
+       ppaappeerr ][ --mm[[hh||vv]] mmaarrggiinn ][ --dd ddppii ] [ iinnppuutt [ oouuttppuutt ] ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _R_a___p_s translates a RADIANCE picture to a color or greyscale Adobe Post-
+       Script file for printing on a laser printer or importing to a page lay-
+       out program.  The _-_b option tells _r_a___p_s to  produce  greyscale  output.
+       (The  default  is  color, which may be specified explicitly with the _-_c
+       option.)
+
+       The _-_A option specifies that the output should be in uncompressed ASCII
+       hexstring  format (the default).  The _-_B option specifies that the out-
+       put should be in uncompressed binary string format.  The file size will
+       be  roughly  half  that  of the ASCII equivalent, but some printers and
+       especially some printer connections do not support binary transfer,  so
+       this  option should be used with caution.  The _-_C option specifies that
+       the output should be in run-length compressed ASCII format.   The  file
+       size will be one half to one tenth as large as the hexstring equivalent
+       and can be sent over any network or by e-mail.  The  only  disadvantage
+       is  that  it will actually take longer to print on some printers, since
+       the  "readhexstring"  procedure  is  generally  faster  than  a  custom
+       replacement.
+
+       The  _-_n  option  specifies the number of copies to print of this image.
+       It is often preferable to use this option instead of the multiple  copy
+       option  of the print spooler program, since the latter often results in
+       duplication of the input file with a large associated cost.
+
+       The _-_e option specifies an exposure compensation in f-stops (powers  of
+       two).   Only  integer stops are allowed, for efficiency.  The _-_g option
+       specifies a power law for the printer transfer function.   The  default
+       gamma  setting  for greyscale printers is 1.0 (linear), and the default
+       gamma for color printers is 1.8 (commonly used in prepress).   If  your
+       output  seems  to have too much contrast relative to its screen equiva-
+       lent, print out the file "ray/lib/lib/gamma.hdr" to your printer  with-
+       out  any  gamma correction and using the _-_d option to set the dots-per-
+       inch (see below).  The best match between the small lines and the  grey
+       patch  next to it indicate the approximate gamma of your printer, which
+       you should use with the _-_g option for  best  contrast  reproduction  in
+       subsequent conversions.
+
+       The  standard  print  area  assumes 8.5 by 11 inch (U.S. letter) paper,
+       with 0.5 inch margins on all sides.   The  image  will  be  rotated  90
+       degrees  if it fits better that way in the available print area, and it
+       will always be centered on the page.  The _-_p and _-_m options to  control
+       the  paper  size  and  margins,  respectively.   The argument to the _-_p
+       option is the common name for a given paper size, or WWxHH, where WW is
+       the width (in inches) and HH is the height.  If millimeters or centime-
+       ters are the preferred measurement unit, the 'x' may be replaced by 'm'
+       or  'c', respectively.  The WW and HH values are decimal quantities, of
+       course.  The current paper identifiers understood by the program may be
+       discovered  by  giving  a  0  argument to the _-_p option.  They are cur-
+       rently:
+
+       _Name________Width_Height_(inches)
+       envelope      4.12   9.50
+       executive     7.25  10.50
+       letter        8.50  11.00
+       lettersmall   7.68  10.16
+       legal         8.50  14.00
+       monarch       3.87   7.50
+       statement     5.50   8.50
+       tabloid      11.00  17.00
+       A3           11.69  16.54
+       A4            8.27  11.69
+       A4small       7.47  10.85
+       A5            6.00   8.27
+       A6            4.13   6.00
+       B4           10.12  14.33
+       B5            7.17  10.12
+       C5            6.38   9.01
+       C6            4.49   6.38
+       DL            4.33   8.66
+       hagaki        3.94   5.83
+
+       The paper size name may be abbreviated with three or more letters,  and
+       character case is ignored.  The argument to the _-_m option is the margin
+       width, which is 0.5 inches by  default.   A  millimeter  or  centimeter
+       quantity  may  be  given instead of inches by immediately following the
+       value with a 'm' or  'c'  character,  respectively.   (Leave  no  space
+       between  the quantity and its unit letter.)  If you wish to specify the
+       horizontal and  vertical  margins  separately,  use  the  _-_m_h  and  _-_m_v
+       options, instead.
+
+       The  _-_d option may be used to explicitly set the print density (in dots
+       per inch).  If the input picture is lower resolution than  the  printer
+       and  has  square  pixels, then _r_a___p_s will adjust the image size so that
+       pixels map to dot regions exactly.  This may improve the appearance  of
+       fine  detail,  and  may  speed  up the printing process as well, at the
+       expense of a slightly smaller image area.   If  you  wish  to  maximize
+       print  area  and  the  input image contains no fine detail, then do not
+       specify this option.
+
+       The output from _r_a___p_s is designed to be compatible  with  the  Encapsu-
+       lated  PostScript  standard, which means that the resulting file may be
+       incorporated into documents by page layout programs that  can  read  in
+       EPS  files.  Unfortunately, there is currently no option for generating
+       a preview bitmap, so the image will show up on the screen as a  rectan-
+       gular  area  only.   To control the EPS image size directly, use the _-_p
+       option as explained above with the WWxHH specification, and set _-_m _0 to
+       turn off the margins.
+
+AAUUTTHHOORR
+       Greg Ward
+
+SSEEEE AALLSSOO
+       pfilt(1),   ra_bmp(1),   ra_bn(1),   ra_pr(1),   ra_pr24(1),  ra_t8(1),
+       ra_t16(1), ra_ppm(1), ra_tiff(1), ximage(1)
+
+
+
+RADIANCE                            8/28/98                           RA_PS(1)

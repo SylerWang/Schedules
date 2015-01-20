@@ -1,0 +1,40 @@
+GENREV(1)                                                            GENREV(1)
+
+
+
+NNAAMMEE
+       genrev - generate a RADIANCE description of surface of revolution
+
+SSYYNNOOPPSSIISS
+       ggeennrreevv mmaatt nnaammee ''zz((tt))'' ''rr((tt))'' nnsseegg [ --ee eexxpprr ][ --ff ffiillee ][ --ss ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _G_e_n_r_e_v  produces  a  RADIANCE scene description of a surface of revolu-
+       tion.  The object will be composed  of  _n_s_e_g  cones,  cups,  cylinders,
+       tubes  or rings following the parametric curve defined by _z_(_t_) (height)
+       and _r_(_t_) (radius).  When _z is increasing with  t,  the  surface  normal
+       points  outward.   When _z is decreasing, the normal points inward.  The
+       variable _t used in the function expressions varies from 0 to 1 in  even
+       steps of _1_/_n_s_e_g_.  The expressions are of the same type used in RADIANCE
+       function files.  Auxiliary expressions and/or files may be specified in
+       any  number  of  _-_e and _-_f options.  The _-_s option smooths the surfaces
+       using Phong normal interpolation.
+
+EEXXAAMMPPLLEE
+       To generate a torus with an inner radius of 1 and an outer radius of 3:
+
+         genrev steel torus 'sin(2*PI*t)' '2+cos(2*PI*t)' 32
+
+AAUUTTHHOORR
+       Greg Ward
+
+BBUUGGSS
+       The -s option doesn't modify the surface normal correctly for the oppo-
+       site side.
+
+SSEEEE AALLSSOO
+       genbox(1), gensurf(1), genworm(1), icalc(1), rpict(1), rvu(1), xform(1)
+
+
+
+RADIANCE                           11/15/93                          GENREV(1)

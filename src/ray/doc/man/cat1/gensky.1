@@ -1,0 +1,164 @@
+GENSKY(1)                                                            GENSKY(1)
+
+
+
+NNAAMMEE
+       gensky - generate a RADIANCE description of the sky
+
+SSYYNNOOPPSSIISS
+       ggeennsskkyy mmoonntthh ddaayy ttiimmee [ ooppttiioonnss ]
+       ggeennsskkyy --aanngg aallttiittuuddee aazziimmuutthh [ ooppttiioonnss ]
+       ggeennsskkyy --ddeeffaauullttss
+
+DDEESSCCRRIIPPTTIIOONN
+       _G_e_n_s_k_y  produces  a RADIANCE scene description for the CIE standard sky
+       distribution at the given month, day and time.  By default, the time is
+       interpreted  as local standard time on a 24-hour clock.  The time value
+       may be given either as decimal hours, or  using  a  colon  to  separate
+       hours  and  minutes.   If  the  time  is immediately followed (no white
+       space) by a North American or European time zone designation, then this
+       determines  the standard meridian, which may be specified alternatively
+       with the _-_m option.  The following  time  zones  are  understood,  with
+       their corresponding hour differences from Greenwich Mean Time:
+       Standard time:
+       YST   PST   MST   CST   EST   GMT
+        9     8     7     6     5     0
+
+       CET   EET   AST   GST   IST   JST  NZST
+       -1    -2    -3    -4    -5.5  -9   -12
+
+       Daylight savings time:
+       YDT   PDT   MDT   CDT   EDT   BST
+        8     7     6     5     4     -1
+
+       CEST  EEST  ADT   GDT   IDT   JDT  NZDT
+        -2    -3   -4    -5   -6.5   -10  -13
+
+       If the time is preceded by a plus sign ('+'), then it is interpreted as
+       local solar time instead.  It is very important to specify the  correct
+       latitude  and longitude (unless local solar time is given) using the _-_a
+       and _-_o options to get the correct solar angles.
+
+       The second form gives the solar angles  explicitly.   The  altitude  is
+       measured  in  degrees above the horizon, and the azimuth is measured in
+       degrees west of South.
+
+       The third form prints the default option values.
+
+       The output sky distribution is given as a brightness function, _s_k_y_f_u_n_c_.
+       Its  value is in watts/steradian/meter2.  The x axis points east, the y
+       axis points north, and the z  axis  corresponds  to  the  zenith.   The
+       actual material and surface(s) used for the sky is left up to the user.
+       For a hemispherical blue sky, the description might be:
+
+       !gensky 4 1 14
+
+       skyfunc glow skyglow
+       0
+       0
+       4 .99 .99 1.1 0
+
+       skyglow source sky
+       0
+       0
+       4 0 0 1 180
+
+       Often, _s_k_y_f_u_n_c will actually be used to characterize the  light  coming
+       in from a window.
+
+       In addition to the specification of a sky distribution function, _g_e_n_s_k_y
+       suggests an ambient value in a comment at the beginning of the descrip-
+       tion  to  use  with  the _-_a_v option of the RADIANCE rendering programs.
+       (See rvu(1) and rpict(1).)  This value is the cosine-weighted  radiance
+       of the sky in watts/steradian/meter2.
+
+       _G_e_n_s_k_y supports the following options.
+
+       --ss        Sunny  sky without sun.  The sky distribution will correspond
+                 to a standard CIE clear day.
+
+       ++ss        Sunny sky with sun.  In  addition  to  the  sky  distribution
+                 function, a source description of the sun is generated.
+
+       --cc        Cloudy  sky.  The sky distribution will correspond to a stan-
+                 dard CIE overcast day.
+
+       --ii        Intermediate sky without sun.  The sky will correspond  to  a
+                 standard CIE intermediate day.
+
+       ++ii        Intermediate  sky with sun.  In addition to the sky distribu-
+                 tion, a (somewhat subdued) sun is generated.
+
+       --uu        Uniform cloudy sky.  The sky distribution will be  completely
+                 uniform.
+
+       --gg _r_f_l    Average  ground  reflectance  is  _r_f_l_.  This value is used to
+                 compute _s_k_y_f_u_n_c when Dz is negative.  Ground plane brightness
+                 is  the  same for _-_s as for _+_s_.  (Likewise for _-_i and _+_i_, but
+                 see the _-_r option below.)
+
+       --bb _b_r_t    The  zenith  brightness  is   _b_r_t_.    Zenith   radiance   (in
+                 watts/steradian/meter2)  is  normally  computed  from the sun
+                 angle and sky turbidity (for sunny sky).   It  can  be  given
+                 directly instead, using this option.
+
+       --BB _i_r_r_a_d  Same  as  _-_b_,  except  zenith brightness is computed from the
+                 horizontal diffuse irradiance (in watts/meter2).
+
+       --rr _r_a_d    The solar radiance is _r_a_d_.  Solar radiance  (in  watts/stera-
+                 dian/meter2)  is  normally  computed from the solar altitude.
+                 This option may be used to override the default  calculation.
+                 If  a value of zero is given, no sun description is produced,
+                 and the contribution of direct solar to ground brightness  is
+                 neglected.
+
+       --RR _i_r_r_a_d  Same  as _-_r_, except solar radiance is computed from the hori-
+                 zontal direct irradiance (in watts/meter2).
+
+       --tt _t_r_b    The turbidity factor is _t_r_b_.  Greater turbidity factors  cor-
+                 respond  to greater atmospheric scattering.  A turbidity fac-
+                 tor of 1.0 indicates an ideal clear atmosphere (i.e.  a  com-
+                 pletely  dark  sky).   Values  less  than  1.0 are physically
+                 impossible.
+
+       The following options do not apply when the solar altitude and  azimuth
+       are given explicitly.
+
+       --aa _l_a_t The site latitude is _l_a_t degrees north.  (Use negative angle for
+              south latitude.)  This is used in the calculation of sun  angle.
+
+       --oo _l_o_n The site longitude is _l_o_n degrees west.  (Use negative angle for
+              east longitude.)  This is used in the calculation of solar  time
+              and  sun  angle.   Be  sure  to  give the corresponding standard
+              meridian also!  If solar  time  is  given  directly,  then  this
+              option has no effect.
+
+       --mm _m_e_r The  site  standard  meridian  is _m_e_r degrees west of Greenwich.
+              (Use negative angle for east.)  This is used in the  calculation
+              of  solar time.  Be sure to give the correct longitude also!  If
+              a time zone or solar time is given directly,  then  this  option
+              has no effect.
+
+EEXXAAMMPPLLEE
+       To  produce a sunny sky for July 4th at 2:30pm Eastern daylight time at
+       a site latitude of 42 degrees, 89 degrees west longitude:
+
+         gensky 7 4 14:30EDT +s -a 42 -o 89
+
+       To produce a sunny sky distribution for a  specific  sun  position  but
+       without the sun description:
+
+         gensky -ang 23 -40 -s
+
+FFIILLEESS
+       /usr/local/lib/ray/skybright.cal
+
+AAUUTTHHOORR
+       Greg Ward
+
+SSEEEE AALLSSOO
+       rpict(1), rvu(1), xform(1)
+
+
+
+RADIANCE                            4/24/98                          GENSKY(1)

@@ -1,0 +1,69 @@
+EV(1)                                                                    EV(1)
+
+
+
+NNAAMMEE
+       ev - evaluate expressions
+
+SSYYNNOOPPSSIISS
+       eevv ''eexxpprr'' ....
+
+DDEESSCCRRIIPPTTIIOONN
+       _E_v  evaluates  expressions  given  on  the  command line, and sends the
+       results to the standard output, one per line.  An  expression  contains
+       real numbers, function calls, and the following operators:
+
+            +  -  *  /  ^
+
+       Operators are evaluated left to right, except '^', which is right asso-
+       ciative.  Powers have the highest precedence; multiplication and  divi-
+       sion are evaluated before addition and subtraction.  Expressions can be
+       grouped with parentheses.  All values are double precision real.
+
+       The following library of functions is available:
+
+       iiff((ccoonndd,, tthheenn,, eellssee))
+                 if cond is greater than zero, then  is  evaluated,  otherwise
+                 else is evaluated.
+
+       sseelleecctt((NN,, aa11,, aa22,, ....))
+                 return  aN  (N  is  rounded to the nearest integer).  If _N is
+                 zero, the number of available arguments is returned.
+
+       rraanndd((xx))   compute a random number between 0 and 1 based on x.
+
+       fflloooorr((xx))  return largest integer not greater than x.
+
+       cceeiill((xx))   return smallest integer not less than x.
+
+       ssqqrrtt((xx))   return square root of x.
+
+       eexxpp((xx))    compute e to the power of x (e approx = 2.718281828).
+
+       lloogg((xx))    compute the logarithm of x to the base e.
+
+       lloogg1100((xx))  compute the logarithm of x to the base 10.
+
+       ssiinn((xx)),, ccooss((xx)),, ttaann((xx))
+                 trigonometric functions.
+
+       aassiinn((xx)),, aaccooss((xx)),, aattaann((xx))
+                 inverse trigonometric functions.
+
+       aattaann22((yy,, xx))
+                 inverse tangent of y/x (range -pi to pi).
+
+EEXXAAMMPPLLEE
+       To pass the square root of two and the sine of .5 to a program:
+
+         program `ev 'sqrt(2)' 'sin(.5)'`
+
+AAUUTTHHOORR
+       Greg Ward
+
+SSEEEE AALLSSOO
+       icalc(1), rcalc(1)
+
+
+
+RADIANCE                           10/28/96                              EV(1)

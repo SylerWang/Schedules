@@ -1,0 +1,61 @@
+GENKLEMSAMP(1)                                                  GENKLEMSAMP(1)
+
+
+
+NNAAMMEE
+       genklemsamp - generate ray samples over surfaces using Klems BSDF basis
+
+SSYYNNOOPPSSIISS
+       ggeennkklleemmssaammpp [ --cc NN ][ --ff{{aa||ff||dd}} ] [ vviieeww ooppttss ] [ ggeeoomm..rraadd ....  ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _G_e_n_k_l_e_m_s_a_m_p generates ray origins and directions to sample planar  sur-
+       faces  needed to determine incident radiances or daylight coefficients.
+       This command is typically used in conjunction with _r_t_c_o_n_t_r_i_b_(_1_) to ana-
+       lyze exterior daylight coefficients for an annual simulation.
+
+       The view options are needed to specify (at minimum) the view direction,
+       which corresponds to the orientation of the surfaces, and the  view  up
+       vector,  which  corresponds  to  the  azimuth=90-degree position on the
+       Klems sampling hemisphere.  The view fore  clipping  distance  is  also
+       quite  useful, as it provides a means to pass through some thickness in
+       a fenestration system before samples are sent out.  Other view  options
+       such  as  the  view  type  and  aft clipping distance are overridden or
+       ignored.
+
+       If no Radiance scene files are provided, then  the  specified  parallel
+       view  defines  the width, height, center, and orientation of the window
+       or facade of interest.  If one or more scene files are given, they  are
+       presumed  to contain planar surfaces over which _g_e_n_k_l_e_m_s_a_m_p will origi-
+       nate samples.  The sampled surface normals must correspond to the spec-
+       ified view direction, and unaligned surfaces are silently ignored.
+
+       The  _-_c  option specifies the number of rays to sample per Klems direc-
+       tion.  These samples will be distributed evenly  over  the  surface(s).
+       The default setting is 1000.
+
+       The _-_f_f option specifies that output rays should be generated as 32-bit
+       IEEE binary float  values.   This  may  be  more  efficient  if  passed
+       directly to _r_t_c_o_n_t_r_i_b or _r_t_r_a_c_e_(_1_) with the same option.  Likewise, the
+       _-_f_d option specifies 64-bit IEEE binary  double  values.   The  default
+       setting of _-_f_a produces ASCII floating point values.
+
+EEXXAAMMPPLLEE
+       To  generate  500 samples per direction over a set of south-facing win-
+       dows and pass to  _r_t_c_o_n_t_r_i_b  to  compute  daylight  coefficients  in  a
+       matrix:
+
+         genklemsamp -c 500 -vd 0 -1 0 -vu 0 0 1 south_windows.rad | rtcontrib
+         -c 500 -e MF:1 -f reinhart.cal -b  rbin  -bn  Nrbins  exterior.oct  >
+         Dsouth.dat
+
+AAUUTTHHOORR
+       Greg Ward
+
+SSEEEE AALLSSOO
+       dctimestep(1),   genskyvec(1),   mkillum(1),  rtcontrib(1),  rtrace(1),
+       vwrays(1)
+
+
+
+RADIANCE                            6/13/09                     GENKLEMSAMP(1)

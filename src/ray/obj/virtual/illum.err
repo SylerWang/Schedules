@@ -1,0 +1,103 @@
+**************
+*** PID  1048: rpict -x 3072 -y 3072 -vf back.vp -t 3600 -e illum.err -dt 0.050000 -dc 0.500000 -ds 0.250000 -dr 2 -dp 512 -sj 1.000000 -st 0.150000 -lr 6 -lw 0.005000 -av .2 .2 .2 -ab 1 -aa .2 -ad 400 -as 200 -ar 100 -af illum.amb -ps 1 -dj .7 illumfurn.oct 
+
+rpict: 7147 rays, 0.00% done after 0.0033 hours
+rpict: 1446238 rays, 1.72% done after 1.0275 hours
+rpict: 2785897 rays, 3.40% done after 2.0525 hours
+rpict: 4925966 rays, 6.17% done after 3.0617 hours
+**************
+*** PID   742: rpict -t 3600 -e illum.err -dt 0.050000 -dc 0.500000 -ds 0.250000 -dr 2 -dp 512 -sj 1.000000 -st 0.150000 -lr 6 -lw 0.005000 -av .2 .2 .2 -ab 1 -aa .2 -ad 400 -as 200 -ar 100 -af illum.amb -ps 1 -dj .7 -ro /usr/people/greg/ray/pic/illumfurn.back.raw illumfurn.oct 
+
+rpict: 7147 rays, 8.12% done after 0.0028 hours
+rpict: 1718913 rays, 10.30% done after 1.0153 hours
+rpict: 3609559 rays, 12.07% done after 2.0403 hours
+rpict: 6487654 rays, 13.57% done after 3.0619 hours
+rpict: 10378014 rays, 14.93% done after 4.0828 hours
+rpict: 15207743 rays, 16.24% done after 5.0961 hours
+rpict: 20889108 rays, 17.60% done after 6.1092 hours
+rpict: 27067530 rays, 19.28% done after 7.1247 hours
+rpict: 33407309 rays, 21.37% done after 8.1344 hours
+rpict: 40080891 rays, 23.64% done after 9.1469 hours
+rpict: 46940018 rays, 25.82% done after 10.1575 hours
+rpict: 53526564 rays, 27.95% done after 11.1578 hours
+rpict: 59794678 rays, 29.90% done after 12.1669 hours
+rpict: 65046325 rays, 31.08% done after 13.1997 hours
+rpict: 70596726 rays, 32.99% done after 14.2092 hours
+rpict: 76409078 rays, 35.21% done after 15.2231 hours
+rpict: 81834337 rays, 37.39% done after 16.2281 hours
+rpict: 86992203 rays, 39.56% done after 17.2356 hours
+rpict: 91912996 rays, 41.65% done after 18.2536 hours
+rpict: 96416663 rays, 43.97% done after 19.2669 hours
+rpict: 100607310 rays, 46.37% done after 20.2744 hours
+rpict: 105691247 rays, 48.68% done after 21.2831 hours
+rpict: 112284231 rays, 51.27% done after 22.3000 hours
+rpict: 119056809 rays, 53.36% done after 23.3036 hours
+rpict: 119999226 rays, 53.58% done after 23.4494 hours
+rpict: signal - Terminate
+rpict: 119999226 rays, 53.58% done after 23.4494 hours
+**************
+*** PID  8717: rpict -t 3600 -e illum.err -dt 0.050000 -dc 0.500000 -ds 0.250000 -dr 2 -dp 512 -sj 1.000000 -st 0.150000 -lr 6 -lw 0.005000 -av .2 .2 .2 -ab 1 -aa .2 -ad 400 -as 200 -ar 100 -af illum.amb -ps 1 -dj .7 -st 0 -sj 1 -ro /usr/people/greg/ray/pic/illumfurn.back.raw illumfurn.oct 
+
+rpict: 7147 rays, 53.58% done after 0.0189 hours
+rpict: 1813733 rays, 53.99% done after 1.0942 hours
+rpict: 3064552 rays, 54.31% done after 3.1694 hours
+rpict: 6214824 rays, 55.17% done after 4.2264 hours
+rpict: 8429283 rays, 55.76% done after 5.2736 hours
+rpict: 10766260 rays, 56.40% done after 6.3236 hours
+rpict: 13207432 rays, 57.17% done after 7.3511 hours
+rpict: 15531312 rays, 57.80% done after 8.4022 hours
+rpict: 17820074 rays, 58.44% done after 9.4575 hours
+rpict: 19960543 rays, 59.07% done after 10.4775 hours
+rpict: 22246411 rays, 59.75% done after 11.5678 hours
+rpict: 24387960 rays, 60.39% done after 12.5858 hours
+rpict: 26378506 rays, 60.93% done after 13.5922 hours
+rpict: 28380262 rays, 61.52% done after 14.6206 hours
+rpict: 31483571 rays, 62.39% done after 15.6394 hours
+rpict: 36730618 rays, 63.84% done after 16.6883 hours
+rpict: 41635856 rays, 64.93% done after 17.7119 hours
+rpict: 46968271 rays, 66.56% done after 18.7214 hours
+rpict: 51444654 rays, 68.15% done after 19.7356 hours
+rpict: 53541400 rays, 68.87% done after 20.7397 hours
+rpict: 56188307 rays, 69.92% done after 21.7706 hours
+rpict: 59038028 rays, 71.01% done after 22.7792 hours
+rpict: 61497819 rays, 71.96% done after 23.7828 hours
+rpict: 66238437 rays, 73.50% done after 24.8236 hours
+rpict: 70714792 rays, 74.82% done after 25.8450 hours
+rpict: 76028430 rays, 76.68% done after 26.8461 hours
+rpict: 78648087 rays, 77.77% done after 27.8544 hours
+**************
+*** PID   701: rpict -t 3600 -e illum.err -dt 0.050000 -dc 0.500000 -ds 0.250000 -dr 2 -dp 512 -lr 6 -lw 0.005000 -av .2 .2 .2 -ab 1 -aa .2 -ad 400 -as 200 -ar 100 -af illum.amb -ps 1 -dj .7 -st 0 -sj 1 -ro /usr/people/greg/ray/pic/illumfurn.back.raw illumfurn.oct 
+
+rpict: 7147 rays, 77.77% done after 0.0103 hours
+rpict: 3724059 rays, 79.22% done after 1.0167 hours
+rpict: 9277391 rays, 81.62% done after 2.0183 hours
+rpict: 14886178 rays, 84.12% done after 3.0278 hours
+rpict: 20438644 rays, 86.48% done after 4.0347 hours
+rpict: 26107588 rays, 88.93% done after 5.0358 hours
+rpict: 31722197 rays, 91.38% done after 6.0414 hours
+rpict: 37101416 rays, 93.83% done after 7.0517 hours
+rpict: 42513873 rays, 96.05% done after 8.0592 hours
+rpict: 48150146 rays, 98.37% done after 9.0717 hours
+rpict: 52057388 rays, 100.00% done after 9.7867 hours
+**************
+*** PID  9362: rpict -t 3600 -e illum.err -dt 0.050000 -dc 0.500000 -ds 0.250000 -dr 2 -dp 512 -lr 6 -lw 0.005000 -av .2 .2 .2 -ab 1 -aa .2 -ad 400 -as 200 -ar 100 -af illum.amb -ps 1 -dj .7 -st 0 -sj 1 -ro /usr/people/greg/ray/pic/illumfurn.back.raw illumfurn.oct 
+
+rpict: 7147 rays, 57.80% done after 0.0083 hours
+rpict: 6054487 rays, 60.21% done after 1.0478 hours
+rpict: 8701262 rays, 61.30% done after 2.0931 hours
+rpict: 12645359 rays, 62.98% done after 3.1089 hours
+rpict: 18254848 rays, 65.25% done after 4.1178 hours
+rpict: 24275679 rays, 67.92% done after 5.1325 hours
+rpict: 30230356 rays, 70.51% done after 6.1344 hours
+rpict: 36364925 rays, 73.14% done after 7.1394 hours
+rpict: 42109452 rays, 75.54% done after 8.1536 hours
+rpict: 47739698 rays, 77.95% done after 9.1628 hours
+rpict: 53380770 rays, 80.44% done after 10.1772 hours
+rpict: 59020248 rays, 83.03% done after 11.1878 hours
+rpict: 64615225 rays, 85.62% done after 12.2053 hours
+rpict: 70192397 rays, 88.07% done after 13.2186 hours
+rpict: 75752379 rays, 90.56% done after 14.2278 hours
+rpict: 81100845 rays, 93.15% done after 15.2278 hours
+rpict: 86652344 rays, 95.60% done after 16.2414 hours
+rpict: 92258406 rays, 97.91% done after 17.2428 hours
+rpict: 97079187 rays, 100.00% done after 18.1089 hours

@@ -1,0 +1,87 @@
+RA_XYZE(1)                                                          RA_XYZE(1)
+
+
+
+NNAAMMEE
+       ra_xyze - convert between RADIANCE RGBE and XYZE formats
+
+SSYYNNOOPPSSIISS
+       rraa__xxyyzzee [ --rr ][ --ee eexxppoossuurree ][ --oo ][ --cc | --uu ][ --pp xxrr yyrr xxgg yygg xxbb yybb xxww
+       yyww ] [ iinnppuutt [ oouuttppuutt ] ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _R_a___x_y_z_e converts between RADIANCE  RGBE  (red,green,blue,exponent)  and
+       XYZE (CIE X,Y,Z,exponent) formats.  The _-_e option specifies an exposure
+       compensation, which may be given as a decimal multiplier or in  f-stops
+       (powers  of two).  The _-_o option may be used to specify original units,
+       to which the exposure compensation is applied.  Otherwise,  the  multi-
+       plier  is in addition to any previous exposure adjustment.  By default,
+       _r_a___x_y_z_e produces a flat XYZE RADIANCE picture file  from  any  type  of
+       RADIANCE  input picture.  To override these defaults, the _-_c option may
+       be used to specify run-length encoded output, or the _-_u option  may  be
+       used to specify a flat output.
+
+       The  _-_r option causes _r_a___x_y_z_e to produce a run-length encoded RGBE file
+       instead, unless _-_u is given, also, when it will  produce  a  flat  RGBE
+       file.   The _-_p option may be used to override the standard RADIANCE RGB
+       primary colors to tailor the image for a particular  output  device  or
+       representation.   The eight floating-point arguments to this option are
+       the 1931 CIE (x,y) chromaticity coordinates of the three RGB  primaries
+       plus  the  white  point,  in  that  order.   The  new primaries will be
+       recorded in the header of the output file, so that the original  infor-
+       mation  may  be  fully  recovered  later.  It is not necessary that the
+       input file by in XYZE format.  Th _-_r option may therefore  be  used  to
+       convert  from  one  RGB  primary representation to another using the _-_p
+       option.
+
+       If the output file is missing, the standard output  is  used.   If  the
+       input file is missing as well, the standard input is used.
+
+NNOOTTEESS
+       The  CIE  standard  used is the 1931 2-degree observer, and the correct
+       output representation relies on the original RADIANCE input description
+       being defined properly in terms of the standard RADIANCE RGB primaries,
+       whose CIE (x,y) chromaticity values are defined in the header  file  in
+       src/common/color.h.   In  this same file is a standard for the luminous
+       efficacy of white light (WHTEFFICACY), which is used  as  a  conversion
+       between  lumens  and  watts  throughout  RADIANCE.  This same factor is
+       applied by _r_a___x_y_z_e when converting between the radiometric units of the
+       RGBE  format and the photometric units of the XYZE format.  The purpose
+       of this factor is to ensure that the Y component of the CIE representa-
+       tion is luminance in units of candelas/meter^2.
+
+       Most  of  the  RADIANCE picture filters should work uniformly on either
+       RGBE or XYZE files, so it is not necessary to convert back to RGBE for-
+       mat  except  for  conversion or display, in which case the correct pri-
+       maries for the chosen output device should be  specified  with  the  _-_p
+       option if they are known.
+
+EEXXAAMMPPLLEESS
+       To  convert RGBE output from _r_p_i_c_t_(_1_) into run-length encoded XYZE for-
+       mat:
+
+         rpict [options] scene.oct | ra_xyze -c > scene_xyz.hdr
+
+       To prepare a RADIANCE picture for display on a calibrated NTSC monitor:
+
+         ra_xyze  -r  -p  .670  .330  .210  .710 .140 .080 .333 .333 stand.hdr
+         ntsc.hdr
+
+AAUUTTHHOORR
+       Greg Ward
+
+BBUUGGSS
+       Any color correction applied to the original image is  not  removed  or
+       translated by _r_a___x_y_z_e_, and it may result in color shifts in the output.
+       If color preservation is important and the correction is  unwanted,  it
+       is  best  to remove it with _p_f_i_l_t_(_1_) using the _-_e_r_, _-_e_g and _-_e_b options
+       first.  (Simply look at the header and apply the  reciprocal  primaries
+       of  all  COLORCORR=  lines multiplied together.)  Better still, get the
+       picture before color correction is applied.
+
+SSEEEE AALLSSOO
+       pfilt(1), ra_rgbe(1), rpict(1)
+
+
+
+RADIANCE                            5/30/96                         RA_XYZE(1)

@@ -1,0 +1,55 @@
+RAN2TIFF(1)                                                        RAN2TIFF(1)
+
+
+
+NNAAMMEE
+       ran2tiff - expose and convert a RADIANCE animation to TIFF frames
+
+SSYYNNOOPPSSIISS
+       rraann22ttiiffff  [  --WW  pprreevv__ffrraammee__wwtt ][ --HH hhiissttoo ][ --DD ddiirr ] [ ppccoonndd ooppttss ] [
+       rraa__ttiiffff ooppttss ] ffrraammee11..hhddrr ffrraammee22..hhddrr ....
+
+DDEESSCCRRIIPPTTIIOONN
+       _R_a_n_2_t_i_f_f takes an animated sequence of Radiance pictures  and  converts
+       them  by  calling  _p_c_o_n_d_(_1_)  and _r_a___t_i_f_f_(_1_) in such a way that exposure
+       changes gradually from one frame to the next.  It accomplishes this  by
+       computing  a  histogram  for each image and blending it with a weighted
+       histogram from the previous frame, where the weight is set  by  the  _-_W
+       option, or 0.9 by default.  A value of 0.5 would mean that the previous
+       frame carries 1/2 the weight of the current one, and the  frame  before
+       that 1/4, 1/8 before that, and so on.
+
+       The  _-_H option specifies a histogram file to be used to ensure continu-
+       ous exposure between the current sequence and one before  it.   If  the
+       file  does  not exist, it will be created at the end of the conversion.
+       If it does exist, its contents will be used as the histogram at the end
+       of the previous sequence.
+
+       The  _-_D  option  may  be  used  to  specify an output directory for the
+       resulting TIFF frames.  Otherwise, the current directory will be  used.
+       The  output  file  names will correspond to the input names, but with a
+       ".tif" suffix.
+
+       Ran2tiff also accepts the  standard  options  for  _p_c_o_n_d  and  _r_a___t_i_f_f_,
+       though output to LogLuv TIFF formats is not supported.  (There would be
+       no point in adjusting the exposure if the output were HDR.)
+
+EEXXAAMMPPLLEE
+       To convert a sequence of frames using a rapid human  exposure  response
+       and LZW compression on the output:
+
+         ran2tiff -W 0.7 -h -z frame*.hdr
+
+       Similar  to  _f_i_e_l_d_c_o_m_b_(_1_)_,  this program works well with the "TRANSFER"
+       facility of _r_a_n_i_m_a_t_e_(_1_)_.
+
+AAUUTTHHOORR
+       Greg Ward
+
+SSEEEE AALLSSOO
+       fieldcomb(1), getinfo(1), pcond(1),  pfilt(1),  phisto(1),  ra_tiff(1),
+       ranimate(1), rpict(1)
+
+
+
+RADIANCE                           9/16/2005                       RAN2TIFF(1)

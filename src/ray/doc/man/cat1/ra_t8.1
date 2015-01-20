@@ -1,0 +1,45 @@
+RA_T8(1)                                                              RA_T8(1)
+
+
+
+NNAAMMEE
+       ra_t8 - convert RADIANCE picture to/from Targa 8-bit image file
+
+SSYYNNOOPPSSIISS
+       rraa__tt88 [ --dd ][ --bb ][ --cc nnccoolloorrss ][ --gg ggaammmmaa ][ --ee ++//--ssttooppss ][ --nn ssaammppffaacc
+       ] iinnppuutt [ oouuttppuutt ]
+       rraa__tt88 --rr [ --gg ggaammmmaa ][ --ee ++//--ssttooppss ] [ iinnppuutt [ oouuttppuutt ] ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _R_a___t_8 converts between RADIANCE  and  Targa  8-bit  color-mapped  image
+       files  (type 1 in Targa's documentation).  In the default mode, a RADI-
+       ANCE picture is converted to a color-mapped Targa file of the same hor-
+       izontal  and  vertical dimensions with 8-bits per pixel.  The _-_d option
+       turns off dithering.  The _-_b option converts the  image  to  black  and
+       white.   Only  with this option can the input be taken from stdin.  The
+       _-_c option allows fewer than 256 colors.  The _-_g  option  specifies  the
+       exponent  used in gamma correction; the default value is 2.2.  An expo-
+       nent of 1.0 turns gamma correction off.  The  _-_e  option  specifies  an
+       exposure  compensation  in f-stops (powers of two).  Only integer stops
+       are allowed, for efficiency.  The _-_n option specifies a sampling factor
+       for  neural network color quantization.  This value should be between 1
+       and 80, where 1 takes the longest and  produces  the  best  results  in
+       small  areas  of  the image.  If no value is given, a faster median cut
+       algorithm is used.  The _-_r option invokes a reverse conversion, from an
+       8-bit Targa file to a RADIANCE picture.  If the output file is missing,
+       the standard output is used.
+
+AAUUTTHHOORRSS
+       Greg Ward
+       Anthony Dekker provided the code for neural network color quantization
+
+BBUUGGSS
+       Run-length encoded files can be read but not written with this program.
+
+SSEEEE AALLSSOO
+       pfilt(1),   ra_bmp(1),   ra_bn(1),   ra_ppm(1),  ra_pr(1),  ra_pr24(1),
+       ra_t16(1), ra_tiff(1), ximage(1)
+
+
+
+RADIANCE                            5/30/95                           RA_T8(1)

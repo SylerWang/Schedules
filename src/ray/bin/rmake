@@ -1,0 +1,9 @@
+#!/bin/sh
+exec make "SPECIAL=ogl" \
+	"OPT=-O0" \
+	"MACH=-DBSD -DNOSTEREO -Dfreebsd -I/usr/X11R6/include -L/usr/X11R6/lib" \
+	ARCH=Intel "COMPAT=" \
+	INSTDIR=/Users/german/Documents/RadiosityRadiance/src/ray/bin \
+	LIBDIR=/Users/german/Documents/RadiosityRadiance/src/ray/lib \
+	ESUFFIX= \
+	CC=cc CONFIGURE_ARCH=i386 "$@" -f Rmakefile

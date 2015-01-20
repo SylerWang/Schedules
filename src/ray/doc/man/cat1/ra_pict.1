@@ -1,0 +1,56 @@
+RA_PICT(1)                                                          RA_PICT(1)
+
+
+
+NNAAMMEE
+       ra_pict - convert Radiance pictures to Macintosh PICT files
+
+SSYYNNOOPPSSIISS
+       rraa__ppiicctt [ --ee ++//-- _s_t_o_p_s ] [ --vv ] [ --gg _g_a_m_m_a ] [ _i_n_f_i_l_e [ _o_u_t_f_i_l_e ]]
+
+DDEESSCCRRIIPPTTIIOONN
+       RRaa__ppiicctt converts a Radiance picture, as produced by rrppiicctt (1) to a Mac-
+       intosh PICT file. The picture will be a 24 bit PICT 2 picture, using  a
+       single bit map (DirectRect).
+
+OOPPTTIIOONNSS
+       --gg _g_a_m_m_a  This sets an explict gamma correction for the image. If it is
+                 not specified, the default value of 2.0 is used.
+
+       --vv        Invokes verbose mode, and gives line on standard error giving
+                 the size of the picture and the gamma correction used.
+
+       --ee ++//-- _s_t_o_p_s
+                 Adjusts the exposure by stops.
+
+       _i_n_f_i_l_e    Specifies the file to read the picture from. If none is spec-
+                 ified, it takes it from standard input. If standard input  is
+                 used, then the picture is sent to standard output.
+
+       _o_u_t_f_i_l_e   Specifies the file to send the PICT file to. If none is spec-
+                 ified, it is sent to standard output.
+
+EEXXAAMMPPLLEESS
+           ra_pict mypict.hdr mypict.pict
+
+       Will convert the Radiance picture mypict.hdr, giving the Macintosh PICT
+       mypict.pict.
+
+           ra_pict -g 2.2 mypict.hdr mypict.pict
+
+       Will convert the file using a gamma of 2.2.
+
+SSEEEE AALLSSOO
+       rpict(1)
+
+BBUUGGSS
+       Does  not yet do Macintosh PICT to Radiance PIC, as this PICT files are
+       a lot more complex than just one bit map. This is left as  an  exercise
+       for the reader :-)
+
+AAUUTTHHOORR
+       Russell Street
+
+
+
+RADIANCE                           11/15/93                         RA_PICT(1)

@@ -1,0 +1,50 @@
+TABFUNC(1)                                                          TABFUNC(1)
+
+
+
+NNAAMMEE
+       tabfunc - convert table to functions for rcalc, etc.
+
+SSYYNNOOPPSSIISS
+       ttaabbffuunncc [ --ii ] func1 [func2 ..]
+
+DDEESSCCRRIIPPTTIIOONN
+       _T_a_b_f_u_n_c  reads  a table of numbers from the standard input and converts
+       it to an expression suitable for _i_c_a_l_c_(_1_)_, _r_c_a_l_c_(_1_) and their  cousins.
+       The  input must consist of a M x N matrix of real numbers, with exactly
+       one row per line.  The number of columns must always  be  the  same  in
+       each  line, separated by whitespace and/or commas, with no missing val-
+       ues.  The first column is always the independent variable, whose  value
+       indexes  all  of  the  other  elements.  This value does not need to be
+       evenly spaced, but it must be either monotonically increasing or  mono-
+       tonically decreasing.  (I.e. it cannot go up and then down, or down and
+       then up.)  Maximum input line width is 4096 characters and the  maximum
+       number  of data rows is 1024.  Input lines not beginning with a numeri-
+       cal value will be silently ignored.
+
+       The command-line arguments  given  to  _t_a_b_f_u_n_c  are  the  names  to  be
+       assigned  to  each column.  _T_a_b_f_u_n_c then produces a single function for
+       each column given.  If there are some columns which should be  skipped,
+       the  dummy name "0" may be given instead of a valid identifier.  (It is
+       not necessary to specify a dummy name for extra columns at the  end  of
+       the matrix.)
+
+       The  _-_i option causes _t_a_b_f_u_n_c to produce a description that will inter-
+       polate values in between those given for the  independent  variable  on
+       the input.
+
+EEXXAAMMPPLLEE
+       To  convert  a  small data table and feed it to rcalc for some calcula-
+       tion:
+
+         rcalc -e `tabfunc f1 f2 < table.dat` -f com.cal
+
+AAUUTTHHOORR
+       Greg Ward
+
+SSEEEE AALLSSOO
+       cnt(1), icalc(1), neaten(1), rcalc(1), rlam(1), total(1)
+
+
+
+RADIANCE                            10/8/97                         TABFUNC(1)

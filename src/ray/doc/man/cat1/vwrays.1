@@ -1,0 +1,92 @@
+VWRAYS(1)                                                            VWRAYS(1)
+
+
+
+NNAAMMEE
+       vwrays - compute rays for a given picture or view
+
+SSYYNNOOPPSSIISS
+       vvwwrraayyss [[ --ii --ff{{aa||ff||dd}} || --dd ]] { vviieeww ooppttss ....  | ppiiccttuurree [[zzbbuuff]] }
+
+DDEESSCCRRIIPPTTIIOONN
+       _V_w_r_a_y_s  takes a picture or view specification and computes the ray ori-
+       gin and direction corresponding to  each  pixel  in  the  image.   This
+       information  may  then be passed to _r_t_r_a_c_e_(_1_) to perform other calcula-
+       tions.  If a given pixel has no corresponding ray (because it  is  out-
+       side the legal view boundaries), then six zero values are sent instead.
+
+       The _-_i option may be used to specify desired  pixel  positions  on  the
+       standard  input rather than generating all the pixels for a given view.
+
+       The _-_f option may be used to set the record format to  something  other
+       than  the default ASCII.  Using raw float or double records for example
+       can reduce the  time  requirements  of  transferring  and  interpreting
+       information in _r_t_r_a_c_e_.
+
+       View  options  may  be  any  combination  of  standard  view parameters
+       described in the _r_p_i_c_t_(_1_) manual page, including input from a view file
+       with  the  _-_v_f option.  Additionally, the target X and Y dimensions may
+       be specified with _-_x and _-_y options, and the pixel aspect ratio may  be
+       given  with  _-_p_a_.   The  default  dimensions  are 512x512, with a pixel
+       aspect ratio of 1.0.  Just as in _r_p_i_c_t_, the X or the Y  dimension  will
+       be reduced if necessary to best match the specified pixel aspect ratio,
+       unless this ratio is set to zero.  The _-_p_j option may be used to jitter
+       samples.  The default value of 0 turns off ray jittering.
+
+       If  the  _-_d option is given, then _v_w_r_a_y_s just prints the computed image
+       dimensions, which are based on the view aspect  and  the  pixel  aspect
+       ratio  just  described.  The _-_l_d switch will also be printed, with _-_l_d_+
+       if the view file has an aft clipping plane, and _-_l_d_-  otherwise.   This
+       is useful for passing options to the _r_t_r_a_c_e command line.  (See below.)
+
+       If the view contains an aft clipping plane _(_-_v_a option), then the  mag-
+       nitudes  of the ray directions will equal the maximum distance for each
+       pixel, which will be interpreted correctly  by  _r_t_r_a_c_e  with  the  _-_l_d_+
+       option.   Note  that this option should not be given unless there is an
+       aft clipping plane, since the ray direction vectors will be  normalized
+       otherwise, which would produce a uniform clipping distance of 1.
+
+       If  a  picture  is  given on the command line rather than a set of view
+       options, then the view and image dimensions are taken from the  picture
+       file,  and  the  reported ray origins and directions will exactly match
+       the center of each pixel in the picture.
+
+       If a depth buffer file is given  as  well,  then  _v_w_r_a_y_s  computes  the
+       intersection  point of each pixel ray (equal to the ray origin plus the
+       depth times the ray direction), and reports this  instead  of  the  ray
+       origin.   The reported ray direction will also be reversed.  The inter-
+       pretation of this data is an image of origins and directions for  light
+       rays leaving the scene surfaces to strike each pixel.
+
+EEXXAAMMPPLLEESS
+       To  compute  the ray intersection points and returned directions corre-
+       sponding to a picture and its depth buffer:
+
+         vwrays scene_v2.hdr scene_v2.zbf > scene_v2.pts
+
+       To determine what the dimensions of a given view would be:
+
+         vwrays -d -vf myview.vf -x 2048 -y 2048
+
+       To generate a RADIANCE picture using _r_t_r_a_c_e instead of _r_p_i_c_t_:
+
+         vwrays -ff -vf view1.vf -x 1024 -y  1024  |  rtrace  `vwrays  -d  -vf
+         view1.vf -x 1024 -y 1024` -ffc scene.oct > view1.hdr
+
+AAUUTTHHOORR
+       Greg Ward Larson
+
+AACCKKNNOOWWLLEEDDGGMMEENNTT
+       This work was supported by Silicon Graphics, Inc.
+
+BBUUGGSS
+       Although  _v_w_r_a_y_s can reproduce any pixel ordering (i.e., any image ori-
+       entation) when given a rendered picture, it will only produce  standard
+       scanline-ordered rays when given a set of view parameters.
+
+SSEEEE AALLSSOO
+       rcalc(1), rpict(1), rtcontrib(1), rtrace(1)
+
+
+
+RADIANCE                            1/15/99                          VWRAYS(1)

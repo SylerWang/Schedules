@@ -1,0 +1,174 @@
+MKILLUM(1)                                                          MKILLUM(1)
+
+
+
+NNAAMMEE
+       mkillum - compute illum sources for a RADIANCE scene
+
+SSYYNNOOPPSSIISS
+       mmkkiilllluumm [ --nn nnpprrooccss ][ rrttrraaccee ooppttiioonnss ] ooccttrreeee [[ << ffiillee .... ]]
+       mmkkiilllluumm [[ rrttrraaccee ooppttiioonnss ]] --ddeeffaauullttss
+
+DDEESSCCRRIIPPTTIIOONN
+       _M_k_i_l_l_u_m  takes  a prepared RADIANCE scene description and an octree and
+       computes light source distributions for each  surface,  replacing  them
+       with  secondary  sources whose contributions can be computed more effi-
+       ciently by _r_p_i_c_t_(_1_) and _r_v_u_(_1_)_.  This type of optimization is most use-
+       ful  for  windows and skylights which represent concentrated sources of
+       indirect illumination.  _M_k_i_l_l_u_m  is  not  appropriate  for  very  large
+       sources  or  sources  with highly directional distributions.  These are
+       best handled respectively by the ambient calculation and the  secondary
+       source types in RADIANCE.
+
+       If the _-_n option is specified with a value greater than 1, multiple ray
+       tracing processes will be used to accelerate computation  on  a  shared
+       memory  machine.  Note that there is no benefit to using more processes
+       than there are local CPUs available to do the work.
+
+       Remaining arguments to _m_k_i_l_l_u_m are interpreted as rendering options for
+       _r_t_r_a_c_e_(_1_)_,  to  compute the light distributions for the input surfaces.
+       These surfaces can be any combination of polygons, spheres  and  rings.
+       Other  surfaces  may be included, but _m_k_i_l_l_u_m cannot compute their dis-
+       tributions.
+
+       By default, _m_k_i_l_l_u_m reads from its standard input  and  writes  to  its
+       standard  output.   It is possible to specify multiple input files in a
+       somewhat unconventional fashion by placing a lesser-than  symbol  ('<')
+       before  the file names.  (Note that this character must be escaped from
+       most shells.)  This is necessary so _m_k_i_l_l_u_m can tell where the  render-
+       ing arguments end and its own input files begin.
+
+VVAARRIIAABBLLEESS
+       _M_k_i_l_l_u_m  has  a number of parameters that can be changed by comments in
+       the input file of the form:
+
+            #@mkillum variable=value option switch{+|-} ..
+
+       String or integer variables are separated  from  their  values  by  the
+       equals  sign  ('=').   Options appear by themselves.  Switches are fol-
+       lowed either by a plus sign to turn them on or a  minus  sign  to  turn
+       them off.
+
+       Parameters are usually changed many times within the same input file to
+       tailor the calculation, specify different labels and so on.  The param-
+       eters and their meanings are described below.
+
+       oo_=_s_t_r_i_n_g  Set  the  output  file  to _s_t_r_i_n_g_.  All subsequent scene data
+                 will be sent to this file.  If this appears in the first com-
+                 ment  in the input, nothing will be sent to the standard out-
+                 put.  Note that this is not recommended when running  _m_k_i_l_l_u_m
+                 from  _r_a_d_(_1_)_,  which expects the output to be on the standard
+                 output.
+
+       mm_=_s_t_r_i_n_g  Set the material identifier to _s_t_r_i_n_g_.   This  name  will  be
+                 used  not  only as the new surface modifier, but it will also
+                 be used to name the distribution pattern and the data  files.
+                 The distribution name will be _s_t_r_i_n_g plus the suffix ".dist".
+                 The data file will be named _s_t_r_i_n_g plus possibly  an  integer
+                 plus  a  ".dat"  suffix.   The integer is used to avoid acci-
+                 dently writing over an existing  file.   If  overwriting  the
+                 file is desired, use the _f variable below.
+
+       ff_=_s_t_r_i_n_g  Set the data file name to _s_t_r_i_n_g_.  The next data file will be
+                 given this name plus a ".dat" suffix.  Subsequent files  will
+                 be  named  _s_t_r_i_n_g plus an integer plus the ".dat" suffix.  An
+                 existing file with the same name  will  be  clobbered.   This
+                 variable  may  be  unset by leaving off the value.  (See also
+                 the _m variable above.)
+
+       aa         Produce secondary sources for all  of  the  surfaces  in  the
+                 input.  This is the default.
+
+       ee_=_s_t_r_i_n_g  Produce secondary sources for all surfaces except those modi-
+                 fied by _s_t_r_i_n_g_.  Surfaces modified by _s_t_r_i_n_g will  be  passed
+                 to the output unchanged.
+
+       ii_=_s_t_r_i_n_g  Only  produce  secondary  sources  for  surfaces  modified by
+                 _s_t_r_i_n_g_.
+
+       nn         Do not produce any secondary  sources.   All  input  will  be
+                 passed  to  the  output  unaffected, except any void surfaces
+                 will be removed.
+
+       bb_=_r_e_a_l    Do not produce a secondary source for a surface if its  aver-
+                 age brightness (radiance) is less than the value _r_e_a_l_.
+
+       cc_=_{_d_|_a_|_n_} Use  color  information according to the given character.  If
+                 the character is _d_, then color information will  be  used  in
+                 three  separate data files and the distribution will be fully
+                 characterized in terms of color.  If the character is _a_, then
+                 only  the average color is computed and the distribution will
+                 not contain color information.  If the character is  _n_,  even
+                 the average distribution color will be thrown away, producing
+                 secondary sources that are completely uncolored.  This may be
+                 desirable from a color-balancing point of view.
+
+       dd_=_i_n_t_e_g_e_r Set  the  number of direction samples per projected steradian
+                 to _i_n_t_e_g_e_r_.  The number of directions stored in  the  associ-
+                 ated  data  file will be approximately this number multiplied
+                 by pi for polygons and rings, and by  4pi  for  spheres.   If
+                 _i_n_t_e_g_e_r is zero, then a diffuse source is assumed and no dis-
+                 tribution is created.
+
+       dd_=_s_t_r_i_n_g  Set the surface Bidirectional Scattering  Distribution  Func-
+                 tion  (BSDF)  to  the  given file.  The RADIANCE library path
+                 will be searched if the file does not begin with a '.' or '~'
+                 character.  This file must contain an LBNL Window 6 XML spec-
+                 ification of a valid BSDF for the given surface, and all rays
+                 will  be  interpreted through this function.  The orientation
+                 of the BSDF may be controlled with the _u  setting,  described
+                 below.   The  thickness of the surface may be controlled with
+                 the _t setting.  If this variable has no setting or an integer
+                 is specified, _m_k_i_l_l_u_m returns to the default behavior of com-
+                 puting the output distribution directly.
+
+       ss_=_i_n_t_e_g_e_r Set the number of ray samples per direction to _i_n_t_e_g_e_r_.  This
+                 variable  affects  the accuracy of the distribution value for
+                 each direction as well as the computation time for _m_k_i_l_l_u_m_.
+
+       ll{{++||--}}    Switch between light sources  and  illum  sources.   If  this
+                 switch  is  enabled  _(_l_+_)_, _m_k_i_l_l_u_m will use the material type
+                 "light" to represent surfaces.   If  disabled  _(_l_-_)_,  _m_k_i_l_l_u_m
+                 will  use  the  material  type "illum" with the input surface
+                 modifier as its alternate material.  The default is _l_-_.
+
+       uu_=_[_+_|_-_]_{_X_|_Y_|_Z_}
+                 The given axis will be considered "up" for  the  purposes  of
+                 interpreting  BSDF  data  specified with the _d variable.  The
+                 BSDF will be reoriented relative to the surface as  necessary
+                 to  keep  the  up  vector in the vertical plane that contains
+                 this axis and the surface normal, corresponding to an azimuth
+                 of 90 degrees.  The default up vector is +Z.
+
+       tt_=_r_e_a_l    Set the surface thickness to _r_e_a_l in world coordinates.  This
+                 value is used for determining where to start rays  that  need
+                 to begin on the opposite side of the surface, specifically to
+                 compute the incoming distribution  for  a  BSDF  computation.
+                 The default value is 0.
+
+EEXXAAMMPPLLEESS
+       The  following  command  generates illum's corresponding to geometry in
+       the files "it1.rad" and "it2.rad":
+
+          mkillum -ab 2 -ad 1024 -av .1 .1 .1 basic.oct "<" it1.rad it2.rad  >
+          illums.rad
+
+       The  output  file "illums.rad" would then be combined with the original
+       scene geometry to create a more easily rendered composite.
+
+EENNVVIIRROONNMMEENNTT
+       RAYPATH        the directories to check for auxiliary files.
+
+AAUUTTHHOORR
+       Greg Ward
+
+AACCKKNNOOWWLLEEDDGGEEMMEENNTT
+       Work on this program was initiated and sponsored by the LESO  group  at
+       EPFL in Switzerland.
+
+SSEEEE AALLSSOO
+       oconv(1), rad(1), rpict(1), rtrace(1), rvu(1)
+
+
+
+RADIANCE                            10/6/95                         MKILLUM(1)

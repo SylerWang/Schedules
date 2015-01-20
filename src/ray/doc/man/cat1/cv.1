@@ -1,0 +1,32 @@
+CV(1)                                                                    CV(1)
+
+
+
+NNAAMMEE
+       cv - convert between metafile formats
+
+SSYYNNOOPPSSIISS
+       ccvv [ -r ][ file ..  ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _C_v  reads each human readable metafile _f_i_l_e in sequence and converts it
+       to a binary form.  If the option _-_r is specified, the  reverse  conver-
+       sion is performed.
+
+       If no input files are specified, the standard input is read.
+
+EEXXAAMMPPLLEE
+       To  convert  the binary file meta.bin to its human-readable equivalent,
+       and put the result in meta.human
+
+         cv -r meta.bin > meta.human
+
+AAUUTTHHOORR
+       Greg Ward
+
+SSEEEE AALLSSOO
+       meta(3), metafile(5), pexpand(1), psort(1)
+
+
+
+RADIANCE                            6/24/98                              CV(1)

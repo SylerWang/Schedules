@@ -1,0 +1,83 @@
+PDFBLUR(1)                                                          PDFBLUR(1)
+
+
+
+NNAAMMEE
+       pdfblur - generate views for depth-of-field blurring
+
+SSYYNNOOPPSSIISS
+       ppddffbblluurr aappeerrttuurree nnssaammpp vviieewwffiillee
+
+DDEESSCCRRIIPPTTIIOONN
+       _P_d_f_b_l_u_r  takes  the given _v_i_e_w_f_i_l_e and computes _n_s_a_m_p views based on an
+       aperture diameter of _a_p_e_r_t_u_r_e (in world coordinate units) and  a  focal
+       distance  equal  to  the length of the _-_v_d view direction vector.  When
+       rendered and averaged together, these views will result  in  a  picture
+       with  the  specified depth of field.  Either _p_i_n_t_e_r_p_(_1_) or _r_p_i_c_t_(_1_) may
+       be called to do the actual work.  (The  given  _v_i_e_w_f_i_l_e  must  also  be
+       passed  on  the command line to the chosen renderer, since _p_d_f_b_l_u_r pro-
+       vides supplemental view specifications only.)
+
+       For _p_i_n_t_e_r_p_, feed the output of _p_d_f_b_l_u_r to the standard input  of  _p_i_n_-
+       _t_e_r_p  and apply the _-_B option to blur views together.  In most cases, a
+       single picture with z-buffer is all that is required to get a satisfac-
+       tory  result, though the perfectionist may wish to apply three pictures
+       arranged in a triangle about the aperature, or alternatively apply  the
+       _-_f_f  option  together  with the _-_f_r option of _p_i_n_t_e_r_p_.  (The latter may
+       actually work out to be faster, since rendering three views takes three
+       times  as  long as a single view, and the _-_f_r option will end up recom-
+       puting relatively few pixels by comparison.)
+
+       To use _p_d_f_b_l_u_r with _r_p_i_c_t_, apply the _-_S option to indicate a  rendering
+       sequence, and set the _-_o option with a formatted file name to save mul-
+       tiple output pictures.  When all the renderings are  finished,  combine
+       them  with  the  _p_c_o_m_b_(_1_)  program,  using  appropriate scalefactors to
+       achieve an average.  Note that using _r_p_i_c_t is MUCH more expensive  than
+       using  _p_i_n_t_e_r_p_, and it is only recommended if the scene and application
+       absolutely demand it (e.g. there is prominent refraction that  must  be
+       modeled accurately).
+
+       For  both  _p_i_n_t_e_r_p and _r_p_i_c_t_, the computation time will be proportional
+       to the number of views from _p_d_f_b_l_u_r_.  We have  found  a  _n_s_a_m_p  setting
+       somewhere  between 5 and 10 to be adequate for most images.  Relatively
+       larger values are appropriate for larger aperatures.
+
+       The _-_p_d option of _r_p_i_c_t may be used instead or in combination  with  or
+       instead  of _p_d_f_b_l_u_r to blur depth-of-field.  If used in combination, it
+       is best to set the _-_p_d option to the overall _a_p_e_r_t_u_r_e divided by  _n_s_a_m_p
+       to minimize ghosting in the output.
+
+       To  simulate a particular camera's aperture, divide the focal length of
+       the lens by the f-number, then convert to the corresponding world coor-
+       dinate  units.   For  example,  if  you wish to simulate a 50mm lens at
+       f/2.0 in a scene modeled in meters, then you divide 50mm by 2.0 to  get
+       25mm, which corresponds to an effective aperture of 0.025 meters.
+
+EEXXAAMMPPLLEESS
+       To  use _p_i_n_t_e_r_p to simulate an aperture of 0.5 inches on a lens focused
+       at a distance of 57 inches:
+
+         rpict -vf myview -x 640 -y 480 -z orig.zbf scene.oct > orig.hdr
+         pdfblur 0.5 57 8 orig.hdr | pinterp -B -vf orig.hdr  -x  640  -y  480
+         orig.hdr orig.zbf > blurry.hdr
+
+       To use _r_p_i_c_t exclusively to do the same:
+
+         pdfblur  .5  57  5  myview  |  rpict -S 1 -vf myview -x 640 -y 480 -o
+         view%d.hdr scene.oct
+         pcomb -s .2 view1.hdr -s .2 view2.hdr -s .2 view3.hdr -s .2 view4.hdr
+         -s .2 view5.hdr > blurry.hdr
+
+AAUUTTHHOORR
+       Greg Ward
+
+BBUUGGSS
+       This program really only works with perspective views.
+
+SSEEEE AALLSSOO
+       pcomb(1),   pinterp(1),   pmblur(1),  pmdblur(1),  rcalc(1),  rpict(1),
+       vwright(1)
+
+
+
+RADIANCE                            1/24/96                         PDFBLUR(1)

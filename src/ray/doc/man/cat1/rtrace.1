@@ -1,0 +1,456 @@
+RTRACE(1)                                                            RTRACE(1)
+
+
+
+NNAAMMEE
+       rtrace - trace rays in RADIANCE scene
+
+SSYYNNOOPPSSIISS
+       rrttrraaccee [ ooppttiioonnss ] [ $$EEVVAARR ] [ @@ffiillee ] ooccttrreeee
+       rrttrraaccee [[ ooppttiioonnss ]] --ddeeffaauullttss
+
+DDEESSCCRRIIPPTTIIOONN
+       _R_t_r_a_c_e  traces  rays from the standard input through the RADIANCE scene
+       given by _o_c_t_r_e_e and sends the results to  the  standard  output.   (The
+       octree  may  be given as the output of a command enclosed in quotes and
+       preceded by a `!'.)  Input for each ray is:
+
+            xorg yorg zorg xdir ydir zdir
+
+       If the direction vector is (0,0,0), a bogus record is printed  and  the
+       output  is flushed if the _-_x value is unset or zero.  (See the notes on
+       this option below.)  This may be useful for programs that run _r_t_r_a_c_e as
+       a  separate  process.   In  the second form, the default values for the
+       options (modified by those options present) are printed  with  a  brief
+       explanation.
+
+       Options  may be given on the command line and/or read from the environ-
+       ment and/or read from a file.  A command argument beginning with a dol-
+       lar  sign  ('$')  is  immediately replaced by the contents of the given
+       environment variable.  A command argument beginning  with  an  at  sign
+       ('@')  is immediately replaced by the contents of the given file.  Most
+       options are followed by one or more arguments, which must be  separated
+       from  the option and each other by white space.  The exceptions to this
+       rule are the boolean options.  Normally, the appearance  of  a  boolean
+       option  causes  a feature to be "toggled", that is switched from off to
+       on or on to off depending on its previous state.  Boolean  options  may
+       also be set explicitly by following them immediately with a '+' or '-',
+       meaning on or off, respectively.  Synonyms for '+' are any of the char-
+       acters "yYtT1", and synonyms for '-' are any of the characters "nNfF0".
+       All other characters will generate an error.
+
+       --ff_i_o      Format input according to the character _i and output  accord-
+                 ing  to  the  character  _o_.  _R_t_r_a_c_e understands the following
+                 input and output formats:  'a' for ascii, 'f' for single-pre-
+                 cision  floating point, and 'd' for double-precision floating
+                 point.  In addition to these three choices, the character 'c'
+                 may  be used to denote 4-byte floating point (Radiance) color
+                 format for the output of values only _(_-_o_v option, below).  If
+                 the output character is missing, the input format is used.
+
+                 Note that there is no space between this option and its argu-
+                 ment.
+
+       --oo_s_p_e_c    Produce output fields  according  to  _s_p_e_c_.   Characters  are
+                 interpreted as follows:
+
+                 o    origin (input)
+
+                 d    direction (normalized)
+
+                 v    value (radiance)
+
+                 V    contribution (radiance)
+
+                 w    weight
+
+                 W    color coefficient
+
+                 l    effective length of ray
+
+                 L    first intersection distance
+
+                 c    local (u,v) coordinates
+
+                 p    point of intersection
+
+                 n    normal at intersection (perturbed)
+
+                 N    normal at intersection (unperturbed)
+
+                 s    surface name
+
+                 m    modifier name
+
+                 M    material name
+
+                 ~    tilde (end of trace marker)
+
+                 If  the letter 't' appears in _s_p_e_c_, then the fields following
+                 will be printed for every ray  traced,  not  just  the  final
+                 result.   If  the capital letter 'T' is given instead of 't',
+                 then all rays will be reported, including shadow testing rays
+                 to light sources.  Spawned rays are indented one tab for each
+                 level.  The tilde marker ('~') is a handy way of  differenti-
+                 ating  the  final  ray value from daughter values in a traced
+                 ray tree, and usually appears right before  the  't'  or  'T'
+                 output  flags.  E.g., _-_o_v_~_T_m_W will emit a tilde followed by a
+                 tab at the end of each trace, which  can  be  easily  distin-
+                 guished even in binary output.
+
+                 Note that there is no space between this option and its argu-
+                 ment.
+
+       --ttee _m_o_d   Append _m_o_d to the trace exclude list, so that it will not  be
+                 reported  by  the  trace option _(_-_o_*_t_*_)_.  Any ray striking an
+                 object having _m_o_d as its modifier will not be reported to the
+                 standard output with the rest of the rays being traced.  This
+                 option has no effect unless either the 't' or 'T' option  has
+                 been  given  as  part of the output specifier.  Any number of
+                 excluded modifiers may be given, but each must  appear  in  a
+                 separate option.
+
+       --ttii _m_o_d   Add  _m_o_d  to  the  trace  include  list,  so  that it will be
+                 reported by the trace option.  The program can use either  an
+                 include list or an exclude list, but not both.
+
+       --ttEE _f_i_l_e  Same  as _-_t_e_, except read modifiers to be excluded from _f_i_l_e_.
+                 The RAYPATH environment variable determines which directories
+                 are searched for this file.  The modifier names are separated
+                 by white space in the file.
+
+       --ttII _f_i_l_e  Same as _-_t_i_, except read modifiers to be included from  _f_i_l_e_.
+
+       --ii        Boolean  switch  to  compute  irradiance rather than radiance
+                 values.  This only affects the final result,  substituting  a
+                 Lambertian surface and multiplying the radiance by pi.  Glass
+                 and other transparent surfaces are ignored during this stage.
+                 Light  sources still appear with their original radiance val-
+                 ues, though the _-_d_v option (below) may be  used  to  override
+                 this.   This  option is especially useful in conjunction with
+                 ximage(1) for computing illuminance at scene points.
+
+       --uu        Boolean switch to control uncorrelated random sampling.  When
+                 "off",  a  low-discrepancy  sequence  is  used, which reduces
+                 variance but can result in a brushed appearance  in  specular
+                 highlights.   When "on", pure Monte Carlo sampling is used in
+                 all calculations.
+
+       --II        Boolean switch to compute irradiance  rather  than  radiance,
+                 with  the  input  origin and direction interpreted instead as
+                 measurement point and orientation.
+
+       --hh        Boolean switch for information header on output.
+
+       --xx _r_e_s    Set the x resolution to _r_e_s_.   The  output  will  be  flushed
+                 after  every  _r_e_s  input rays.  A value of zero means that no
+                 output flushing will take place.
+
+       --yy _r_e_s    Set the y resolution to _r_e_s_.  The program will exit after _r_e_s
+                 scanlines have been processed, where a scanline is the number
+                 of rays given by the _-_x option, or 1 if _-_x is zero.  A  value
+                 of zero means the program will not halt until the end of file
+                 is reached.
+
+                 If both _-_x and _-_y options are given, a resolution  string  is
+                 printed  at the beginning of the output.  This is mostly use-
+                 ful for recovering image dimensions with _p_v_a_l_u_e_(_1_)_,  and  for
+                 creating  valid Radiance picture files using the color output
+                 format.  (See the _-_f option, above.)
+
+       --nn _n_p_r_o_c  Execute in parallel on _n_p_r_o_c local processes.  This option is
+                 incompatible  with  the  _-_P  and _-_P_P_, options.  Multiple pro-
+                 cesses also do not work properly with ray tree  output  using
+                 any  of the _-_o_*_t_* options.  There is no benefit from specify-
+                 ing more processes than there are cores available on the sys-
+                 tem or the _-_x setting, which forces a wait at each flush.
+
+       --ddjj _f_r_a_c  Set  the  direct  jittering to _f_r_a_c_.  A value of zero samples
+                 each source at specific sample points  (see  the  _-_d_s  option
+                 below),  giving a smoother but somewhat less accurate render-
+                 ing.  A positive value causes rays  to  be  distributed  over
+                 each  source  sample according to its size, resulting in more
+                 accurate penumbras.  This option should never be greater than
+                 1,  and  may  even  cause problems (such as speckle) when the
+                 value is smaller.  A warning about aiming failure will issued
+                 if _f_r_a_c is too large.
+
+       --ddss _f_r_a_c  Set  the  direct sampling ratio to _f_r_a_c_.  A light source will
+                 be subdivided until the width of each sample area divided  by
+                 the  distance  to  the illuminated point is below this ratio.
+                 This assures accuracy in regions close to large area  sources
+                 at  a  slight  computational  expense.  A value of zero turns
+                 source subdivision off, sending at most  one  shadow  ray  to
+                 each light source.
+
+       --ddtt _f_r_a_c  Set  the  direct threshold to _f_r_a_c_.  Shadow testing will stop
+                 when the potential contribution of at least the next  and  at
+                 most  all  remaining light sources is less than this fraction
+                 of the accumulated value.  (See the _-_d_c option  below.)   The
+                 remaining light source contributions are approximated statis-
+                 tically.  A value of zero means that all light  sources  will
+                 be tested for shadow.
+
+       --ddcc _f_r_a_c  Set  the direct certainty to _f_r_a_c_.  A value of one guarantees
+                 that the absolute accuracy of the direct calculation will  be
+                 equal  to or better than that given in the _-_d_t specification.
+                 A value of zero only insures that all shadow lines  resulting
+                 in  a contrast change greater than the _-_d_t specification will
+                 be calculated.
+
+       --ddrr _N     Set the number of relays for secondary sources to _N_.  A value
+                 of  0  means that secondary sources will be ignored.  A value
+                 of 1 means that sources will be made  into  first  generation
+                 secondary  sources;  a value of 2 means that first generation
+                 secondary sources will also be made  into  second  generation
+                 secondary sources, and so on.
+
+       --ddpp _D     Set  the  secondary source presampling density to D.  This is
+                 the number of samples per steradian  that  will  be  used  to
+                 determine  ahead of time whether or not it is worth following
+                 shadow rays through all the reflections and/or  transmissions
+                 associated  with a secondary source path.  A value of 0 means
+                 that the full secondary source path will always be tested for
+                 shadows if it is tested at all.
+
+       --ddvv       Boolean switch for light source visibility.  With this switch
+                 off, sources will be black when viewed directly although they
+                 will  still  participate  in  the  direct  calculation.  This
+                 option is mostly for the program _m_k_i_l_l_u_m_(_1_) to avoid inappro-
+                 priate  counting  of light sources, but it may also be desir-
+                 able in conjunction with the _-_i option.
+
+       --ssjj _f_r_a_c  Set the specular sampling jitter to _f_r_a_c_.  This is the degree
+                 to  which the highlights are sampled for rough specular mate-
+                 rials.  A value of one means  that  all  highlights  will  be
+                 fully sampled using distributed ray tracing.  A value of zero
+                 means that no jittering will take place, and all  reflections
+                 will appear sharp even when they should be diffuse.
+
+       --sstt _f_r_a_c  Set  the  specular  sampling  threshold to _f_r_a_c_.  This is the
+                 minimum fraction of reflection or transmission,  under  which
+                 no  specular  sampling  is  performed.  A value of zero means
+                 that highlights will always be sampled by  tracing  reflected
+                 or transmitted rays.  A value of one means that specular sam-
+                 pling is never used.   Highlights  from  light  sources  will
+                 always  be  correct, but reflections from other surfaces will
+                 be approximated using an ambient value.  A sampling threshold
+                 between  zero and one offers a compromise between image accu-
+                 racy and rendering time.
+
+       --bbvv       Boolean switch for back face visibility.   With  this  switch
+                 off,  back  faces  of opaque objects will be invisible to all
+                 rays.  This is dangerous unless  the  model  was  constructed
+                 such that all surface normals on opaque objects face outward.
+                 Although turning off back face visibility does not save  much
+                 computation  time  under most circumstances, it may be useful
+                 as a tool for scene debugging, or  for  seeing  through  one-
+                 sided  walls  from the outside.  This option has no effect on
+                 transparent or translucent materials.
+
+       --aavv _r_e_d _g_r_n _b_l_u
+                 Set the ambient value to a radiance of _r_e_d _g_r_n _b_l_u _.  This is
+                 the  final  value used in place of an indirect light calcula-
+                 tion.  If the number of ambient bounces is one or greater and
+                 the ambient value weight is non-zero (see _-_a_w and _-_a_b below),
+                 this value may be modified by the computed indirect values to
+                 improve overall accuracy.
+
+       --aaww _N     Set  the  relative weight of the ambient value given with the
+                 _-_a_v option to _N_.  As new indirect irradiances  are  computed,
+                 they  will modify the default ambient value in a moving aver-
+                 age, with the specified weight assigned to the initial  value
+                 given  on  the  command and all other weights set to 1.  If a
+                 value of 0 is given with this option, then the initial  ambi-
+                 ent  value  is  never modified.  This is the safest value for
+                 scenes with large differences in indirect contributions, such
+                 as when both indoor and outdoor (daylight) areas are visible.
+
+       --aabb _N     Set the number of ambient bounces to _N_.  This is the  maximum
+                 number  of  diffuse bounces computed by the indirect calcula-
+                 tion.  A value of zero implies no indirect calculation.
+
+       --aarr _r_e_s   Set the ambient resolution to _r_e_s_.  This number  will  deter-
+                 mine the maximum density of ambient values used in interpola-
+                 tion.  Error will start to increase on surfaces spaced closer
+                 than  the  scene size divided by the ambient resolution.  The
+                 maximum ambient value density is the  scene  size  times  the
+                 ambient  accuracy  (see  the _-_a_a option below) divided by the
+                 ambient resolution.  The scene size can be  determined  using
+                 _g_e_t_i_n_f_o_(_1_) with the _-_d option on the input octree.
+
+       --aaaa _a_c_c   Set  the  ambient  accuracy to _a_c_c_.  This value will approxi-
+                 mately equal the error from indirect  illuminance  interpola-
+                 tion.  A value of zero implies no interpolation.
+
+       --aadd _N     Set  the  number of ambient divisions to _N_.  The error in the
+                 Monte Carlo  calculation  of  indirect  illuminance  will  be
+                 inversely  proportional to the square root of this number.  A
+                 value of zero implies no indirect calculation.
+
+       --aass _N     Set the number of ambient super-samples to _N_.   Super-samples
+                 are  applied  only to the ambient divisions which show a sig-
+                 nificant change.
+
+       --aaff _f_n_a_m_e Set the ambient file to _f_n_a_m_e_.  This is where indirect  illu-
+                 minance  will  be  stored  and retrieved.  Normally, indirect
+                 illuminance values are kept in memory and lost when the  pro-
+                 gram  finishes  or  dies.  By using a file, different invoca-
+                 tions can share illuminance values, saving time in the compu-
+                 tation.   The ambient file is in a machine-independent binary
+                 format which can be examined with _l_o_o_k_a_m_b_(_1_)_.
+
+                 The ambient file may also be used as a means of communication
+                 and  data sharing between simultaneously executing processes.
+                 The same file may be used  by  multiple  processes,  possibly
+                 running  on different machines and accessing the file via the
+                 network (ie.  _n_f_s_(_4_)_)_.  The network lock manager _l_o_c_k_d_(_8_)  is
+                 used to insure that this information is used consistently.
+
+                 If  any  calculation  parameters  are changed or the scene is
+                 modified, the old ambient file should be removed so that  the
+                 calculation  can  start  over from scratch.  For convenience,
+                 the original ambient parameters are listed in the  header  of
+                 the  ambient  file.  _G_e_t_i_n_f_o_(_1_) may be used to print out this
+                 information.
+
+       --aaee _m_o_d   Append _m_o_d to the ambient exclude list, so that it  will  not
+                 be  considered  during  the  indirect calculation.  This is a
+                 hack for speeding the indirect computation by  ignoring  cer-
+                 tain objects.  Any object having _m_o_d as its modifier will get
+                 the default ambient level rather  than  a  calculated  value.
+                 Any  number of excluded modifiers may be given, but each must
+                 appear in a separate option.
+
+       --aaii _m_o_d   Add _m_o_d to the ambient include list, so that it will be  con-
+                 sidered during the indirect calculation.  The program can use
+                 either an include list or an exclude list, but not both.
+
+       --aaEE _f_i_l_e  Same as _-_a_e_, except read modifiers to be excluded from  _f_i_l_e_.
+                 The RAYPATH environment variable determines which directories
+                 are searched for this file.  The modifier names are separated
+                 by white space in the file.
+
+       --aaII _f_i_l_e  Same  as _-_a_i_, except read modifiers to be included from _f_i_l_e_.
+
+       --mmee _r_e_x_t _g_e_x_t _b_e_x_t
+                 Set the global medium extinction coefficient to the indicated
+                 color,  in  units  of  1/distance  (distance in world coordi-
+                 nates).  Light will be scattered or  absorbed  over  distance
+                 according  to  this  value.  The ratio of scattering to total
+                 scattering plus absorption is set by  the  albedo  parameter,
+                 described below.
+
+       --mmaa _r_a_l_b _g_a_l_b _b_a_l_b
+                 Set the global medium albedo to the given value between 0 0 0
+                 and 1 1 1.  A zero value means that all light not transmitted
+                 by  the  medium  is absorbed.  A unitary value means that all
+                 light not transmitted by the medium is scattered in some  new
+                 direction.   The  isotropy of scattering is determined by the
+                 Heyney-Greenstein parameter, described below.
+
+       --mmgg _g_e_c_c  Set the medium Heyney-Greenstein  eccentricity  parameter  to
+                 _g_e_c_c_.   This  parameter  determines  how  strongly scattering
+                 favors the forward direction.  A value of  0  indicates  per-
+                 fectly isotropic scattering.  As this parameter approaches 1,
+                 scattering tends to prefer the forward direction.
+
+       --mmss _s_a_m_p_d_i_s_t
+                 Set the medium sampling distance to _s_a_m_p_d_i_s_t_, in world  coor-
+                 dinate  units.   During  source  scattering, this will be the
+                 average distance between adjacent  samples.   A  value  of  0
+                 means  that  only  one  sample will be taken per light source
+                 within a given scattering volume.
+
+       --llrr _N     Limit reflections to a maximum of _N_, if N is a positive inte-
+                 ger.  If _N is zero or negative, then Russian roulette is used
+                 for ray termination, and the _-_l_w setting (below) must be pos-
+                 itive.   If N is a negative integer, then this sets the upper
+                 limit of reflections past  which  Russian  roulette  will  be
+                 used.   In scenes with dielectrics and total internal reflec-
+                 tion, a setting of 0 (no limit) may cause a stack overflow.
+
+       --llww _f_r_a_c  Limit the weight of each ray to a minimum  of  _f_r_a_c_.   During
+                 ray-tracing,  a  record is kept of the estimated contribution
+                 (weight) a ray would have in the image.  If  this  weight  is
+                 less  than  the specified minimum and the _-_l_r setting (above)
+                 is positive, the  ray  is  not  traced.   Otherwise,  Russian
+                 roulette is used to continue rays with a probability equal to
+                 the ray weight divided by the given _f_r_a_c_.
+
+       --lldd       Boolean switch to limit ray distance.  If this option is set,
+                 then rays will only be traced as far as the magnitude of each
+                 direction vector.  Otherwise, vector magnitude is ignored and
+                 rays are traced to infinity.
+
+       --ee _e_f_i_l_e  Send  error messages and progress reports to _e_f_i_l_e instead of
+                 the standard error.
+
+       --ww        Boolean switch to suppress warning messages.
+
+       --PP _p_f_i_l_e  Execute in a persistent mode,  using  _p_f_i_l_e  as  the  control
+                 file.  Persistent execution means that after reaching end-of-
+                 file on its input, _r_t_r_a_c_e will fork a child process that will
+                 wait  for  another  _r_t_r_a_c_e command with the same _-_P option to
+                 attach to it.  (Note that since the rest of the command  line
+                 options  will  be those of the original invocation, it is not
+                 necessary to give any arguments  besides  _-_P  for  subsequent
+                 calls.)   Killing  the  process  is achieved with the _k_i_l_l_(_1_)
+                 command.  (The process ID in the first line of _p_f_i_l_e  may  be
+                 used  to  identify  the waiting _r_t_r_a_c_e process.)  This option
+                 may be used with the _-_f_r option of _p_i_n_t_e_r_p_(_1_)  to  avoid  the
+                 cost of starting up _r_t_r_a_c_e many times.
+
+       --PPPP _p_f_i_l_e Execute in continuous-forking persistent mode, using _p_f_i_l_e as
+                 the control file.  The difference between this option and the
+                 _-_P  option described above is the creation of multiple dupli-
+                 cate processes to handle any number of attaches.   This  pro-
+                 vides  a  simple  and reliable mechanism of memory sharing on
+                 most multiprocessing platforms, since the _f_o_r_k_(_2_) system call
+                 will share memory on a copy-on-write basis.
+
+EEXXAAMMPPLLEESS
+       To compute radiance values for the rays listed in samples.inp:
+
+         rtrace -ov scene.oct < samples.inp > radiance.out
+
+       To  compute  illuminance values at locations selected with the 't' com-
+       mand of _x_i_m_a_g_e_(_1_)_:
+
+         ximage  scene.hdr  |  rtrace  -h  -x  1  -i  scene.oct  |  rcalc   -e
+         '$1=47.4*$1+120*$2+11.6*$3'
+
+       To  record  the  object  identifier  corresponding  to each pixel in an
+       image:
+
+         vwrays  -fd  scene.hdr  |  rtrace  -fda  `vwrays  -d  scene.hdr`  -os
+         scene.oct
+
+       To compute an image with an unusual view mapping:
+
+         cnt  480  640 | rcalc -e 'xr:640;yr:480' -f unusual_view.cal | rtrace
+         -x 640 -y 480 -fac scene.oct > unusual.hdr
+
+EENNVVIIRROONNMMEENNTT
+       RAYPATH        the directories to check for auxiliary files.
+
+FFIILLEESS
+       /tmp/rtXXXXXX       common header information for picture sequence
+
+DDIIAAGGNNOOSSTTIICCSS
+       If the program terminates from an input related error, the exit  status
+       will  be 1.  A system related error results in an exit status of 2.  If
+       the program receives a signal that is caught, it will exit with a  sta-
+       tus  of 3.  In each case, an error message will be printed to the stan-
+       dard error, or to the file designated by the _-_e option.
+
+AAUUTTHHOORR
+       Greg Ward
+
+SSEEEE AALLSSOO
+       getinfo(1),  lookamb(1),  oconv(1),  pfilt(1),  pinterp(1),  pvalue(1),
+       rpict(1), rtcontrib(1), rvu(1), vwrays(1), ximage(1)
+
+
+
+RADIANCE                           10/17/97                          RTRACE(1)

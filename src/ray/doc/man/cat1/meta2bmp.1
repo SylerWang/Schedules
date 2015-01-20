@@ -1,0 +1,52 @@
+META2BMP(1)                                                        META2BMP(1)
+
+
+
+NNAAMMEE
+       meta2bmp - convert metafile to Windows Bitmap (BMP) File
+
+SSYYNNOOPPSSIISS
+       mmeettaa22bbmmpp  [ --cc || --rr ][ --xx wwiiddtthh ][ --yy hheeiigghhtt ][ --mm mmiinnrraadd ][ --oo oouuttnnaammee
+       ] file ..
+
+DDEESSCCRRIIPPTTIIOONN
+       _M_e_t_a_2_b_m_p reads each metafile _f_i_l_e in sequence and converts it to a com-
+       pressed,  color-mapped  BMP  file.   The result is sent to the standard
+       output (which must be redirected) unless the _-_o option  is  used.   The
+       argument to the _-_o option specifies the base file name, to which a page
+       number and ".bmp" is added as a suffix.  Note that this option must  be
+       present in order to produce more than a single page of output.
+
+       The default output resolution is 400 by 400, but a different resolution
+       can be given with the _-_x and _-_y options.
+
+       The _-_m option can be used to set a minimum value for the line radius in
+       pixels.  This may be helpful for improving the readability of high res-
+       olution output.  The default value is 0,  which  allows  lines  of  one
+       pixel thickness.
+
+       If the option _-_c is specified, the input files are only conditioned for
+       output, ie.  expanded (see pexpand).  This is useful if many copies  of
+       the same output is desired.  If the option _-_r is instead specified, the
+       input is assumed already to be conditioned.   If  no  input  files  are
+       specified, the standard input is read.
+
+EEXXAAMMPPLLEE
+       To  convert  the  plots  examp1.plt  and  examp2.plt to 1024x1024 Targa
+       files:
+
+         bgraph examp1.plt examp2.plt | meta2bmp -o examp -x 1024 -y 1024
+
+FFIILLEESS
+       see pexpand(1) and psort(1)
+
+AAUUTTHHOORR
+       Greg Ward
+
+SSEEEE AALLSSOO
+       bgraph(1), igraph(1),  meta2tga(1),  pexpand(1),  psmeta(1),  psort(1),
+       ra_t8(1)
+
+
+
+RADIANCE                            6/24/98                        META2BMP(1)

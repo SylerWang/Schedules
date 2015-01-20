@@ -1,0 +1,32 @@
+OBJVIEW(1)                                                          OBJVIEW(1)
+
+
+
+NNAAMMEE
+       objview - view RADIANCE object(s)
+
+SSYYNNOOPPSSIISS
+       oobbjjvviieeww [ --uu uuppddiirreeccttiioonn ][ rad options ] input ..
+       oobbjjvviieeww [ --gg ][ --uu uuppddiirreeccttiioonn ][ glrad options ] input ..
+
+DDEESSCCRRIIPPTTIIOONN
+       _O_b_j_v_i_e_w  renders  a  RADIANCE  object  interactively  using  _r_a_d_(_1_)  or
+       _g_l_r_a_d_(_1_)_.  This program is merely a shell script that adds  some  light
+       sources  to a scene then calls _r_a_d_(_1_) or _g_l_r_a_d_(_1_) to make an octree and
+       view the scene interactively.
+
+       If the default up vector (+Z) is inappropriate for  this  object,  then
+       specify a different one using the _-_u option to _o_b_j_v_i_e_w_.
+
+       Any  number  of  material  and scene files may be given, but no in-line
+       commands or standard input.
+
+AAUUTTHHOORR
+       Greg Ward Larson
+
+SSEEEE AALLSSOO
+       glrad(1), oconv(1), rad(1), rvu(1)
+
+
+
+RADIANCE                            6/10/98                         OBJVIEW(1)

@@ -1,0 +1,1145 @@
+~s Radiance Digest v1n5
+Dear Radiance Users,
+
+For those of you still with us after last week's fiasco, here is a culling
+of electronic mail exchanged between me and some of you over the last month.
+Once again, I have given headings by subject to make it easier to browse
+without reading everything.
+
+A couple of reminders.  First, you may pick up previous issues of the
+Radiance Digest at hobbes.lbl.gov (128.3.12.38) with anonymous ftp
+from the pub/digest directory.  Second, you must write to me if you want
+your name removed from this mailing list -- please take a few minutes now
+to express your outrage at getting such unwelcomed junk mail so that
+the tension doesn't build up and make the blood vessels on your forehead
+bulge out in an unbecoming fashion.
+
+I particularly recommend looking at the section on the Radiance picture
+format to anyone interested in translating Radiance images.
+
+-Greg
+
+	MAC		- MacIntosh and Radiance
+	PICTURE		- Radiance Picutre file format
+	HPUX		- Hewlett-Packard UNIX and Radiance 1.4
+	DAYLIGHT	- Radiance and Daylight Simulation
+	AMIGA		- Radiance on the Amiga 2000
+	COLORPICT	- Using the Colorpict primitive
+	DOS		- Radiance under DOS?
+	RVIEW		- Rview and memory
+	LIGHTS		- Non-standard Light Sources
+
+============================
+MAC	MacIntosh programs with Radiance and A/UX
+
+Date: Fri, 23 Aug 91 13:07:34 NZT
+From: pdbourke%ccu1.aukuni.ac.nz@Csa2.lbl.gov
+Subject: Fractal Landscape generator
+To: GJWard@Csa2.lbl.gov
+
+I've just written the "old fractal landscape" generator using the subdivision
+technique (as opposed to spectral techniques). A Mac II application!
+
+It does the following:
+- surface parameters, x,y range and typical z variation
+- roughness parameter
+- sea (lake) level
+- seed specification, lets the same landscape be generated on request
+- 3 point colour ramp mapped to height
+- DXF, Super3D, RayShade, and Radiance
+- view on the Mac screen of wireframe coloured model
+- variable resolution up to 256x256 cells
+- automatic triangulation of non-planar facets
+
+------------------------------
+Paul D. Bourke
+pdbourke@ccu1.aukuni.ac.nz
+
+
+Date: Sun, 25 Aug 91 15:54:59 EDT
+From: David Brainard  <brainard@cvs.rochester.edu>
+To: greg@lesosun1.epfl.ch
+Subject: Re:  Mac version
+
+I see.  I will definitely have a Big Mac (as it were)
+and am trying to decide whether to load it with A/UX
+or not.  You are the first person I've had any contact
+with who seems to be using it.  Do you find it a reasonable
+Unix?  Do you find that native Mac applications run on
+top of it without too many problems?   My prior was that
+running Unix on the MAC would provide the worst of both
+worlds, rather than the best.  But I am willing to be 
+convinced otherwise.  Thanks for any advice you can give.
+
+David
+
+Date: Mon, 26 Aug 91 09:40:37 +0200
+From: greg (Greg Ward)
+To: brainard@cvs.rochester.edu
+Subject: Re:  Mac version
+
+Hi David,
+
+My advice is free, and it's worth what you pay for it!
+
+I won't claim that A/UX is the best of both worlds.  I have certainly
+had my share of frustrations trying to get around little annoying
+compiler bugs and poor virtual memory performance on the UNIX side,
+but I've dealt with worse UNIX implementations, certainly.  The
+worst thing I can say about A/UX is that it's a System V derivative,
+with all the associated problems.  Berkeley, Berkeley, yeah, yeah, yeah!
+
+As for the Mac side, I haven't tried it out with every software package.
+I have tried Microsoft Word 4.0, which seems fairly stable, MacDraw II,
+Adobe Photoshop (excellent software in my opinion), Aldus Freehand,
+Studio/8, Versaterm, Mathematica, HyperCard, and a few others I can't
+think of right now.  I haven't tried Excel or any database systems, but
+WingZ seems to work (though I haven't used it really at all).  Programs
+that I've tried which failed are MacWrite, SuperPaint and Architrion II.
+Sometimes you'll get a warning if the 32-bit clean bit isn't set on the
+application and it will run anyway, but only if the code actually is
+32-bit clean and they just forgot to set the bit, as is the case with
+HyperCard 2.0.  In general, 24-bit applications don't work, even in the
+special 24-bit mode A/UX Finder.  I don't see this as being much of a
+drawback, since all applications have to be 32-bit clean to run under
+System 7, anyway.
+
+The other loss (that I don't really consider a loss) is all the
+OS utilities and INIT's and so forth that work under the MacOS.
+You will be very sorry if you install any of these under A/UX.
+Also, specialty programs for formatting hard drives and other
+hardware-specific tasks must be run under the regular OS.
+
+Keep in mind that installing A/UX doesn't mean giving up your
+regular MacIntosh.  All you really give up is about 100 Mbytes of
+disk space somewhere.  You can still run without A/UX, only
+booting it when you have some UNIX program you need to run.
+Also, since A/UX is cognizant of the Mac volumes, it's not
+necessary to install your Mac applications or data in two places.
+
+In conclusion, I think the A/UX development team have done a
+decent job getting these two very different systems to cooperate
+with each other, and I've been generally satisfied with the
+improvements that come with each new release -- something I
+can't say for the Sun operating system!
+
+-Greg
+
+[A sad postscript to this message -- it seems that the new Adobe
+	Photoshop version 2.0 doesn't like A/UX.]
+
+================================
+PICTURE		Radiance Picture Format
+
+Date: Fri, 13 Sep 91 16:56:02 NZT
+From: russells@ccu1.aukuni.ac.nz
+Subject: Radiance picture format
+To: greg@lesosun1.epfl.ch
+
+Hi,
+
+Can you supply the format of the Radiance picture files, as produced
+by rpict etal. I am planning to write an Macintosh application
+to display them, using MacTCP to bring them from the Unix system
+without intermediate FTPing and conversions.
+
+Also, is it possible for Radiance to do parametric models. For instance
+you set a variable and use instances of that variable throughout
+your model files. This would be good for my Super 3D (a Mac modeller)
+to Radiance translator for handling "one-pixel wide" lines.
+
+Thanks in advance,
+
+Russell Street
+russells@ccu1.aukuni.ac.nz
+(arch2 in a former life)
+
+Date: Fri, 13 Sep 91 09:19:31 +0200
+From: greg (Greg Ward)
+To: russells@ccu1.aukuni.ac.nz
+Subject: Re:  Radiance picture format
+
+Hi Russell,
+
+Thanks for writing the Super 3D translator.  Paul just wrote to me
+about it, but I haven't had a chance yet to try it out.  I need to
+find a copy of Super 3D first!
+
+At the end of this mail I will put a shar file of the routines you
+need to read and write Radiance pictures.  The format has been
+enhanced slightly for the next release (in an upward compatible
+way), so you should definitely use these newer routines.
+
+The file format, like most binary files used by Radiance, contains
+an ascii information header that is terminated by an empty line.
+This header typically contains the commands used to generate the
+file along with variables indicating exposure, view parameters, and
+so on.  Next there is a single line that indicates the resolution and
+pixel scanning order of the image.  For Radiance pictures, the pixels
+are order as English text, left to right and top to bottom.  This is
+indicated with a line of the form:
+
+-Y M +X N
+
+Where M and N are the y and x resolutions, respectively.  The x and y
+image coordinates are always the same, starting with (0,0) at the lower
+left corner, (N,0) at the lower right, and (0,M) at the upper left.
+The y resolution appears first in our specification because it is the
+major sort, and is preceded by a minus sign because it is decreasing in
+the file.
+
+Finally, the floating point scanlines follow.  Each pixel is represented by
+at most 4 bytes.  The first three bytes are the red, green and blue mantissas
+(in that order), and the fourth byte is a common exponent.  The floating point
+color (R,G,B)=(1.,.5,.25) would be represented by the bytes (128,64,32,129).
+The conversion back to floating point is possible using the ldexp() library
+routine, or it's better to use the colr_color() routine included in color.c.
+
+The scanlines are usually run-length encoded.  My previous scheme (release 1.4
+and earlier) used a simple count for repeated pixels.  My new scheme is
+more complicated and encodes the four components separately.  I don't
+recommend writing your own routine to decode it -- use what's in color.c.
+
+A skeletal program to read a Radiance picture file and convert to 24-bit
+gamma-corrected color looks like this:
+
+#include <stdio.h>
+#include "color.h"
+main(argc, argv)
+int argc;
+char *argv[];
+{
+	char *fname;		/* Radiance input file name */
+	FILE *fp;		/* input stream pointer */
+	int xres,yres;		/* x and y image resolution */
+	int y;
+	register COLR *scanin;
+	register int x;
+
+	if (argc < 2) {
+		fp = stdin;
+		fname = "<stdin>";
+	} else if ((fp = fopen(fname=argv[1], "r")) == NULL) {
+		perror(fname);
+		exit(1);
+	}
+	if (checkheader(fp, COLRFMT, NULL) < 0 ||
+			fgetresolu(&xres, &yres, fp) != (YMAJOR|YDECR))
+		fprintf(stderr, "%s: not a Radiance picture\n", fname);
+		exit(1);
+	}
+	if ((scanin = (COLR *)malloc(xres*sizeof(COLR))) == NULL) {
+		perror(argv[0]);
+		exit(1);
+	}
+	setcolrgam(2.2);		/* set appropriate gamma correction */
+	for (y = yres-1; y >= 0; y--) {
+		if (freadcolrs(scanin, xres, fp) < 0) {
+			fprintf(stderr, "%s: read error\n", fname);
+			exit(1);
+		}
+		colrs_gambs(scanin, xres);
+		for (x = 0; x < xres; x++) {
+			/*
+			 * Do something with the bytes:
+			 *	scanin[x][RED]
+			 *	scanin[x][GRN]
+			 *	scanin[x][BLU]
+			 */
+		}
+	}
+	free((char *)scanin);
+	exit(0);
+}
+
+You will find all the routines you need in ray/src/common.  The
+checkheader() routine is in the module header.c, fgetresolu is in resolu.c,
+freadcolrs() is in color.c, and setcolrgam() and colrs_gambs() are
+in the module colrops.c.
+
+If you want to convert the file to 8-bit color, the process is quite a
+bit more complicated.  I suggest you take a look at the ra_pr program
+in the ray/src/px directory to get a better idea of what is involved.
+
+For communicating with another program across MacTCP, I suggest reading
+and unpacking the scanlines on the remote (UNIX) host and transferring
+fixed-length packets (perhaps a scanline at a time) to your MacIntosh
+display program.
+
+As for a macro facility to replace variables with values in a Radiance
+scene file, Paul asked me also about this earlier in the context of
+pixel-thick lines.  You can certainly use a macro program such as
+cpp or m4 to replace variables with values in a file, but the real
+problem is that pixel-thick lines do not exist.  They should be
+converted to cylinders with a non-zero radius corresponding to the
+physical objects the lines were meant to represent.  This may end
+up being a pixel wide in the final image, but usually it is not.
+Radiance actually has no notion of pixel size in its rendering
+routines, so variable replacement with the pixel size is impossible
+anyway.
+
+-Greg
+
+------------------------------
+#! /bin/sh
+# This is a shell archive, meaning:
+# 1. Remove everything above the #! /bin/sh line.
+# 2. Save the resulting text in a file.
+# 3. Execute the file with /bin/sh (not csh) to create:
+#	color.h
+#	header.c
+#	resolu.c
+#	color.c
+#	colrops.c
+# This archive created: Fri Sep 13 09:19:19 1991
+[Deleted for the sake of brevity.]
+
+============================================
+HPUX		Hewlett-Packard UNIX and Radiance 1.4
+
+From: jaf@beauty.graphics.cornell.edu (James A. Ferwerda)
+Subject: Radiance installation on HP9000/835
+To: GJWard@Csa2.lbl.gov
+Date: Thu, 29 Aug 91 14:53:05 EDT
+
+Hi,
+
+I'm a potentially new user of Radiance, but I'm having a little trouble
+getting it to compile on my HP9000/835. Included below is a copy of the
+output of the makeall script. I'm writing to you for assistance before
+I make any major changes to the distributed version because I'd like to
+remain compatible with any updates or bug fixes, and because I figure
+you know your software better than I ever will and might know a quick
+fix which would save me hours of hacking. I compiled the package using
+the "HP workstation" option in the makeall script, and so far the only
+code change I've made was to change the line
+
+#include <sys/var.h> 
+
+in malloc.c to
+
+#include <var.h>
+
+because there is no var.h in usr/include/sys on the HP system.
+
+I'm not a hardware or a systems person (or even a very good programmer)
+but to the best of my knowledge the HP9000/835 is a RISC based machine
+running a modified version of System V. (But the makeall script gave
+similar messages when I used the "Other" option and indicated a RISC based
+non-BSD machine).
+
+Any insights you can give me on how to get the package up and running
+on my HP machine would be greatly appreciated. Radiance looks like a
+great tool for my work on surface lightness/ illumination perception
+and I'd really like to be able to use it. By the way, I first heard about
+Radiance from Holly Rushmeier from Georgia Tech who gave it rave reviews.
+Thanks in advance for any help, and keep up the good work.
+
+-Jim Ferwerda
+jaf@graphics.cornell.edu
+
+Date: Fri, 30 Aug 91 10:38:00 +0200
+From: greg (Greg Ward)
+To: jaf@beauty.graphics.cornell.edu
+Subject: Re:  Radiance installation on HP9000/835
+
+Hello Jim,
+
+OK, so I admit that I haven't actually compiled the distribution on all
+these different machines.  I'm still running on a Sun 3/60 myself.
+
+Thanks for sending me the compilation errors.  It really is the best
+way for me to correct portability problems in the code.  I recommend
+the following changes:
+
+	1) Change the #ifdef lines to #ifndef BSD at:
+		line 78 of src/cv/dxfcvt/config.h and
+		line 22 of src/cal/calc/calc.c
+
+	2) Change the COMPAT=malloc.o to COMPAT=bmalloc.o in:
+		src/ot/Makefile and
+		src/rt/Makefile
+
+These fixes will appear in the next release, thanks to you.
+-Greg
+
+From greg Thu Sep  5 11:03:53 1991
+Date: Thu, 5 Sep 91 11:03:52 +0200
+From: greg (Greg Ward)
+To: jaf@beauty.graphics.cornell.edu
+Subject: Re: Radiance installation on HP9000/835
+Status: R
+
+Hi Jim,
+
+I took a look at the core and oconv is hitting a bus error in the scanf()
+procedure.  I suspect the problem is memory alignment, and that the HP
+is a RISC machine and we need to define ALIGN=double for bmalloc to
+be compiled properly.  I recommend doing this manually and I will
+correct the entry for HP workstations in the makeall script for
+the next distribution.  Do:
+
+	% cd ray/src/ot
+	% rm bmalloc.o
+	% cc -O -DALIGN=double -c bmalloc.c
+	% cd ../rt
+	% rm bmalloc.o
+	% cc -O -DALIGN=double -c bmalloc.c
+
+Then rerun makeall from the top and the fixed compilations of bmalloc.o
+will be included.  Hopefully, this will fix your problems.
+
+-Greg
+
+P.S.  I didn't do it myself because of file permissions obviously.
+
+From daemon Fri Sep  6 00:24:34 1991
+From: James A. Ferwerda <jaf@beauty.graphics.cornell.edu>
+Subject: Success!
+To: greg@lesosun1.epfl.ch
+Date: Thu, 5 Sep 91 18:26:33 EDT
+Mailer: Elm [revision: 64.9]
+Status: R
+
+
+Greg, 
+
+Thanks for the fixes. I'm off and running, working my way through the
+tutorial. Thus far I'm really impressed with how comprehensive your 
+package looks and how easy it's been to get things to come up. You've
+really done a great job. I'll keep you posted on how things are coming
+along. Thanks.
+
+-Jim
+
+From: nfotis%theseas.ntua.gr@Csa2.lbl.gov (Nikolaos)
+Subject: Troubles with Radiance1R4
+To: gjward@Csa2.lbl.gov (Greg Ward)
+Date: Sat, 7 Sep 91 8:33:14 EET DST
+
+Dear Mr. Ward,
+
+I just set to play with Radiance, but with bad results
+(on a HP-9000/720. Here's its `uname -a` output:
+HP-UX kentayro A.B8.01 A 9000/720 29904182  )
+
+The first trouble: malloc.c doesn't compile with the 5th option
+of makeall:
+
+cc: "malloc.c", line 270: error 1588: "v_pageshift" undefined.
+cc: "malloc.c", line 270: error 1531: Invalid member of struct or union.
+*** Error code 1
+
+I did the following changes:
+
+--
+#ifndef NOVMEM
+#ifndef BSD
+/* For HP-UX 8.01, I changed the line:
+
+#include <sys/var.h>
+to: 
+#include <var.h>
+
+ARRGH!! This damned machine has not .v_pageshift structure!?! .
+
+I have checked the /usr/include directory, and much to my horror, I have found
+various page sizes:
+
+/usr/include > fgrep "page size" *
+a.out.h:#define EXEC_PAGESIZE   4096 not always the same as the MMU page size
+
+/usr/include/sys > fgrep "page size" *
+sys/framebuf.h: locked page size = 2 ** 11 
+sys/unistd.h:#  define _SC_PAGE_SIZE   3001  PAGE_SIZE: Software page size
+
+/usr/include/machine > fgrep "page size" machine
+machine/param.h:#define NBPG_PA83 2048      2kb page size for PA-RISC 1.0 
+*/
+
+/* So I try with the following test: */
+int
+getpagesize()
+
+{			/* I think that machine/param.h has the right number */
+#include <machine/param.h>
+
+return(NBPG_PA83);	/* This is supposed to be ok for PA-RISC 1.0, but
+				I don't know about 1.1 (i.e. Snakes) */
+
+}
+
+/* I played with various combinations, but the examples on "Radiance tutorisl"
+keep crashing (the examples with rview give bus error/core dumps. Fighting
+with HP's debugger showed that the program was inside readobj.c, immediately
+after line 165 :
+
+   165                          if (fscanf(fp, "%lf", &fa->farg[i]) != 1)
+
+#ifdef REALSYSV
+int
+getpagesize()			/* use SYSV var structure to get page size */
+
+etc...
+
+
+That's all I can do for the moment (I should go to the bed, you see... )
+
+Have a nice weekend,
+Nick.
+-- 
+Nikolaos Fotis			National Technical Univ. of Athens, Greece
+16 Esperidon St.,		UUCP:	mcsun!ariadne!theseas!nfotis
+Halandri, GR - 152 32		or InterNet : nfotis@theseas.ntua.gr
+Athens, GREECE			FAX: (+30 1) 77 84 578
+
+Date: Thu, 12 Sep 91 09:11:54 +0200
+From: greg (Greg Ward)
+To: nfotis%theseas.ntua.gr@Csa2.lbl.gov
+Subject: Re:  Troubles with Radiance1R4
+
+Yes, someone else has had trouble with HP workstations and my version
+of malloc.  The truth is, you don't need my version of malloc and it
+would probably make life simpler if you replaced the appearance of
+malloc.o with bmalloc.o in the Makefiles of the ot and rt directories.
+Also, you should compile bmalloc.c with the option -DALIGN=double for
+RISC architectures, something I should have included for HP workstations
+in the makeall script but didn't out of ignorance.  I recommend compiling
+bmalloc.c by hand in the ot and rt subdirectories, replacing malloc.o with
+bmalloc.o in the associated Makefile's, and rerunning makeall afterwards.
+
+I hope that this fixes your problems.
+-Greg
+
+========================================
+DAYLIGHT	Radiance and Daylight Simulation
+
+Date: Wed,  4 Sep 91 11:57:27 Z
+From: Environmental Design Unit <edu@leicester-poly.ac.uk>
+To: greg@lesosun1.epfl.ch
+Subject: Radiance
+
+Dear Greg,
+
+I have some more questions about Radiance and daylight factor calculation.
+
+a) What is the latest version of Radiance currently avialable, and how
+   does is it differ from v1.3.1 with respect to df calc?
+
+b) Any joy yet in dealing with adjacent spaces?
+
+c) Is there a way of modelling external structures so that both the direct
+   AND diffuse daylight entering a space is modified? (A "fudge factor"
+   in the sky model?).
+
+d) Specular reflections from (pseudo?) glazing elements - are they a
+   function of incidence angle?  (Reflections at grazing incidence
+   dominate for deep-well atria with glass 'walls').
+
+Thanks in advance.
+
+-John Mardaljevic
+
+ps.  I realise I might be asking some difficult questions.
+
+pps. It might not be a bad thing to warn any Radiance users moving in
+     the direction of df calcs about the dangers of using insufficiently
+     small source polygons for window elements (df>100% !!).
+
+Date: Wed, 4 Sep 91 15:53:25 +0200
+From: greg (Greg Ward)
+To: edu@leicester-poly.ac.uk
+Subject: Re:  Radiance
+
+Hi John,
+
+a)
+I think it's really the next release of Radiance that you want.  Version 1.4
+has relatively few advantages in the daylight area over 1.3.1.  The release
+on which I am currently laboring (probably 2.0), has many more of the
+calculation capabilities that are needed for difficult daylight modeling
+and analysis.  In particular, there is a daylight factor calculation and
+visualization script that produces contour plots of the workplane (hallelujah)
+and additional capabilities built into Radiance itself for the simulation
+of daylight reflected from mirrored surfaces and so on.
+
+b)
+I have not tried it out yet, but I think Radiance is now ready to tackle
+adjacent spaces to atria.  The key is a new program called mkillum that
+calculates in a separate pass the distribution of light from windows or
+other such "secondary" light sources.  In the process, mkillum accounts
+for all interactions including external obstructions and interreflections.
+
+c)
+In older releases of Radiance, the only way to account properly for
+external obstructions (other than computing the distribution yourself)
+is to use the interreflection calculation to compute the contribution
+from the window, ie. do not make the windows into type illum.  This
+is even still the best method for offices with very large windows.
+(Avoiding the problem you mentioned in your P.S.)
+
+d)
+Radiance surfaces obey Fresnel's laws where reflection goes
+to one and transmission goes to zero at grazing for specular surfaces.
+However, to properly account for reflected sunlight from atria walls,
+you must use the next release of Radiance with code for finding virtual
+light sources.  Previous releases cannot find secondary rays from such
+tiny sources as the sun.
+
+If you want to be a beta test site for version 2.0, you need only ask.
+I would be happy to put together a current distribution for you to
+test.  I plan to make an official release near the end of this year.
+
+-Greg
+
+=======================================
+AMIGA		Radiance on the Amiga 2000
+
+Date: Thu, 29 Aug 91 13:51:24 MED
+From: bojsen@dc.dth.dk (Per Bojsen)
+To: greg@hobbes.lbl.gov
+Subject: Distribution of a port of the RADIANCE package
+
+Greg,
+
+I'm currently porting your RADIANCE package to the Amiga.  I would
+like to distribute at least the binaries along with the data files
+necessary, but preferably the whole package including the patched
+sources.  Is it permitted to redistribute the package with pacthed
+sources?  If not, what parts of the package may be redistributed, if
+any?
+
+--------------------------------------------------------------------------------
+Per Bojsen                The VLSI Research Group        EMail: bojsen@dc.dth.dk
+MoDAG                 Technical University of Denmark
+--------------------------------------------------------------------------------
+
+Date: Thu, 29 Aug 91 14:02:57 +0200
+From: greg (Greg Ward)
+To: bojsen@dc.dth.dk
+Subject: Re:  Distribution of a port of the RADIANCE package
+
+Hello Per Bojsen,
+
+First off, let me thank you for porting the software.  I haven't used
+an Amiga myself, but I like what I've seen on it and it sounds like
+a great value.
+
+Could you tell me a little about your experience bringing the software
+over?  Did you have to throw much out?  Do you have a display driver?
+Did you get rview to work?
+
+Since no one has asked to redistribute a modified version of Radiance
+before, I think I will have to ask around and find out if it would
+be acceptable.  Our main concern I suppose is protecting the reputation
+of Lawrence Berkeley Lab (if it has one) against irresponsible changes.
+I'll try and get back to you by the end of next week.
+
+-Greg
+
+Date: Wed, 4 Sep 91 15:42:26 +0200
+From: her%compel.dk%dkuug.dk@Csa2.lbl.gov (Helge Egelund Rasmussen)
+
+New RADIANCE 1R4 user...
+Mail address:
+	Helge E. Rasmussen
+	Compel A/S
+	Hvidovrevej 80
+	DK-2610 Roedovre
+	Denmark
+Phone: +45 36 72 33 00
+E-mail: her@compel.dk
+Machine: 386, Amiga
+System: Interactive Unix, AmigaDos
+Application:
+	Hobby, I've been working with lots of different renderes on the
+	Amiga.
+	I'm in the process of porting Radiance to the Amiga.
+	At the moment, nearly everything works except programs which use
+	the pipe system call (f.ex. pinterp). I've created a rview device 
+	driver for the Amiga HAM-E 'framebuffer', and created a picture 
+	converter to the Amiga IFF24 bit graphics format.
+	At the moment, I'm working on a converter which can convert 
+	Imagine objects and scenes to Radiance scenes (Imagine is a commercial
+	Amiga based render/animation package which has a rather good 
+	'triangle' based 3d editor).
+
+	I can upload the patches for the Amiga version to hobbes if you are
+	interested.
+
+Date: Wed, 4 Sep 91 17:17:48 +0200
+From: greg (Greg Ward)
+To: bojsen@dc.dth.dk, her@compel.dk
+Subject: Re:  Distribution of a port of the RADIANCE package
+
+Dear Per Bojsen and Helge Rasmussen,
+
+Thank you both for your work porting Radiance to the Amiga.  It is a shock
+to me that anyone has attempted this, let alone two people from the same
+country at the same time!
+
+I have asked those in the know at LBL about the official policies on
+redistribution of software, and there don't appear to be any.  Therefore,
+I am going to make up my own policies, which I hope will be acceptable to
+everyone.
+
+First off, I don't think we really need TWO ports of Radiance to the
+Amiga, so I would like the two of you to have a little discussion and
+fight it out among you to decide which and what to include in a distribution.
+
+Second, I would like hobbes.lbl.gov to be used as the distribution site,
+at least for the time being.  Before the end of the year, I hope to set
+up a site here in Switzerland for distribution on the European continent
+that is identical to the one in California.  I have created a new directory
+in the anonymous ftp pub/ports subdirectory called "amiga".  I would like
+it very much if you (collectively) would deposit your patches for
+the Amiga plus any driver programs or routines you have written.  Please
+do not duplicate the main distribution as I would like people to continue
+to draw from the original for the sake of future compatibility.  Please also
+include a README file describing the contents of your directory so that other
+folks who are not so gifted (including myself) can figure out what to
+do with it.
+
+Third, I don't really want the Amiga binaries all stored on hobbes because
+it would put quite a burden on my disk space and potentially on the network
+if everybody and his brother wants a copy.  Therefore, I would be delighted
+if you would distribute the executables yourself to interested parties via
+floppy disk or whatever transfer medium you prefer.  (I have been using
+floppies myself to distribute the MacIntosh A/UX version.)  I have no
+objection if you want to redistribute the source code as well, so long as
+you make it clear what version you are distributing and that the main site
+has the most recent version.
+
+Thanks again guys.  Bravo!  Good work!  (And all that.)
+
+-Greg
+
+Date: Mon, 9 Sep 91 17:36:40 MED
+From: bojsen@dc.dth.dk (Per Bojsen)
+To: greg@lesosun1.epfl.ch
+Cc: her@compel.dk
+Subject: Distribution of a port of the RADIANCE package
+
+Hello Greg,
+
+> Thank you both for your work porting Radiance to the Amiga.  It is a shock
+> to me that anyone has attempted this, let alone two people from the same
+> country at the same time!
+>
+In fact it is a surprise for me too!  I don't know Helge personally,
+but I have seen him appear on USENET.
+
+> First off, I don't think we really need TWO ports of Radiance to the
+> Amiga, so I would like the two of you to have a little discussion and
+> fight it out among you to decide which and what to include in a distribution.
+>
+I agree with that.  The discussion has started.  One thing we have to
+agree upon is whether we will support old versions of the Amiga
+operating systems, or only the newest.  As soon as we have compared
+our ports and agreed upon the patches we'll let you know!
+
+						Per.
+
+========================================
+COLORPICT	Using the Colorpict primitive
+
+Date: Wed, 4 Sep 91 15:01:52 -0700
+From: chet@cs.uoregon.edu (Chet Haase)
+To: GJWard@Csa2.lbl.gov
+Subject: Colorpict function
+
+Hi.  I'm trying to get the Colorpict pattern to work right now and can't
+seem to manage it.  I see it being used in example pictures (such as
+model.new), but the source for those pictures is not in our distribution
+(1.2?).  Is there more documentation or examples elsewhere that
+I could get ahold of?   The main error that's occurring is:
+	rview: rfuncname: undefined function,
+where rfuncname is the rfunc I've defined in the .cal file (which it is
+finding).   But then, I'm not really sure what I should be using for these
+functions without a good example to work from (all I want to do is a straight 
+mapping of the image onto a polygonal surface in another image, so I'm not
+sure what parameters I should be using), so the source of the problem
+may be elsewhere.
+
+Thanks for your help.
+
+Incidentally, I've been using your Architrion translator that you sent me help
+on last Fall and it works great.  Thanks.
+
+Chet Haase
+CIS Department
+University of Oregon
+
+Date: Thu, 5 Sep 91 10:28:04 +0200
+From: greg (Greg Ward)
+To: chet@cs.uoregon.edu
+Subject: Re:  Colorpict function
+
+Hi Chet,
+
+You've discovered the worst documented part of Radiance -- function files!
+One day, I hope to make all this clear to people, but as you can see it
+is very muddy water.
+
+First off, rfuncname is just an example to get you to pick your own name
+as appropriate for your material.  Each of the primary color functions is
+a function of the three input primaries, thus allowing any mapping.  A
+straightfoward mapping (as defined in rayinit.cal) is:
+
+	red(r,g,b) = r;
+	green(r,g,b) = g;
+	blue(r,g,b) = b;
+
+You may want to use the clip_r, clip_g and clip_b functions instead to
+prevent reflectances greater than one (a no-no in any physical simulation).
+
+An example of this should be contained in the file "picture" in the directory
+model.new.  The actual files used, picture.cal and pine.pic, should be found
+in the Radiance library location (ray/lib in the distribution).  The additional
+arguments at the end of the colorpict define a transformation to get from
+the world coordinates to the coordinates desired for the picture, pic_u and 
+pic_v.
+
+If you can't find the files or have other specific questions, I'll be happy to
+help.  Otherwise, you could tell me exactly what you want and I could do it
+for you as the most appropriate example.
+
+-Greg
+
+Date: Thu, 5 Sep 91 13:27:40 -0700
+From: chet@cs.uoregon.edu (Chet Haase)
+To: GJWard@Csa2.lbl.gov
+Subject: colorpict revisited
+
+I couldn't find any of the examples you listed except picture.cal and the 
+picture only for model.new; I couldn't find the model.new directory or
+the pine file in either the radiance directory on the system or the latest distribution tape we have (1.3.1).  So while I kind of understand what
+I'm supposed to do, I'm apparently not getting the format or usage right
+because I keep getting the same errors.  
+
+
+
+
+I'll describe my situation a bit more clearly (hopefully):
+
+I've got a picture called rgb.pic of a monitor screen and I'd like to map
+it into a scene in which I've defined a monitor.  Using the functions in
+rayinit.cal and picture.cal as models, I've defined my own functions in
+rgbpic.cal:
+{
+	rgbpic.cal
+}
+
+clip_r(r,g,b) = min(r,1);
+clip_g(r,g,b) = min(g,1);
+clip_b(r,g,b) = min(b,1);
+rgb_u = 1;
+rgb_v = 1;
+ (Note - these are perhaps silly functions for doing what I want, but at this
+stage I just want to get the thing to compile)
+
+I then try to map the picture with colorpict using this .cal file like so
+void colorpict rgbpic
+7
+	clip_r(0,0,0) clip_g(0,0,0) clip_b(0,0,0) rgb.pic
+	rgbpic.cal rgb_u rgb_v 
+0
+0
+
+rgbpic plastic rgbimage
+0
+0
+5 1 1 1 .05 0
+
+rgbimage polygon rgbpicture
+0
+0
+12
+	.13 .481 .13
+	1.21 .481 .13
+	1.21 .481 .96
+	.13 .481 .96
+
+
+When I attempt to run rview on the .oct file, however, I get the error:
+rview: clip_r(0,0,0): undefined function
+
+Since it does find the .cal file (I've got RAYPATH defined correctly),
+I don't understand why it's not using the function I've defined.
+
+
+
+SO, the main problems I'm having are:
+1) the above function error and how to avoid it
+2) what functions/values I should be using for this purpose - I don't really
+want to do anything funky with textures or colors, I simply want to map
+the picture directly over what's in the scene.
+
+If that model.new file would show me more about how to do this, I'd love to
+see it.  The closest example I've found here is the source for the tennis
+ball picture, but it wasn't quite enough for me to get the colorpict usage
+down...
+
+
+Thanks for your help.
+
+Chet.
+
+Date: Fri, 6 Sep 91 10:05:26 +0200
+From: greg (Greg Ward)
+To: chet@cs.uoregon.edu
+Subject: Re:  colorpict revisited
+
+Hi Chet,
+
+I'll offer the following changes to the file, and hopefully you can
+get this to work.
+
+----------------------
+rgbpic.cal:
+{
+	rgbpic.cal
+}
+
+clip_r(r,g,b) = min(r,1);
+clip_g(r,g,b) = min(g,1);
+clip_b(r,g,b) = min(b,1);
+rgb_u = (Px-.13)/(.96-.13); 	{ was rgb_u = 1; }
+rgb_v = (Pz-.13)/(.96-.13);	{ was rgb_v = 1; }
+
+----------------------
+Radiance file:
+
+#
+# Took out the arguments for the following:
+#
+void colorpict rgbpic
+7
+	clip_r clip_g clip_b rgb.pic
+	rgbpic.cal rgb_u rgb_v 
+0
+0
+
+rgbpic plastic rgbimage
+0
+0
+5 1 1 1 .05 0
+
+rgbimage polygon rgbpicture
+0
+0
+12
+	.13 .481 .13
+	1.21 .481 .13
+	1.21 .481 .96
+	.13 .481 .96
+
+-------------------------
+
+The coordinate mapping I have made is based on the location, orientation,
+and size of the polygon in your file.  If any of these things change, you
+will have to change the coordinate mapping.  The simpler way to do this
+is to use picture.cal and add a transformation to the colorpict primitive,
+but since you're just trying to get it to work for now, I wanted to stay
+as close to your original as possible.
+
+The scalefactors for pictures is determined based on the aspect ratio.  I'm
+assuming that your picture has square pixels and will fill the polygon you
+have supplied, thus the horizontal (x) dimension is larger.  Quoting from
+the Radiance reference manual (ray.1):
+
+	The dimensions of the image data are determined by the picture
+	such that the smaller dimension is always 1, and the other
+	is the ratio between the larger and the smaller.
+	For example, a 500x338 picture would have coordinates (u,v)
+	in the rectangle between (0,0) and (1.48,1).
+
+Hope this works!
+-Greg
+
+Date: Fri, 6 Sep 91 16:31:05 -0700
+From: Chet Haase <chet@cs.uoregon.edu>
+To: greg@lesosun1.epfl.ch
+Subject: Re: colorpict revisited
+
+That was the kind of help I needed - problem solved.
+
+Thanks,
+Chet.
+
+===============================================
+DOS		Radiance under DOS?
+
+Date: Thu, 5 Sep 91 17:26:24 PDT
+From: Donald Yett <dyett@phad.hsc.usc.edu>
+To: greg@hobbes.lbl.gov
+Subject: Radiance questions
+
+Hi, I just grabbed the Radiance package and related files from the ftp site.. 
+I do have a few questions in hand.
+
+1). Has this ever been ported to (please don't flame me!) DOS?
+
+2). Is there a translator to convert the output to (yea I know it's limited
+format) GIF?
+
+In this day and age of 40-MIPS / 160 MFLOPS PC's I think it is a valid
+question, even though I don't condone people wasting their money just to run
+DOS!
+
+(Yea I said 160 MFLOPS!  Although that board would cost the end-user about
+$15k...)
+
+Date: Fri, 6 Sep 91 09:22:26 +0200
+From: greg (Greg Ward)
+To: dyett@phad.hsc.usc.edu
+Subject: Re:  Radiance questions
+
+No, no one I know of has ported it to DOS yet, but there is now an Amiga
+version they tell me and I use it on the Mac under A/UX and plenty of
+folks have gotten it on their IBM RS/2 running AIX.
+
+You are not the first to ask me this question, but since DOS is limited
+in so many ways with virtually no standard graphics interface, I
+haven't felt it was worth my time to attempt a port.  Even if I did
+port the software to a DOS platform that could handle it, I'then get
+hundreds of people coming to me with questions like, "I tried to get
+Radiance to run on my IBM AT and it said something about a memory
+error.  Do I need a hard drive?"  So, I don't think I'll be porting
+Radiance to MS-DOS in my lifetime.  Any takers?
+
+I have done some work on translators lately, but have not written anything
+for GIF.  I have now a Poskanzer Pixmap translator and one for the TIFF
+format, but gave up on Utah RLE format because it was too complicated and
+GIF because it's only 8 bits and rather nasty itself.
+
+My best advice is to pick up the pbmplus package which offers translation
+between many different image format "standards", including Targa and GIF,
+so you can get from Radiance to the format you want.  The pbmplus distribution
+is available via anonymous ftp from export.lcs.mit.edu (18.30.0.238)
+in the file "contrib/pbmplus.tar.Z".  Not everything works perfectly,
+but it's the best package I know of in the public domain.  Personally,
+I prefer PhotoShop from Adobe, which does image manipulation as well as
+import/export from many formats.
+
+-Greg
+
+==========================================
+RVIEW		Rview and memory
+
+Date: Thu, 5 Sep 91 09:04:54 EST
+From: vanwyk@arc.cmu.edu (Skip Van Wyk)
+To: greg@lesosun1.epfl.ch
+Status: RO
+
+Greg, I got the conf model up and running.  I have 16MB on this
+Sparc2.  Though it is also configured as a server for 8 accounts, right
+now they are inactive.
+
+Anyway, the conf scene cooked away for about 2.5 hours before I went
+home last night; it looked good, even in 8bit.  Sometime during the
+night, I got the message
+
+rview: system - out of memory in refine:  Not enough memory
+*** Error code 2
+
+What kind of memory do you have?  And would everything have worked if I
+logged out?
+
+--Skip
+
+Date: Fri, 6 Sep 91 10:11:57 +0200
+From: greg (Greg Ward)
+To: vanwyk@arc.cmu.edu
+Subject: rview and memory
+
+Hi Skip,
+
+The problem is that you shouldn't be using rview to do your rendering.
+You should use it to figure out what view you want, write it out with
+the view command, then use rpict with the -vf option to read the view
+and render the file in the background.  Rview is meant to be a previewer,
+and uses up tons of memory as it goes to higher resolutions.  I've made
+an enhancement for the next release that keeps rview from bombing when
+it runs out of memory, but it will still run out of memory if you haven't
+enough swap space on your disk.  A simple example of an rpict command is:
+
+	% rpict -vf myview.vp -av .04 .04 .04 electric.oct > myview.pic &
+
+Afterwards, you can logout and come back in the morning to see if the
+process is still running (using ps).  The values for -av I selected for
+the conference room model in particular, and they would be different for
+a different scene.  (I'm also assuming that you did a "view myview.vp"
+command in rview or you can use one of the provided view files in the
+vf subdirectory instead.)
+
+-Greg
+
+===================================================
+LIGHTS		Non-standard Light Sources
+
+Date: Sat, 7 Sep 1991 15:18 EDT
+From: elci@pluto.gs.com (Reha Elci)
+Subject: radiance 4.0 questions + problems
+To: GJWARD@Csa2.lbl.gov
+
+First, I'd like to say that this is really a great package for learning and
+production! Thanks for making this available on the net. I have a DECStation
+with a PXG card; and the only problem I had so far is that ximage does not
+work (probably does not recognize the visual); it produces no picture and
+a lot of XServer errors (bad value). Currently I do a pvalue the pic file into
+an rle file to display it.
+
+But I have a question as well; cylinders as light sources are not supported
+neither is "glow" applied to plastic or dielectric. So how does one go 
+about doing neon lights or glowing rubys? Those examples would truly
+demonstrate the power of radiosity. Testing for a maximum radius for shadow
+testing (like you support on glow) would even make it better! Is there a
+work around? Thanks for all your help.
+
+Reha Elci
+
+PS: Please add me to the newuser list; the automatic mailing failed since
+my mail does not go thru to internet directly. Thanks.
+
+Date: Thu, 12 Sep 91 11:19:22 +0200
+From: greg (Greg Ward)
+To: elci@pluto.gs.com
+Subject: Re:  radiance 4.0 questions + problems
+
+Dear Reha,
+
+I am sorry but I don't think I can help you with your ximage problems.
+I have found it very difficult to debug such things remotely, and X11
+servers seem to be particularly flakey when it comes to color.  For
+example, I know very well that 24-bit color does not work properly
+in ximage, but I have no hardware to test it on and the hardware I
+have tried seems unreliable.
+
+I do plan to make cylinders usable as light sources in the near future,
+but until then the only way to model neon tubes is to break the tubes
+into many small polygons.  You can use gensurf to help you with that.
+An example to create a tube of length 1 and radius .05:
+
+	gensurf neon lamp '.05*sin(2*PI*t)' '.05*cos(2*PI*t)' 's' 20 6
+
+You would then define the neon material using type glow with a maximum
+radius of .5 (if you only wanted to illuminate nearby objects):
+
+	void glow neon
+	0
+	0
+	4 20 1 2 .5
+
+As for glowing jewels, I'm not sure what you suggest is really physical.
+Gems usually "glow" because of light reflected many times within the
+stone and scintillation processes (in rubies for example).  You can
+simulate this in Radiance by giving the red transmission coefficient
+for a dielectric a value greater than one.  Note that giving values
+greater than one for all three coefficients would mean that the
+material was generating radiation -- which would be wrong in the
+case of non-radioactive materials.
+
+Hope this helps.
+-Greg
+

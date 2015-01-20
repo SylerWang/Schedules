@@ -1,0 +1,30 @@
+PSMETA(1)                                                            PSMETA(1)
+
+
+
+NNAAMMEE
+       psmeta - convert metafile to PostScript
+
+SSYYNNOOPPSSIISS
+       ppssmmeettaa file ..
+
+DDEESSCCRRIIPPTTIIOONN
+       _P_s_m_e_t_a  reads  each  metafile _f_i_l_e in sequence and converts it to Post-
+       Script output suitable for a standard letter-size page.  The file  pro-
+       duced may also be read into programs that can handle Encapsulated Post-
+       Script.  If no input files are specified, the standard input is read.
+
+EEXXAAMMPPLLEE
+       To print the plot file example.plt to the ap5 printer:
+
+         bgraph example.plt | psmeta | lpr -P ap5
+
+AAUUTTHHOORR
+       Greg Ward
+
+SSEEEE AALLSSOO
+       bgraph(1), igraph(1), lpr(1), meta2bmp(1), meta2tga(1), x11meta(1)
+
+
+
+RADIANCE                            6/24/98                          PSMETA(1)

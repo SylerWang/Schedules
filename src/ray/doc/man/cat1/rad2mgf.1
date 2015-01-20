@@ -1,0 +1,65 @@
+RAD2MGF(1)                                                          RAD2MGF(1)
+
+
+
+NNAAMMEE
+       rad2mgf  - convert RADIANCE scene description to Materials and Geometry
+       Format
+
+SSYYNNOOPPSSIISS
+       rraadd22mmggff [ --ddUU ] [ iinnppuutt ....  ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _R_a_d_2_m_g_f converts one or more RADIANCE scene files to the Materials  and
+       Geometry  Format (MGF).  Input units are specified with the _-_m_U option,
+       where _U is one of 'm' (meters), 'c' (centimeters), 'f'  (feet)  or  'i'
+       (inches).   The  assumed  unit  is meters, which is the required output
+       unit for MGF (thus the need to know).  If the input dimensions  are  in
+       none  of  these  units, then the user should apply _x_f_o_r_m_(_1_) with the _-_s
+       option to bring the units into line prior to translation.
+
+       The MGF material names and properties for the surfaces  will  be  those
+       assigned  in  RADIANCE.  If a referenced material has not been defined,
+       then its name will be invoked in the MGF output without definition, and
+       the description will be incomplete.
+
+LLIIMMIITTAATTIIOONNSS
+       Although  MGF  supports  all of the geometric types and the most common
+       material types used in RADIANCE, there  is  currently  no  support  for
+       advanced  BRDF  materials,  patterns,  textures or mixtures.  Also, the
+       special types "source" and "antimatter"  are  not  supported,  and  all
+       light source materials are converted to simple diffuse emitters (except
+       "illum" materials, which are converted  to  their  alternates).   These
+       primitives  are  reproduced  as  comments  in  the  output  and must be
+       replaced manually if necessary.
+
+       The RADIANCE "instance" and "mesh" types aretreated specially.  _R_a_d_2_m_g_f
+       converts  each  instance or mesh to an MGF include statement, using the
+       corresponding transformation and a file name derived from the octree or
+       mesh  name.   (The original octree/mesh suffix is replaced by ".mgf".)
+       For this to work, the user must separately create  the  referenced  MGF
+       files  from  the  original RADIANCE descriptions.  The description file
+       names can usually be determined using the _g_e_t_i_n_f_o_(_1_) command run on the
+       octrees in question.
+
+EEXXAAMMPPLLEE
+       To convert three RADIANCE files (in feet) to one MGF file:
+
+         rad2mgf -df file1.rad file2.rad file3.rad > scene.mgf
+
+       To translate a RADIANCE materials file to MGF:
+
+         rad2mgf materials.rad > materials.mgf
+
+AAUUTTHHOORR
+       Greg Ward
+
+SSEEEE AALLSSOO
+       getinfo(1),  ies2rad(1), mgf2meta(1), mgf2rad(1), obj2rad(1), oconv(1),
+       xform(1)
+
+       MGF web site "http://radsite.lbl.gov/mgf/HOME.html"
+
+
+
+RADIANCE                            5/15/95                         RAD2MGF(1)

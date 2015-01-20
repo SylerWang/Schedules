@@ -1,0 +1,56 @@
+RA_PPM(1)                                                            RA_PPM(1)
+
+
+
+NNAAMMEE
+       ra_ppm - convert RADIANCE picture to/from a Poskanzer Portable Pixmap
+
+SSYYNNOOPPSSIISS
+       rraa__ppppmm [ --rr ][ --aa ][ --bb ][ --ss mmaaxxvv ][ --gg ggaammmmaa ][ --ee ++//--ssttooppss ] [ iinnppuutt
+       [ oouuttppuutt ] ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _R_a___p_p_m converts between RADIANCE and Poskanzer Portable Pixmap formats.
+       The  _-_g  option  specifies  the  exponent used in gamma correction; the
+       default value is 2.2.  An exponent of 1  turns  gamma  correction  off.
+       The  _-_e option specifies an exposure compensation in f-stops (powers of
+       two).  Only integer stops are allowed, for efficiency.  The  _-_r  option
+       invokes  a reverse conversion, from a Pixmap to a RADIANCE picture.  If
+       the output file is missing, the standard output is used.  If the  input
+       file is missing as well, the standard input is used.
+
+       The  _-_a  option produces a standard ASCII Pixmap representation instead
+       of the default binary file.  The file is much larger and the conversion
+       is  much slower, which is why this format is not normally used.  The _-_b
+       option forces greyscale output.  The  _-_s  option  controls  the  output
+       scale,  which  is 255 by default.  If this value is set above 255, then
+       two bytes will be output for each component in binary mode.   This  may
+       not  be  understood  by some PPM readers, which do not understand files
+       with maximum values greater than 255.  The maximum allowed setting  for
+       this parameter is 65535.
+
+       With  the  _-_r  option,  the type of the Pixmap input file is determined
+       automatically.  _R_a___p_p_m will read either  greyscale  or  color  Pixmaps,
+       with any precision up to a maximum scale of 65535.
+
+NNOOTTEESS
+       The Poskanzer Portable Bitmap Plus package contains translators between
+       the Pixmap format and many of the dozen or so  image  file  "standards"
+       that  exist.   At  the  time  of this writing, the software is free and
+       available by anonymous ftp from export.lcs.mit.edu (18.30.0.238) in the
+       file "contrib/pbmplus.tar.Z".
+
+AAUUTTHHOORR
+       Greg Ward
+
+AACCKKNNOOWWLLEEDDGGEEMMEENNTT
+       Work  on  this program was initiated and sponsored by the LESO group at
+       EPFL in Switzerland and Silicon Graphics, Inc.
+
+SSEEEE AALLSSOO
+       pfilt(1),  ra_bmp(1),   ra_bn(1),   ra_pr(1),   ra_pr24(1),   ra_t8(1),
+       ra_t16(1), ra_tiff(1), ximage(1)
+
+
+
+RADIANCE                            2/10/99                          RA_PPM(1)

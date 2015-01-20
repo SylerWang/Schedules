@@ -1,0 +1,61 @@
+RLAM(1)                                                                RLAM(1)
+
+
+
+NNAAMMEE
+       rlam - laminate records from multiple files
+
+SSYYNNOOPPSSIISS
+       rrllaamm [ --ttSS ][ --iiaaNN | --iiffNN | --iiddNN | --iiwwNN ] input1 input2 ..
+
+DDEESSCCRRIIPPTTIIOONN
+       _R_l_a_m  simply  joins records (or lines) from multiple inputs, separating
+       them with the given string (TAB by default).  Different separators  may
+       be  given  for  different  files by specifying additional _-_t options in
+       between each file name.  Note that  there  is  no  space  between  this
+       option and its argument.  If none of the input files uses an ASCII sep-
+       arator, then no end-of-line character will be printed, either.
+
+       An input is either a stream  or  a  command.   Commands  are  given  in
+       quotes,  and  begin with an exclamantion point ('!').  If the inputs do
+       not have the same number of lines, then shorter files  will  stop  con-
+       tributing to the output as they run out.
+
+       The _-_i_a option may be used to specify ASCII input (the default), or the
+       _-_i_f option may be used to indicated binary IEEE 32-bit floats on input.
+       Similarly,  the  _-_i_d  and  _-_i_w  options  may be used to indicate binary
+       64-bit doubles or integer words, respectively.  If an number is immedi-
+       ately  follows  any  of  these options, then it indicates that multiple
+       such values are expected for each record.  For example, _-_i_f_3  indicates
+       three floats per input record for the next named input.  In the case of
+       the _-_i_a option, no number indicates one line per input record, and num-
+       bers  greater  than  zero  indicate  that  many  characters exactly per
+       record.  For binary input formts,  no  number  implies  one  value  per
+       record.   For  anything other than EOL-separated input, the default tab
+       separator is reset to the empty string.
+
+       A hyphen ('-') by itself can be used to indicate  the  standard  input,
+       and may appear multiple times.
+
+EEXXAAMMPPLLEE
+       To join files output1 and output2, separated by a comma:
+
+         rlam -t, output1 output2
+
+       To join a file with line numbers (starting at 0) and its reverse:
+
+         cnt `wc -l < lam.c` | rlam - -t: lam.c -t '!tail -r lam.c'
+
+       To join four data files, each having three doubles per record:
+
+         rlam -id3 file1.dbl file2.dbl file3.dbl file4.dbl > combined.dbl
+
+AAUUTTHHOORR
+       Greg Ward
+
+SSEEEE AALLSSOO
+       cnt(1), histo(1), neaten(1), rcalc(1), tabfunc(1), total(1)
+
+
+
+RADIANCE                            7/8/97                             RLAM(1)

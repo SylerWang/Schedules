@@ -1,0 +1,122 @@
+ICALC(1)                                                              ICALC(1)
+
+
+
+NNAAMMEE
+       icalc - interactive calculator
+
+SSYYNNOOPPSSIISS
+       iiccaallcc [ ffiillee ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _I_c_a_l_c is a algebraic calculator designed primarily for interactive use.
+       Each formula definition _f_i_l_e is read and compiled.  The standard  input
+       is  then  read,  expressions  are evaluated and results are sent to the
+       standard output.  If a newline is escaped using a backslash,  input  is
+       continued on the next line.
+
+       An  expression  contains  real numbers, variable names, function calls,
+       and the following operators:
+
+            +  -  *  /  ^
+
+       Operators are evaluated left to right, except '^', which is right asso-
+       ciative.  Exponentiation has the highest precedence; multiplication and
+       division are evaluated before addition  and  subtraction.   Expressions
+       can  be  grouped  with  parentheses.  Each result is assigned a number,
+       which can be used in future expressions.  For example,  the  expression
+       ($3*10)  is  the  result of the third calculation multiplied by ten.  A
+       dollar sign by itself may be used for the previous result.  All  values
+       are double precision real.
+
+       In  addition,  variables  and  functions can be defined by the user.  A
+       variable definition has the form:
+
+
+            var = expression ;
+
+
+       Any instance of the variable in an expression will be replaced with its
+       definition.  A function definition has the form:
+
+
+            func(a1, a2, ..) = expression ;
+
+
+       The  expression can contain instances of the function arguments as well
+       as other variables and functions.  Function  names  can  be  passed  as
+       arguments.   Recursive  functions  can  be  defined  using calls to the
+       defined function or other functions calling the defined function.
+
+       To define a constant expression, simply replace the equals  sign  ('=')
+       with a colon (':') in a definition.  Constant expressions are evaluated
+       only once, the first time they are used.  This avoids repeated  evalua-
+       tion  of  expressions  whose  values never change.  Ideally, a constant
+       expression contains only numbers and references to  previously  defined
+       constant  expressions and functions.  Constant function definitions are
+       are replaced by their value in any expression that uses them with  con-
+       stant  arguments.  All predefined functions and variables have the con-
+       stant attribute.  Thus, "sin(PI/4)" in an expression would  be  immedi-
+       ately  replaced  by  ".707108" unless sin() or PI were redefined by the
+       user.  (Note that redefining constant expressions is not a  recommended
+       practice!)
+
+       A variable or function's definition can be displayed with the '?'  com-
+       mand:
+
+            ? name
+
+       If no name is given, all definitions  are  printed.   The  '>'  command
+       writes definitions to a file:
+
+            > file
+
+       Similarly, the '<' command loads definitions.
+
+       The  following  library  of  predefined functions and variables is pro-
+       vided:
+
+       PPII        the ratio of a circle's circumference to its diameter.
+
+       iiff((ccoonndd,, tthheenn,, eellssee))
+                 if cond is greater than zero, then  is  evaluated,  otherwise
+                 else  is evaluated.  This function is necessary for recursive
+                 definitions.
+
+       sseelleecctt((NN,, aa11,, aa22,, ....))
+                 return aN (N is rounded to the nearest integer).  This  func-
+                 tion  provides  array capabilities.  If _N is zero, the number
+                 of available arguments is returned.
+
+       rraanndd((xx))   compute a random number between 0 and 1 based on x.
+
+       fflloooorr((xx))  return largest integer not greater than x.
+
+       cceeiill((xx))   return smallest integer not less than x.
+
+       ssqqrrtt((xx))   return square root of x.
+
+       eexxpp((xx))    compute e to the power of x (e approx = 2.718281828).
+
+       lloogg((xx))    compute the logarithm of x to the base e.
+
+       lloogg1100((xx))  compute the logarithm of x to the base 10.
+
+       ssiinn((xx)),, ccooss((xx)),, ttaann((xx))
+                 trigonometric functions.
+
+       aassiinn((xx)),, aaccooss((xx)),, aattaann((xx))
+                 inverse trigonometric functions.
+
+       aattaann22((yy,, xx))
+                 inverse tangent of y/x (range -pi to pi).
+
+AAUUTTHHOORR
+       Greg Ward
+
+SSEEEE AALLSSOO
+       ev(1), rcalc(1), tabfunc(1)
+
+
+
+RADIANCE                            2/3/95                            ICALC(1)

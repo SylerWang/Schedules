@@ -1,0 +1,41 @@
+GETINFO(1)                                                          GETINFO(1)
+
+
+
+NNAAMMEE
+       getinfo - get header information from a RADIANCE file
+
+SSYYNNOOPPSSIISS
+       ggeettiinnffoo [ --dd ][ ffiillee ....  ]
+       ggeettiinnffoo -
+
+DDEESSCCRRIIPPTTIIOONN
+       _G_e_t_i_n_f_o  reads  the  header  of each RADIANCE _f_i_l_e and writes it to the
+       standard output.  Octree and picture files  are  in  a  binary  format,
+       which  makes it difficult to determine their content.  Therefore, a few
+       lines of text are placed at the beginning of each file by the  RADIANCE
+       program  that  creates  it.   The end of the header information and the
+       start of the data is indicated by an empty line.  The _-_d option can  be
+       used to print the dimensions of an octree or picture file instead.  For
+       an octree, _g_e_t_i_n_f_o _-_d prints the bounding cube (xmin ymin  zmin  size).
+       For  a  picture,  _g_e_t_i_n_f_o  _-_d prints the y and x resolution (-Y yres +X
+       xres).  If no _f_i_l_e is given, the standard input is read.
+
+       The second form of getinfo with a hyphen simply removes the header  and
+       copies  the  body  of  the file from the standard input to the standard
+       output.
+
+EEXXAAMMPPLLEE
+       To print the header information from scene1.oct and scene2.hdr:
+
+         getinfo scene1.oct scene2.hdr
+
+AAUUTTHHOORR
+       Greg Ward
+
+SSEEEE AALLSSOO
+       oconv(1), pfilt(1), rhinfo(1), rpict(1), rvu(1)
+
+
+
+RADIANCE                            1/15/99                         GETINFO(1)

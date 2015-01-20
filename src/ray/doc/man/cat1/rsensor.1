@@ -1,0 +1,75 @@
+RSENSOR(1)                                                          RSENSOR(1)
+
+
+
+NNAAMMEE
+       rsensor - compute sensor signal from a RADIANCE scene
+
+SSYYNNOOPPSSIISS
+       rrsseennssoorr  [  --nn nnpprrooccss ][ --hh ][ rreennddeerr ooppttiioonnss ] [ $$EEVVAARR ] [ @@ffiillee ] { [
+       --rrdd nnrraayyss ][ --ddnn nnssrrcc ][ sseennssoorr__vviieeww ] sseennssoorr__ffiillee ....  } ooccttrreeee
+       rrsseennssoorr [[ ooppttiioonnss ]] --ddeeffaauullttss
+
+DDEESSCCRRIIPPTTIIOONN
+       _R_s_e_n_s_o_r traces rays outward from one  or  more  specified  illumination
+       sensors  into  the RADIANCE scene given by _o_c_t_r_e_e_, sending the computed
+       sensor value to the standard output.  (The octree may be given  as  the
+       output  of a command enclosed in quotes and preceded by a `!'.)  In the
+       second form, the default values for  the  options  (modified  by  those
+       options present) are printed with a brief explanation.
+
+       Options  may be given on the command line and/or read from the environ-
+       ment and/or read from a file.  A command argument beginning with a dol-
+       lar  sign  ('$')  is  immediately replaced by the contents of the given
+       environment variable.  A command argument beginning  with  an  at  sign
+       ('@') is immediately replaced by the contents of the given file.
+
+       The  sensor files themselves will be searched for in the path locations
+       specified by the _R_A_Y_P_A_T_H environment variable, similar to  other  types
+       of  Radiance auxiliary files.  If the sensor file path begins with '/',
+       '.' or '~', no search will take place.  Before each sensor file, a sep-
+       arate  view may be specified.  In this case, the view origin and direc-
+       tion will correspond to the position and orientation of the sensor, and
+       the  view  up vector will determine the zero azimuthal direction of the
+       sensor.  The fore clipping distance may be used as well, but other view
+       options will be ignored.  (See _r_p_i_c_t_(_1_) for details on how to specify a
+       view.)  The actual data contained in the sensor file corresponds to the
+       _S_P_O_T  tab-separated  matrix  specification, where the column header has
+       "degrees" in the leftmost column, followed by  evenly-spaced  azimuthal
+       angles.   Each  row begins with the polar angle, and is followed by the
+       relative sensitivity values for each direction.  A low-resolution exam-
+       ple of a sensor file is given below:
+
+            degrees   0    90   180  270
+            0    .02  .04  .02  .04
+            45   .01  .02  .01  .02
+            90   .001 .002 .001 .002
+
+       As  well  as  different  views,  the  number  of samples may be changed
+       between sensors, where the _-_r_d option controls the number of  ray  sam-
+       ples  sent  at  random,  and the _-_d_n option controls the number of rays
+       sent to each light source per sensor.
+
+       The _-_h option toggles header output, which defaults to  "on."   The  _-_n
+       option may be used to specify multiple calculation processes on systems
+       with more than one CPU.  For additional options, consult the  _r_t_r_a_c_e_(_1_)
+       man  page.  The final _o_c_t_r_e_e argument must be given, as the octree can-
+       not be read from the standard input.
+
+EEXXAAMMPPLLEESS
+       To compute values for the same sensor with two different positions:
+
+         rsensor -ab 2 -vf posA.vf mysens.dat -vf posB.vf mysens.dat scene.oct
+
+EENNVVIIRROONNMMEENNTT
+       RAYPATH        the directories to check for auxiliary files.
+
+AAUUTTHHOORR
+       Greg Ward for Architectural Energy Corporation
+
+SSEEEE AALLSSOO
+       oconv(1), rpict(1), rtcontrib(1), rtrace(1)
+
+
+
+RADIANCE                           4/11/2008                        RSENSOR(1)

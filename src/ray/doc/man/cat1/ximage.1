@@ -1,0 +1,156 @@
+XIMAGE(1)                                                            XIMAGE(1)
+
+
+
+NNAAMMEE
+       ximage - RADIANCE picture display for X window system
+
+SSYYNNOOPPSSIISS
+       xxiimmaaggee [ ==ggeeoommeettrryy ][ --ddii ddiissppllaayy ][ --cc nnccoolloorrss ][ --dd ][ --bb ][ --mm ][ --gg
+       ggaammmmaa ][ --ff ][ --ee ssppeecc ][ --oo_s_p_e_c ][ --tt iinnttvvll ][ --ss ] ppiiccttuurree ....
+
+DDEESSCCRRIIPPTTIIOONN
+       _X_i_m_a_g_e takes one or more RADIANCE picture files and displays them on an
+       X server.  The _-_c option specifies the number of colors to use (default
+       fills color table).  The _-_d option turns off color dithering.   The  _-_b
+       option  displays  the  image  in  black  and white (greyscale).  The _-_m
+       option forces monochrome output.  The _-_g option specifies the  exponent
+       used  in  gamma  correction;  the  default value is 2.2.  The _-_f option
+       stores a Pixmap on the server side for faster refresh.   This  may  not
+       work  with  large  images  on  some servers.  The _-_o option specifies a
+       sequence of information to print to the standard  output  for  the  't'
+       command  (see  below).   The _-_t option specifies a minimum interval (in
+       milliseconds) between successive ray outputs  in  mouse  tracking  mode
+       (right button pressed).
+
+       The  _-_e option specifies an exposure compensation in f-stops (powers of
+       two).  Only integer stops are allowed, for efficiency.  If the  special
+       word,  _a_u_t_o is given instead of a number of stops, then _x_i_m_a_g_e performs
+       an automatic exposure adjustment similar to _p_c_o_n_d_(_1_)_,  compressing  the
+       dynamic  range of the image to fit within the dynamic range of the dis-
+       play.  If the special word, _h_u_m_a_n is given instead,  then  _x_i_m_a_g_e  per-
+       forms  an  exposure  adjustment  similar  to  _p_c_o_n_d  with the _-_s and _-_c
+       options, which compensate for human contrast and color  sensitivity  at
+       the  corresponding  scene  luminance  levels.   This  option yeilds and
+       appearance of the scene on the display that closely matches what  would
+       be experienced in the real world.
+
+       The  _-_s  option tells _x_i_m_a_g_e to display multiple pictures sequentially,
+       rather than all at once.  If no _p_i_c_t_u_r_e is given, input  is  read  from
+       stdin provided either the _-_b or _-_m option is in effect, or the X server
+       is capable of 24-bit color.  However, many of the commands given  below
+       will not work.
+
+CCOOMMMMAANNDDSS
+       Once  a  picture  is displayed, the user may perform a number of opera-
+       tions.  Some of the operations make use of an area of interest, defined
+       by  pressing  the left mouse button and dragging the cursor over a sec-
+       tion of the image.  Pressing the button and  immediately  releasing  it
+       defines  a single point as the area of interest.  A command is a single
+       character.
+
+       qq         Quit picture.  (Also Q or ^D.)
+
+       <<ssppaaccee>>   Redraw the area of interest.
+
+       ^^RR        Redraw the entire image.
+
+       <<rreettuurrnn>>  Display the radiance averaged over the area of interest.  The
+                 maximum of the three (RGB) channels is reported.
+
+       ll         Display  the  photometrically-weighted luminance value in the
+                 area of interest.  This assumes that the image was  correctly
+                 computed in terms of luminance.
+
+       cc         Display the color in the area of interest, as adjusted by the
+                 current exposure setting.
+
+       pp         Display the x and y location of the cursor.
+
+       ii         Identify identical pixels by assigning a random color at  the
+                 cursor  position.   This  is  useful for displaying contours,
+                 especially when combined with the -b option.
+
+       tt         Print information about the pixel under the cursor  according
+                 to  the  string  following  the  _-_o command line option.  The
+                 valid characters for this option correspond  roughly  to  the
+                 other _x_i_m_a_g_e commands:
+
+                 o    ray origin
+
+                 d    ray direction
+
+                 v    radiance value
+
+                 l    luminance value
+
+                 p    pixel position
+
+                 The default output is "-ood", which prints the ray origin and
+                 direction.  This can be used as input  to  rtrace(1)  to  get
+                 additional  information  about the image (ie. pipe the output
+                 of ximage into rtrace).  Pressing the middle mouse button  is
+                 equivalent  to  typing the 't' key.  Pressing and holding the
+                 right mouse button is equivalent to continuously pressing the
+                 't' key.
+
+       ==         Adjust the exposure to the area of interest.  A crude adjust-
+                 ment is made immediately, and the number of stops is  printed
+                 while  the  colors  are  resampled.  After a few seconds to a
+                 minute, the final image  is  redisplayed.   If  the  area  of
+                 interest  is already within 1/2 stop of the ideal, no adjust-
+                 ment is made.
+
+       @@         Same as '=' command, only the exposure is adjusted to provide
+                 roughly the same visibility for the selected region on screen
+                 as a viewer would experience in the actual space.   Like  the
+                 'l'  command, this adjustment assumes that the image has been
+                 correctly computed in terms of luminance.  (See also the  'h'
+                 command, below.)
+
+       aa         Perform  automatic  exposure  compensation, as if _x_i_m_a_g_e were
+                 started with the _-_e _a_u_t_o option.  If a rectangular  area  has
+                 been  selected,  the pixels in this region will be emphasized
+                 in the histogram, offering  this  area  exposure  preference.
+                 (Each  pixel within the rectangle will be weighted as 21 out-
+                 side pixels.)
+
+       hh         Perform  human  expsoure  compensation,  as  if  _x_i_m_a_g_e  were
+                 started  with the _-_e _h_u_m_a_n option.  See the 'a' command above
+                 regarding pixel weighting.
+
+       00         Reset the origin to the upper left corner of the image.  This
+                 command  is used to restore the original image position after
+                 using the shift or control key with the mouse to relocate the
+                 image within the frame (see below).
+
+       ff         Switch  on  the  fast  redraw  option _(_-_f_)_, loading the image
+                 pixmap over to the server side.  This command is useful  when
+                 network  delays  are causing slow image refresh, and the user
+                 didn't notice it until after _x_i_m_a_g_e was started.
+
+       FF         Switch off the fast redraw option.  This frees up some memory
+                 on  the server, as well as the color table for other windows.
+
+       In addition to the commands listed above, the control or shift key  may
+       be  held while the cursor is dragged to reposition the image within the
+       window.
+
+XX RREESSOOUURRCCEESS
+       radiance.gamma the default gamma correction value
+
+EENNVVIIRROONNMMEENNTT
+       DISPLAY_GAMMA       the default gamma correction value
+
+AAUUTTHHOORRSS
+       Greg Ward
+       Anat Grynberg (Paris)
+       Philip Thompson (MIT)
+
+SSEEEE AALLSSOO
+       aedimage(1),  normtiff(1),  pcond(1),  pfilt(1),  rpict(1),  rtrace(1),
+       rvu(1), xglaresrc(1), xshowtrace(1)
+
+
+
+RADIANCE                           10/27/98                          XIMAGE(1)

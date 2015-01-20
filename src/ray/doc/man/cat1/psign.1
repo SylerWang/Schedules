@@ -1,0 +1,92 @@
+PSIGN(1)                                                              PSIGN(1)
+
+
+
+NNAAMMEE
+       psign - produce a RADIANCE picture from text.
+
+SSYYNNOOPPSSIISS
+       ppssiiggnn [ ooppttiioonnss ] [ tteexxtt ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _P_s_i_g_n produces a RADIANCE picture of the given _t_e_x_t_.  The output dimen-
+       sions are determined by the character height, aspect ratio,  number  of
+       lines  and  line length.  (Also the character size if text squeezing is
+       used.)  If no _t_e_x_t is given, the standard input is read.
+
+       --ccbb _r _g _b Set the background color to _r _g _b The default is white  (1  1
+                 1).
+
+       --ccff _r _g _b Set  the  foreground color to _r _g _b The default is black (0 0
+                 0).
+
+       --ddrr       Text reads to the right (default).
+
+       --dduu       Text reads upwards.
+
+       --ddll       Text reads to the left (upside down).
+
+       --dddd       Text reads downwards.
+
+       --hh _c_h_e_i_g_h_t
+                 Set the character height to _c_h_e_i_g_h_t_.  The default is 32  pix-
+                 els.
+
+       --aa _a_s_p_e_c_t Set the character aspect ratio (height/width) to _a_s_p_e_c_t_.  The
+                 default value is 1.67.
+
+       --xx _x_s_i_z_e  Set the horizontal image size to _x_s_i_z_e_.  Use with  _-_y  option
+                 (below)  in  place  of the _-_h specification to control output
+                 image size directly.   If  the  character  aspect  ratio  _(_-_a
+                 option,  above) is non-zero, then one of the specified x or y
+                 output dimensions may be reduced to maintain this ratio.   If
+                 direction is right _(_-_d_r_) or left _(_-_d_l_)_, then it is not neces-
+                 sary to give the _-_y option, since it can be computed from the
+                 character height _(_-_h_)_.
+
+       --yy _y_s_i_z_e  Set the vertical image size to _y_s_i_z_e_.  Use with the _-_x option
+                 (described above).  If direction is up _(_-_d_u_) or  down  _(_-_d_d_)_,
+                 then  it is not necessary to give the _-_x option, since it can
+                 be computed from the character height _(_-_h_)_.
+
+       --ss _s_p_a_c_i_n_g
+                 Set the intercharacter spacing to _s_p_a_c_i_n_g_.  The magnitude  of
+                 this  value  is  multiplied  by the character height over the
+                 aspect ratio (ie. the character width) to compute the desired
+                 distance  between  characters in the output.  The sign of the
+                 value, positive or negative, determines how this ideal  spac-
+                 ing  is used in the actual placement of characters.  If _s_p_a_c_-
+                 _i_n_g is positive, then the overall width of the line will  not
+                 be affected, nor will indentation of textual elements.  Thus,
+                 the text format will be mostly unaffected.  However,  spacing
+                 between  characters  will  reflect  their relative size for a
+                 more natural appearance.  If _s_p_a_c_i_n_g is negative,  characters
+                 will  be  squeezed  together  to  meet the spacing critereon,
+                 regardless of how it might affect the format of  the  output.
+                 The  default  value for _s_p_a_c_i_n_g is zero, which is interpreted
+                 as uniformly spaced characters.
+
+       --ff _f_o_n_t_f_i_l_e
+                 Load the font from _f_o_n_t_f_i_l_e_.  The default font is helvet.fnt
+
+EEXXAAMMPPLLEE
+       To put a big "Hi!" on the terminal:
+
+         psign -h 22 -a 1 -cb 0 0 0 -cf 1 1 1 Hi\! | ttyimage
+
+EENNVVIIRROONNMMEENNTT
+       RAYPATH        path to search for font files
+
+AAUUTTHHOORR
+       Greg Ward
+
+BBUUGGSS
+       The entire bitmap is stored in memory, which can be a problem for large
+       and/or high-resolution signs.
+
+SSEEEE AALLSSOO
+       getinfo(1), pcompos(1), pfilt(1), ttyimage(1)
+
+
+
+RADIANCE                            10/9/97                           PSIGN(1)

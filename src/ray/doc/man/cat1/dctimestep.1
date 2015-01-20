@@ -1,0 +1,60 @@
+DCTIMESTEP(1)                                                    DCTIMESTEP(1)
+
+
+
+NNAAMMEE
+       dctimestep - compute annual simulation time-step via matrix multiplica-
+       tion
+
+SSYYNNOOPPSSIISS
+       ddccttiimmeesstteepp VVssppeecc TTbbssddff..xxmmll DDmmaatt..ddaatt [ ttrreeggvveecc ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _D_c_t_i_m_e_s_t_e_p takes four input files, forming a  matrix  expression.   The
+       first argument is the View matrix file that specifies how window output
+       directions are related to some set of measured values, such as an array
+       of  illuminance  points  or images.  This matrix is usually computed by
+       _r_t_c_o_n_t_r_i_b_(_1_) for a particular set of windows or skylight openings.  The
+       second  argument is the window transmission matrix, or BSDF, given as a
+       standard XML description.  The third argument is  the  Daylight  matrix
+       file  that  defines  how  sky patches relate to input directions on the
+       same opening.  This  is  usually  computed  using  _g_e_n_k_l_e_m_s_a_m_p_(_1_)  with
+       _r_t_c_o_n_t_r_i_b  in  a  separate run for each window or skylight orientation.
+       The final input is the sky contribution  vector,  usually  computed  by
+       _g_e_n_s_k_y_v_e_c_(_1_)_,  which  may  be  passed on the standard input.  This data
+       must be in ASCII format, whereas the View  and  Daylight  matrices  are
+       more efficiently represented as binary float data if machine byte-order
+       is not an issue.
+
+       Sent to the standard output of _d_c_t_i_m_e_s_t_e_p is either an ASCII color vec-
+       tor  with as many RGB triplets as there are rows in the View matrix, or
+       a combined _R_a_d_i_a_n_c_e picture.  Which output is produced depends  on  the
+       _V_s_p_e_c  argument.  A regular file name will be loaded and interpreted as
+       a matrix to generate a color results vector.  A file specification con-
+       taining  a '%d' format string will be interpreted as a list of _R_a_d_i_a_n_c_e
+       component pictures, which will be summed according to the computed vec-
+       tor.
+
+EEXXAAMMPPLLEESS
+       To  compute a set of illuminance contributions for Window 1 on the Win-
+       ter solstice at 2pm:
+
+         gensky 12 21 14 | genskyvec | dctimestep IllPts.vmx Blinds20.xml Win-
+         dow1.dmx > Ill_12-21-14.dat
+
+       To compute Window2's contribution to an interior view at 12 noon on the
+       Summer solstice:
+
+         gensky 6 21 12 | genskyvec  |  dctimestep  view%03d.hdr  Blinds30.xml
+         Window2.dmx > view_6-21-12.hdr
+
+AAUUTTHHOORR
+       Greg Ward
+
+SSEEEE AALLSSOO
+       genklemsamp(1),   genskyvec(1),  mkillum(1),  rtcontrib(1),  rtrace(1),
+       vwrays(1)
+
+
+
+RADIANCE                           12/09/09                      DCTIMESTEP(1)

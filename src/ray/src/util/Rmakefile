@@ -1,0 +1,194 @@
+# RCSid: $Id: Rmakefile,v 2.62 2013/09/05 17:53:23 greg Exp $
+#
+# Radiance makefile for utility programs
+#
+
+MACH = -DBSD
+
+OPT = -O
+
+CFLAGS = -I../common -I../rt -L../lib $(OPT) $(MACH)
+
+MLIB = -lm
+
+CC = cc
+
+SPECIAL =
+
+INSTDIR = /usr/local/bin
+
+LIBDIR = /usr/local/lib/ray
+
+PROGS = findglare glarendx rpiece rad ranimate ranimove vwright getinfo \
+		vwrays xglaresrc rsensor dctimestep rttree_reduce rcollate
+
+all:	$(PROGS)
+
+install:	all $(SPECIAL) objview.csh objpict.csh glare.csh dayfact.csh \
+rlux.csh raddepend.csh trad.wsh objline.csh compamb.csh vinfo.csh \
+genambpos.csh fieldcomb.csh genklemsamp.pl genskyvec.pl genBSDF.pl tregsamp.dat
+	cp $(PROGS) $(INSTDIR)
+	cp objview.csh $(INSTDIR)/objview
+	cp objline.csh $(INSTDIR)/objline
+	cp objpict.csh $(INSTDIR)/objpict
+	cp glare.csh $(INSTDIR)/glare
+	cp dayfact.csh $(INSTDIR)/dayfact
+	cp debugcal.csh $(INSTDIR)/debugcal
+	cp rlux.csh $(INSTDIR)/rlux
+	cp raddepend.csh $(INSTDIR)/raddepend
+	cp compamb.csh $(INSTDIR)/compamb
+	cp vinfo.csh $(INSTDIR)/vinfo
+	cp genambpos.csh $(INSTDIR)/genambpos
+	cp fieldcomb.csh $(INSTDIR)/fieldcomb
+	cp genklemsamp.pl $(INSTDIR)/genklemsamp
+	cp genskyvec.pl $(INSTDIR)/genskyvec
+	cp genBSDF.pl $(INSTDIR)/genBSDF
+	cd $(INSTDIR) ; chmod 755 objview objpict \
+		glare dayfact debugcal rlux raddepend objline \
+		compamb vinfo genambpos fieldcomb genklemsamp \
+		genskyvec genBSDF
+	cp tregsamp.dat $(LIBDIR)
+	csh -f tradinstall.csh $(INSTDIR) $(LIBDIR)/tcl
+
+clean:
+	set nonomatch; rm -f *.o $(PROGS) glrad core Version.c x11findwind.c
+
+ogl:	glrad
+	cp glrad $(INSTDIR)
+
+sgi:
+
+sun:
+
+findglare:	findglare.o glareval.o glaresrc.o setscan.o
+	$(CC) $(CFLAGS) -o findglare findglare.o glareval.o glaresrc.o \
+setscan.o -lrtrad $(MLIB)
+
+glarendx:	glarendx.o
+	$(CC) $(CFLAGS) -o glarendx glarendx.o -lrtrad $(MLIB)
+
+xglaresrc:	xglaresrc.o x11findwind.o
+	$(CC) $(CFLAGS) -o xglaresrc xglaresrc.o \
+x11findwind.o -lrtrad -lX11 $(MLIB)
+
+rad:	rad.o
+	$(CC) $(CFLAGS) -o rad rad.o -lrtrad $(MLIB)
+
+ranimate:	ranimate.o netproc.o
+	$(CC) $(CFLAGS) -o ranimate ranimate.o netproc.o -lrtrad $(MLIB)
+
+ranimove:	ranimove.o ranimove1.o ranimove2.o
+	$(CC) $(CFLAGS) -o ranimove ranimove.o ranimove1.o ranimove2.o \
+-lraycalls -lradiance -lrtrad $(MLIB)
+
+rsensor:	rsensor.o
+	$(CC) $(CFLAGS) -o rsensor rsensor.o \
+-lraycalls -lradiance -lrtrad $(MLIB)
+
+rpiece:	rpiece.o Version.o
+	$(CC) $(CFLAGS) -o rpiece rpiece.o Version.o -lrtrad $(MLIB)
+
+rtcontrib:	rtcontrib.o Version.o
+	$(CC) $(CFLAGS) -o rtcontrib rtcontrib.o Version.o -lrtrad $(MLIB)
+
+vwright:	vwright.o
+	$(CC) $(CFLAGS) -o vwright vwright.o -lrtrad $(MLIB)
+
+vwrays:		vwrays.o
+	$(CC) $(CFLAGS) -o vwrays vwrays.o -lrtrad $(MLIB)
+
+getinfo:	getinfo.o
+	$(CC) $(CFLAGS) -o getinfo getinfo.o -lrtrad
+
+glrad:	glrad.o
+	$(CC) $(CFLAGS) -o glrad glrad.o -lrgl -lrtrad -lGLU -lGL \
+-lX11 -lXext $(MLIB)
+
+dctimestep:	dctimestep.o
+	$(CC) $(CFLAGS) -o dctimestep dctimestep.o -lrtrad $(MLIB)
+
+rttree_reduce:	rttree_reduce.o
+	$(CC) $(CFLAGS) -o rttree_reduce rttree_reduce.o -lrtrad $(MLIB)
+
+rcollate:	rcollate.o
+	$(CC) $(CFLAGS) -o rcollate rcollate.o -lrtrad
+
+setscan.o:	setscan.h
+
+findglare.o glareval.o \
+glaresrc.o:	glare.h ../common/standard.h \
+../common/rtmisc.h ../common/rtio.h \
+../common/rtmath.h ../common/mat4.h ../common/fvect.h \
+../common/rterror.h ../common/view.h ../common/color.h setscan.h
+
+glaresrc.o:	../common/linregr.h
+
+rpiece.o:	../common/color.h ../common/view.h ../common/resolu.h
+
+dctimestep.o:	../common/standard.h \
+../common/rtmisc.h ../common/rtio.h \
+../common/rtmath.h ../common/mat4.h ../common/fvect.h \
+../common/rterror.h ../common/platform.h ../common/paths.h \
+../common/color.h ../common/bsdf.h ../common/bsdf_m.h ../common/resolu.h
+
+rtcontrib.o:	../common/platform.h ../common/rtprocess.h \
+../common/color.h ../common/resolu.h ../common/lookup.h \
+../common/calcomp.h ../common/selcall.h
+
+rad.o ranimate.o rpiece.o rtcontrib.o xglaresrc.o:	../common/standard.h \
+../common/rtmisc.h ../common/rtio.h \
+../common/rtmath.h ../common/mat4.h ../common/fvect.h \
+../common/rterror.h
+
+xglaresrc.o:	../common/view.h
+
+glareval.o xglaresrc.o:	../common/resolu.h
+
+glareval.o:	../common/platform.h ../common/rtprocess.h
+
+rad.o ranimate.o:	../common/vars.h
+
+ranimove1.o ranimove2.o vwrays.o:	../common/random.h
+
+rad.o:	../common/paths.h
+
+ranimate.o netproc.o:	netproc.h
+
+ranimove1.o:	../common/otypes.h
+
+netproc.o:	../common/paths.h
+
+rad.o ranimate.o ranimove.o:	../common/view.h ../common/resolu.h
+
+glrad.o:	../common/radogl.h \
+../common/standard.h ../common/rtmisc.h ../common/rtio.h \
+../common/rtmath.h ../common/mat4.h ../common/fvect.h ../common/rterror.h \
+../common/color.h ../common/object.h ../common/otypes.h ../common/lookup.h
+
+glrad.o:	glradicon.h ../common/view.h ../common/paths.h
+
+ranimove.o ranimove1.o ranimove2.o:	ranimove.h \
+../common/vars.h ../common/view.h \
+../rt/ray.h ../common/octree.h \
+../common/object.h ../common/color.h \
+../common/standard.h ../common/rtmisc.h ../common/rtio.h \
+../common/rtmath.h ../common/mat4.h ../common/fvect.h \
+../common/rterror.h
+
+rsensor.o:	../rt/ray.h ../common/octree.h \
+../common/object.h ../common/color.h \
+../common/standard.h ../common/rtmisc.h ../common/rtio.h \
+../common/rtmath.h ../common/mat4.h ../common/fvect.h \
+../common/rterror.h
+
+rsensor.o:	../common/view.h ../common/resolu.h ../rt/source.h
+
+rcollate.o:	../common/platform.h ../common/rtio.h ../common/resolu.h
+
+Version.c:	../rt/Version.c
+	cp ../rt/Version.c .
+
+x11findwind.c:	../common/x11findwind.c
+	cp ../common/x11findwind.c .
+
+rttree_reduce.o:	../common/rtio.h ../common/rterror.h

@@ -1,0 +1,51 @@
+RA_BMP(1)                                                            RA_BMP(1)
+
+
+
+NNAAMMEE
+       ra_bmp - convert RADIANCE picture to/from Windows BMP image
+
+SSYYNNOOPPSSIISS
+       rraa__bbmmpp  [ --bb ][ --gg ggaammmmaa ][ --ee ssppeecc ][ --pp xxrr yyrr xxgg yygg xxbb yybb xxww yyww ] [ [
+       iinnppuutt||-- [ oouuttppuutt ] ]
+       rraa__bbmmpp --rr [ --gg ggaammmmaa ][ --ee ++//--ssttooppss ] [ [ iinnppuutt||-- [ oouuttppuutt ] ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _R_a___b_m_p converts between RADIANCE and a Windows BMP image.  During  for-
+       ward  conversion,  the _-_b option produces 8-bit grayscale output rather
+       than 24-bit RGB.  The _-_g option specifies the exponent used in  monitor
+       gamma  correction; the default value is 2.2.  The _-_e option specifies a
+       tone-mapping method or exposure compensation.  If the argument  is  one
+       of  the  special  words "auto", "human", or "linear", the image will be
+       tone-mapped with histogram adjustment, human vision simulation,  or  an
+       averaged  linear  exposure, respectively.  (These words may be abbrevi-
+       ated by one or more letters.)  Otherwise, the exposure specification is
+       interpreted  as  a  linear compensation value in integer f-stops, which
+       must be proceeded by a '+' or '-'.  The CRT color output primaries  may
+       be specified with the _-_p option.
+
+       The _-_r option invokes a reverse conversion, from a Windows BMP image to
+       a RADIANCE picture.  Tone-mapping and monitor primaries  are  not  sup-
+       ported for reverse conversion.
+
+       _R_a___b_m_p can accept 16-bit or color-mapped BMP files on input, but cannot
+       not produce them on output.
+
+       A hyphen ('-') may be specified to indicate standard input  for  either
+       forward  or reverse conversion so that an output file may be specified.
+       If the BMP input is taken from the standard input or sent to the  stan-
+       dard  output  without  tone-mapping, then the scanlines may be reversed
+       from their usual ordering.  Reversed scanlines sometimes causes  diffi-
+       culties  for  programs  attempting  to interpret the resulting RADIANCE
+       picture or BMP image, which may be rejected or displayed inverted.
+
+AAUUTTHHOORR
+       Greg Ward
+
+SSEEEE AALLSSOO
+       pfilt(1),  ra_ppm(1),  ra_pr(1),   ra_pr24(1),   ra_t8(1),   ra_t16(1),
+       ra_tiff(1), ximage(1)
+
+
+
+RADIANCE                            3/25/04                          RA_BMP(1)

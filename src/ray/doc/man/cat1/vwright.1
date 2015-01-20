@@ -1,0 +1,80 @@
+VWRIGHT(1)                                                          VWRIGHT(1)
+
+
+
+NNAAMMEE
+       vwright - normalize a RADIANCE view, shift it to the right
+
+SSYYNNOOPPSSIISS
+       vvwwrriigghhtt [[ vviieeww ooppttiioonnss ]] ddiissttaannccee
+       vvwwrriigghhtt [[ vviieeww ooppttiioonnss ]] nnaammee
+
+DDEESSCCRRIIPPTTIIOONN
+       In  the  first  form, _v_w_r_i_g_h_t shifts a RADIANCE view the specified dis-
+       tance to the right, putting out a complete set of view parameters in  a
+       single line on the standard output.  This utility is most often used to
+       compute a right-eyed view from a left-eye view for stereo imaging.
+
+       If no options are specified on the command line, _v_w_r_i_g_h_t reads  a  view
+       from its standard input.
+
+       The  _d_i_s_t_a_n_c_e  given  is  in  world coordinate units.  A negative value
+       indicates a shift to the left rather than the right.
+
+       The second form substitutes a name prefix in place of  the  shift  dis-
+       tance,  and  produces constant assignments on the standard output suit-
+       able for passing directly to _r_c_a_l_c_(_1_)_.  For a given prefix _N_, the  con-
+       stant names are as follows:
+
+       Nt:  view type ('v'==1,'l'==2,'a'==3,'h'==4,'c'==5,'s'==6)
+       Npx: view point x value
+       Npy: view point y value
+       Npz: view point z value
+       Ndx: view direction x value (normalized)
+       Ndy: view direction y value (normalized)
+       Ndz: view direction z value (normalized)
+       Nd:  view focal distance
+       Nux: view up vector x value (normalized)
+       Nuy: view up vector y value (normalized)
+       Nuz: view up vector z value (normalized)
+       Nh:  view horizontal size
+       Nv:  view vertical size
+       Ns:  view shift
+       Nl:  view lift
+       No:  view fore clipping distance
+       Na:  view aft clipping distance
+       Nhx: derived horizontal image vector x value (normalized)
+       Nhy: derived horizontal image vector y value (normalized)
+       Nhz: derived horizontal image vector z value (normalized)
+       Nhn: derived horizontal image vector multiplier
+       Nvx: derived vertical image vector x value (normalized)
+       Nvy: derived vertical image vector y value (normalized)
+       Nvz: derived vertical image vector z value (normalized)
+       Nvn: derived vertical image vector multiplier
+
+EEXXAAMMPPLLEESS
+       To  start  _r_p_i_c_t_(_1_)  on  a view .06 meters left of the view in the file
+       "right.vf":
+
+         rpict `vwright -.06 < right.vf` scene.oct > right.hdr &
+
+       To move the _r_a_d_(_1_) view named "left" 2.5 inches to the right and render
+       from there:
+
+         rad  -v  "right  `rad  -n  -s  -V  -v  left examp.rif | vwright 2.5`"
+         examp.rif &
+
+       To pass a view to _r_c_a_l_c for conversion to some other view:
+
+         rcalc -n -e `vwright orig < orig.vf` -f  viewmod.cal  -o  view.fmt  >
+         new.vf
+
+AAUUTTHHOORR
+       Greg Ward
+
+SSEEEE AALLSSOO
+       pdfblur(1), rad(1), rcalc(1), rpict(1), rvu(1)
+
+
+
+RADIANCE                            8/29/96                         VWRIGHT(1)

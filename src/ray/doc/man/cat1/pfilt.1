@@ -1,0 +1,107 @@
+PFILT(1)                                                              PFILT(1)
+
+
+
+NNAAMMEE
+       pfilt - filter a RADIANCE picture
+
+SSYYNNOOPPSSIISS
+       ppffiilltt [ ooppttiioonnss ] [ ffiillee ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _P_f_i_l_t  performs  anti-aliasing  and scaling on a RADIANCE picture.  The
+       program makes two passes on the picture file in order to set the  expo-
+       sure  to  the correct average value.  If no _f_i_l_e is given, the standard
+       input is read.
+
+       --xx _r_e_s    Set the output x resolution to _r_e_s_.  This must be  less  than
+                 or  equal to the x dimension of the target device.  If _r_e_s is
+                 given as a slash followed by a real number, the input resolu-
+                 tion  is divided by this number to get the output resolution.
+                 By default, the output resolution is the same as the input.
+
+       --yy _r_e_s    Set the output y resolution to _r_e_s_, similar to the specifica-
+                 tion of the x resolution above.
+
+       --pp _r_a_t    Set  the  pixel  aspect  ratio to _r_a_t_.  Either the x or the y
+                 resolution will be reduced so that the pixels have this ratio
+                 for  the specified picture.  If _r_a_t is zero, then the x and y
+                 resolutions will adhere to the given  maxima.   Zero  is  the
+                 default.
+
+       --cc        Pixel aspect ratio is being corrected, so do not write PIXAS-
+                 PECT variable to output file.
+
+       --ee _e_x_p    Adjust the exposure.  If _e_x_p is preceded by a '+' or '-', the
+                 exposure  is  interpreted  in f-stops (ie. the power of two).
+                 Otherwise, _e_x_p is interpreted as a straight multiplier.   The
+                 individual  primaries  can be changed using _-_e_r_, _-_e_g and _-_e_b_.
+                 Multiple exposure options have a cumulative effect.
+
+       --tt lamp   Color-balance the image as if it were illuminated by fixtures
+                 of  the  given  type.  The specification must match a pattern
+                 listed in the lamp lookup table (see the -f option below).
+
+       --ff lampdat
+                 Use the specified lamp lookup table rather than  the  default
+                 (lamp.tab).
+
+       --11        Use  only  one pass on the file.  This allows the exposure to
+                 be controlled absolutely, without any averaging.  Note that a
+                 single  pass  is much quicker and should be used whenever the
+                 desired exposure is known and star patterns are not required.
+
+       --22        Use two passes on the input.  This is the default.
+
+       --bb        Use  box  filtering  (default).   Box  filtering averages the
+                 input pixels corresponding to each separate output pixel.
+
+       --rr _r_a_d    Use Gaussian filtering with a radius of _r_a_d relative  to  the
+                 output  pixel size.  This option with a radius around 0.6 and
+                 a reduction in image width and height of 2 or 3 produces  the
+                 highest  quality pictures.  A radius greater than 0.7 results
+                 in a defocused picture.
+
+       --mm _f_r_a_c   Limit the influence of any given input pixel to _f_r_a_c  of  any
+                 given  output pixel.  This option may be used to mitigate the
+                 problems associated with inadequate image  sampling,  at  the
+                 expense  of  a  slightly  blurred  image.  The fraction given
+                 should not exceed the  output  picture  dimensions  over  the
+                 input  picture dimensions (x_o*y_o/x_i/y_i), or blurring will
+                 occur over the entire image.   This  option  implies  the  _-_r
+                 option  for Gaussian filtering, which defaults to a radius of
+                 0.6.
+
+       --hh _l_v_l    Set intensity considered ``hot'' to _l_v_l_.  This is  the  level
+                 above  which  areas  of  the image will begin to exhibit star
+                 diffraction  patterns  (see  below).   The  default  is   100
+                 watts/sr/m2.
+
+       --nn _N      Set  the  number of points on star patterns to _N_.  A value of
+                 zero turns star patterns off.  The default is 0.  (Note  that
+                 two passes are required for star patterns.)
+
+       --ss _v_a_l    Set the spread for star patterns to _v_a_l_.  This is the value a
+                 star pattern will have at the edge of the image.  The default
+                 is .0001.
+
+       --aa        Average hot spots as well.  By default, the areas of the pic-
+                 ture above the hot level are not used in  setting  the  expo-
+                 sure.
+
+EENNVVIIRROONNMMEENNTT
+       RAYPATH        directories to search for lamp lookup table
+
+FFIILLEESS
+       /tmp/rt??????
+
+AAUUTTHHOORR
+       Greg Ward
+
+SSEEEE AALLSSOO
+       getinfo(1),  ies2rad(1),  pcompos(1),  pflip(1), pinterp(1), pvalue(1),
+       protate(1), rad(1), rpict(1), ximage(1)
+
+
+
+RADIANCE                            11/8/96                           PFILT(1)

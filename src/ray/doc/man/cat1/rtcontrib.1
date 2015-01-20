@@ -1,0 +1,173 @@
+RTCONTRIB(1)                                                      RTCONTRIB(1)
+
+
+
+NNAAMMEE
+       rtcontrib - compute contribution coefficients in a RADIANCE scene
+
+SSYYNNOOPPSSIISS
+       rrttccoonnttrriibb  [  --nn  nnpprrooccss ][ --VV ][ --cc ccoouunntt ][ --ffoo | --rr ][ --ee eexxpprr ][ --ff
+       ssoouurrccee ][ --oo oossppeecc ][ --bb bbiinnvv ][ --bbnn nnbbiinnss ] { --mm mmoodd ||  --MM  ffiillee  }  [
+       $$EEVVAARR ] [ @@ffiillee ] [ rtrace options ] ooccttrreeee
+       rrttccoonnttrriibb [[ ooppttiioonnss ]] --ddeeffaauullttss
+
+DDEESSCCRRIIPPTTIIOONN
+       _R_t_c_o_n_t_r_i_b  computes  ray  coefficients  for objects whose modifiers are
+       named in one or more _-_m settings.  These modifiers are usually  materi-
+       als  associated with light sources or sky domes, and must directly mod-
+       ify some geometric primitives to be considered in the output.  A  modi-
+       fier  list  may also be read from a file using the _-_M option.  The RAY-
+       PATH environment variable determines directories  to  search  for  this
+       file.   (No search takes place if a file name begins with a '.', '/' or
+       '~' character.)
+
+       If the _-_n option is specified with a value  greater  than  1,  multiple
+       _r_t_r_a_c_e  processes  will  be  used to accelerate computation on a shared
+       memory machine.  Note that there is no benefit to using more  processes
+       than  there  are local CPUs available to do the work, and the _r_t_c_o_n_t_r_i_b
+       process itself may use a considerable amount of CPU time.
+
+       By setting the boolean _-_V option, you may instruct _r_t_c_o_n_t_r_i_b to  report
+       the  contribution  from  each material rather than the ray coefficient.
+       This is particularly useful for light sources with  directional  output
+       distributions,  whose  value  would  otherwise  be lost in the shuffle.
+       With the default _-_V_- setting, the output of rtcontrib is a  coefficient
+       that must be multiplied by the radiance of each material to arrive at a
+       final contribution.  This is more  convenient  for  computing  daylight
+       coefficeints,  or  cases where the actual radiance is not desired.  Use
+       the _-_V_+ setting when you wish  to  simply  sum  together  contributions
+       (with  possible  adjustment  factors) to obtain a final radiance value.
+       Combined with  the  _-_i  or  _-_I  option,  irradiance  contributions  are
+       reported  by  _-_V_+ rather than radiance, and _-_V_- coefficients contain an
+       additonal factor of PI.
+
+       The _-_c option tells _r_t_c_o_n_t_r_i_b how many  rays  to  accumulate  for  each
+       record.  The default value is 1, meaning a full record will be produced
+       for each input ray.  For values greater than 1, contributions  will  be
+       averaged together over the given number of input rays.  If set to zero,
+       only a single record will be produced at the very end, corresponding to
+       the sum of all rays given on the input (rather than the average).  This
+       is equivalent to passing all the output records through a program  like
+       _t_o_t_a_l_(_1_) to sum RGB values together, but is much more efficient.  Using
+       this option, it is possible to reverse sampling, sending  rays  from  a
+       parallel  source  such  as  the  sun to a diffuse surface, for example.
+       Note that output flushing via zero-direction rays is disabled for accu-
+       mulated evaluations.
+
+       The  output of _r_t_c_o_n_t_r_i_b has many potential uses.  Source contributions
+       can be used as  components  in  linear  combination  to  reproduce  any
+       desired  variation,  e.g., simulating lighting controls or changing sky
+       conditions via daylight coefficients.  More generally, _r_t_c_o_n_t_r_i_b can be
+       used  to  compute  arbitrary input-output relationships in optical sys-
+       tems, such as luminaires, light pipes, and shading devices.
+
+       _R_t_c_o_n_t_r_i_b calls _r_t_r_a_c_e_(_1_) with the -oTW (or -oTV) option  to  calculate
+       the  daughter ray contributions for each input ray, and the output tal-
+       lies are sent to one or more destinations according  to  the  given  _-_o
+       specification.  If a destination begins with an exclamation mark ('!'),
+       then a pipe is opened to a command and data is  sent  to  its  standard
+       input.   Otherwise,  the destination is treated as a file.  An existing
+       file of the same name will not be clobbered, unless the _-_f_o  option  is
+       given.   If  instead  the  _-_r  option  is  specified,  data recovery is
+       attempted on existing files.  (If _-_c _0 is used  together  with  the  _-_r
+       option, existing files are read in and new ray evaluations are added to
+       the previous results, providing a convenient means for progressive sim-
+       ulation.)  If an output specification contains a "%s" format, this will
+       be replaced by the modifier name.  The _-_b option may be used to further
+       define a "bin number" within each object if finer resolution is needed,
+       and this will be applied to a "%d" format in the output file specifica-
+       tion  if  present.  The actual bin number is computed at run time based
+       on ray direction and surface intersection, as described below.  If  the
+       number of bins is known in advance, it should be specified with the _-_b_n
+       option, and this is critical for output files containing multiple  val-
+       ues  per  record.   A  variable  or constant name may be given for this
+       parameter if it has been defined via a previous _-_f or _-_e option.  Since
+       bin numbers start from 0, the bin count is always equal to the last bin
+       plus 1.  Set the this value to 0 if  the  bin  count  is  unknown  (the
+       default).   The  most recent _-_b_, _-_b_n and _-_o options to the left of each
+       _-_m setting are the ones used for that modifier.  The ordering of  other
+       options  is unimportant, except for _-_x and _-_y if the _-_c is 0, when they
+       control the resolution string produced in the corresponding output.
+
+       If a _-_b expression is defined for a particular modifier, the bin number
+       will  be  evaluated  at run time for each ray contribution from _r_t_r_a_c_e_.
+       Specifically, each ray's world intersection point will be  assigned  to
+       the  variables Px, Py, and Pz, and the normalized ray direction will be
+       assigned to Dx, Dy, and Dz.  These parameters may be combined with def-
+       initions given in _-_e arguments and files read using the _-_f option.  The
+       computed bin value will be rounded to the nearest whole  number.   This
+       mechanism  allows the user to define precise regions or directions they
+       wish to accumulate, such as  the  Tregenza  sky  discretization,  which
+       would  be  otherwise  impossible to specify as a set of RADIANCE primi-
+       tives.  The rules and predefined functions available for these  expres-
+       sions  are described in the _r_c_a_l_c_(_1_) man page.  Unlike _r_c_a_l_c_, _r_t_c_o_n_t_r_i_b
+       will search the RADIANCE library directories for each file given  in  a
+       _-_f option.
+
+       If  no  _-_o  specification is given, results are written on the standard
+       output in order of modifier (as given on the  command  line)  then  bin
+       number.   Concatenated data is also sent to a single destination (i.e.,
+       an initial _-_o specification without formatting  strings).   If  a  "%s"
+       format  appears but no "%d" in the _-_o specification, then each modifier
+       will have its own output file, with multiple values per record  in  the
+       case  of  a  non-zero  _-_b  definition.  If a "%d" format appears but no
+       "%s", then each bin will get its own output file, with modifiers output
+       in  order in each record.  For text output, each RGB coefficient triple
+       is separated by a tab, with a newline at the end of  each  ray  record.
+       For  binary  output formats, there is no such delimiter to mark the end
+       of each record.
+
+       Input and output format defaults to plain text, where each ray's origin
+       and  direction (6 real values) are given on input, and one line is pro-
+       duced per output file per ray.  Alternative data representations may be
+       specified  by  the  _-_f_[_i_o_] option, which is described in the _r_t_r_a_c_e man
+       page along with the associated _-_x and _-_y resolution settings.  In  par-
+       ticular, the color ('c') output data representation together with posi-
+       tive dimensions for _-_x and _-_y will  produce  an  uncompressed  RADIANCE
+       picture, suitable for manipulation with _p_c_o_m_b_(_1_) and related tools.
+
+       Options  may be given on the command line and/or read from the environ-
+       ment and/or read from a file.  A command argument beginning with a dol-
+       lar  sign  ('$')  is  immediately replaced by the contents of the given
+       environment variable.  A command argument beginning  with  an  at  sign
+       ('@') is immediately replaced by the contents of the given file.
+
+EEXXAAMMPPLLEESS
+       To  compute  the  proportional  contributions  from sources modified by
+       "light1" vs. "light2" on a set of illuminance values:
+
+         rtcontrib -I+ @render.opt -o c_%s.dat -m light1 -m light2 scene.oct <
+         test.dat
+
+       To generate a pair of images corresponding to these two lights' contri-
+       butions:
+
+         vwrays -ff -x 1024 -y 1024 -vf best.vf | rtcontrib -ffc `vwrays -d -x
+         1024 -y 1024 -vf best.vf` @render.opt -o c_%s.hdr -m light1 -m light2
+         scene.oct
+
+       These images may then be recombined using the desired outputs of light1
+       and light2:
+
+         pcomb  -c  100  90  75  c_light1.hdr  -c 50 55 57 c_light2.hdr > com-
+         bined.hdr
+
+       To compute an array of illuminance contributions according  to  a  Tre-
+       genza sky:
+
+         rtcontrib  -I+  -b  tbin  -o sky.dat -m skyglow -b 0 -o ground.dat -m
+         groundglow @render.opt -f tregenza.cal scene.oct < test.dat
+
+EENNVVIIRROONNMMEENNTT
+       RAYPATH        path to search for -f and -M files
+
+AAUUTTHHOORR
+       Greg Ward
+
+SSEEEE AALLSSOO
+       cnt(1), genklemsamp(1),  getinfo(1),  pcomb(1),  pfilt(1),  ra_rgbe(1),
+       rcalc(1), rpict(1), rtrace(1), total(1), vwrays(1), ximage(1)
+
+
+
+RADIANCE                            5/25/05                       RTCONTRIB(1)

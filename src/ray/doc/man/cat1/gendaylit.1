@@ -1,0 +1,197 @@
+GENDAYLIT(1)                                                      GENDAYLIT(1)
+
+
+
+NNAAMMEE
+       gendaylit  -  generates  a  RADIANCE  description of the daylit sources
+       using Perez models for diffuse and direct components
+
+SSYYNNOOPPSSIISS
+       ggeennddaayylliitt  mmoonntthh  ddaayy  hhoouurr  [[--PP||--WW||--LL]]  ddiirreecctt__vvaalluuee  ddiiffffuussee__vvaalluuee  [
+       ooppttiioonnss ]
+       ggeennddaayylliitt --aanngg aallttiittuuddee aazziimmuutthh [[--PP||--WW||--LL]] ddiirreecctt__vvaalluuee ddiiffffuussee__vvaalluuee [
+       ooppttiioonnss ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _G_e_n_d_a_y_l_i_t produces a RADIANCE scene description  based  on  an  angular
+       distribution  of  the  daylight  sources (direct+diffuse) for the given
+       atmospheric conditions (direct and diffuse component of the solar radi-
+       ation),  date  and local standard time. The default output is the radi-
+       ance of the sun (direct) and the sky (diffus) integrated over the visi-
+       ble  spectral  range  (380-780 nm). We have used the calculation of the
+       sun's position and the ground brightness models which  were  programmed
+       in _g_e_n_s_k_y_.
+
+       The  diffuse  angular distribution is calculated using the Perez et al.
+       sky luminance distribution model (see Solar Energy Vol. 50, No. 3,  pp.
+       235-245,  1993) which, quoting Perez, describes "the mean instantaneous
+       sky luminance angular distribution patterns for all sky conditions from
+       overcast  to  clear,  through partly cloudy, skies". The correctness of
+       the resulting sky  radiance/luminance  values  in  this  simulation  is
+       ensured  through  the  normalization of the modelled sky diffuse to the
+       measured sky diffuse irradiances/illuminances.
+
+       The direct radiation is understood here as the radiant flux coming from
+       the  sun  and  an area of approximately 3 degrees around the sun (World
+       Meteorological Organisation specifications  for  measuring  the  direct
+       radiation.  The  aperture  angle  of a pyrheliometer is approximately 6
+       degrees).  To simplify the calculations for the direct  radiation,  the
+       sun  is  represented as a disk and no circumsolar radiation is modelled
+       in the 3 degrees around the sun. This means that all the measured/eval-
+       uated direct radiation is added to the 0.5 degree sun source.
+
+       _T_h_e  _d_i_r_e_c_t  _a_n_d  _d_i_f_f_u_s_e _s_o_l_a_r _i_r_r_a_d_i_a_n_c_e_s_/_i_l_l_u_m_i_n_a_n_c_e_s _a_r_e _t_h_e _i_n_p_u_t_s
+       _n_e_e_d_e_d _f_o_r _t_h_e _c_a_l_c_u_l_a_t_i_o_n_.  These quantities are the commonly accessi-
+       ble  data from radiometric measurement centres, conversion models (e.g.
+       global irradiance to direct irradiance), or  from  the  Test  Reference
+       Year.  The use of such data is the recommended method for achieving the
+       most accurate simulation results.
+
+
+       The  atmospheric  conditions  are  modelled  with  the  Perez  et   al.
+       parametrization  (see  Solar  Energy Vol. 44, No 5, pp. 271-289, 1990),
+       which is dependent on the values for the direct and the diffuse irradi-
+       ances.  The  three  parameters  are epsilon, delta and the solar zenith
+       angle. "Epsilon variations express the transition from a totally  over-
+       cast  sky  (epsilon=1)  to a low turbidity clear sky (epsilon>6); delta
+       variations reflect the opacity/thickness of the clouds". Delta can vary
+       from  0.05  representing  a  dark sky to 0.5 for a very bright sky. Not
+       every combination of epsilon, delta and solar zenith angle is possible.
+       For  a clear day, if epsilon and the solar zenith angle are known, then
+       delta can be determined. For intermediate or overcast days, the sky can
+       be  dark  or  bright,  giving a range of possible values for delta when
+       epsilon and the solar zenith are fixed. The  relation  between  epsilon
+       and  delta  is  represented  in  a  figure  on page 393 in Solar Energy
+       Vol.42, No 5, 1989, or can be obtained from the author of this RADIANCE
+       extension  upon  request. Note that the epsilon parameter is a function
+       of the solar zenith angle. It means  that  a  clear  day  will  not  be
+       defined  by  fixed  values of epsilon and delta. Consequently the input
+       parameters, epsilon, delta and the  solar  zenith  angle,  have  to  be
+       determined  on  a  graph.  It might be easier to work with the measured
+       direct and diffuse components (direct normal irradiance/illuminance and
+       diffuse  horizontal  irradiance/illuminance)  than with the epsilon and
+       delta parameters.
+
+
+       The conversion of irradiance into illuminance for the  direct  and  the
+       diffuse  components  is  determined  by the luminous efficacy models of
+       Perez et al. (see Solar Energy Vol. 44, No 5, pp.  271-289,  1990).  To
+       convert  the luminance values into radiance integrated over the visible
+       range of the spectrum, we devide the luminance by the white light effi-
+       cacy  factor of 179 lm/W. This is consistent with the RADIANCE calcula-
+       tion because the luminance will be recalculated from the radiance inte-
+       grated over the visible range by :
+
+       luminance = radiance_integrated_over_visible_range * 179   or
+
+       luminance = (RED*.263 + GREEN*.655 + BLUE*.082) * 179    with the capa-
+       bility to model colour (where radiance_integrated_over_visible_range ==
+       (RED + GREEN + BLUE)/3).
+
+       From  _g_e_n_s_k_y , if the hour is preceded by a plus sign ('+'), then it is
+       interpreted as local solar time instead of standard time.   The  second
+       form  gives  the  solar angles explicitly.  The altitude is measured in
+       degrees above the horizon, and the azimuth is measured in degrees  west
+       of South.
+
+       The  x axis points east, the y axis points north, and the z axis corre-
+       sponds to the zenith.  The actual material and surface(s) used for  the
+       sky is left up to the user.
+
+       In  addition  to the specification of a sky distribution function, _g_e_n_-
+       _d_a_y_l_i_t suggests an ambient value in a comment at the beginning  of  the
+       description  to  use with the _-_a_v option of the RADIANCE rendering pro-
+       grams.  (See rview(1) and rpict(1).)  This value is the cosine-weighted
+       radiance of the sky in W/sr/m^2.
+
+       _G_e_n_d_a_y_l_i_t  can  be used with the following input parameters. They offer
+       three possibilities to run it: with the Perez parametrization, with the
+       irradiance values and with the illuminance values.
+
+       --PP        _e_p_s_i_l_o_n _d_e_l_t_a (these are the Perez parameters)
+
+       --WW        _d_i_r_e_c_t_-_n_o_r_m_a_l_-_i_r_r_a_d_i_a_n_c_e  (W/m^2), _d_i_f_f_u_s_e_-_h_o_r_i_z_o_n_t_a_l_-_i_r_r_a_d_i_-
+                 _a_n_c_e (W/m^2)
+
+       --LL        _d_i_r_e_c_t_-_n_o_r_m_a_l_-_i_l_l_u_m_i_n_a_n_c_e (lm/m^2),  _d_i_f_f_u_s_e_-_h_o_r_i_z_o_n_t_a_l_-_i_l_l_u_-
+                 _m_i_n_a_n_c_e (lm/m^2)
+
+       The  output  can be set to either the radiance of the visible radiation
+       (default), the solar radiance (full spectrum) or the luminance.
+
+       --OO[0|1|2] (0=output in W/m^2/sr visible radiation, 0=output in W/m^2/sr
+                 solar radiation, 2=output in lm/m^2/sr luminance)
+
+       _G_e_n_d_a_y_l_i_t supports the following options.
+
+       --ss        The source description of the sun is not generated.
+
+       --gg _r_f_l    Average  ground  reflectance  is  _r_f_l_.  This value is used to
+                 compute _s_k_y_f_u_n_c when Dz is negative.
+
+       The following options do not apply when the solar altitude and  azimuth
+       are given explicitly.
+
+       --aa _l_a_t The site latitude is _l_a_t degrees north.  (Use negative angle for
+              south latitude.)  This is used in the calculation of sun  angle.
+
+       --oo _l_o_n The site longitude is _l_o_n degrees west.  (Use negative angle for
+              east longitude.)  This is used in the calculation of solar  time
+              and  sun  angle.   Be  sure  to  give the corresponding standard
+              meridian also!  If solar  time  is  given  directly,  then  this
+              option has no effect.
+
+       --mm _m_e_r The  site  standard  meridian  is _m_e_r degrees west of Greenwich.
+              (Use negative angle for east.)  This is used in the  calculation
+              of  solar time.  Be sure to give the correct longitude also!  If
+              solar time is given directly, then this option has no effect.
+
+EEXXAAMMPPLLEESS
+       A clear non-turbid sky for a solar altitude of 60 degrees and an azimut
+       of 0 degree might be defined by:
+
+         gendaylit  -ang  60  0  -P 6.3 0.12 or gendaylit -ang 60 0 -W 840 135
+         This sky description corresponds to the clear  sky  standard  of  the
+         CIE.
+
+       The corresponding sky with a high turbidity is:
+
+         gendaylit -ang 60 0 -P 3.2 0.24 or gendaylit -ang 60 0 -W 720 280
+
+       The  dark overcast sky (corresponding to the CIE overcast standard, see
+       CIE draft standard, Pub. No. CIE DS 003, 1st Edition, 1994) is obtained
+       by:
+
+         gendaylit -ang 60 0 -P 1 0.08
+
+       A  bright  overcast  sky  is modelled with a larger value of delta, for
+       example:
+
+         gendaylit -ang 60 0 -P 1 0.35
+
+       To generate the same bright overcast sky for March 2th at 3:15pm  stan-
+       dard time at a site latitude of 42 degrees, 108 degrees west longitude,
+       and a 110 degrees standard meridian:
+
+         gendaylit 3 2 15.25 -a 42 -o 108 -m 110 -P 1 0.35
+
+
+FFIILLEESS
+       /usr/local/lib/ray/perezlum.cal
+
+AAUUTTHHOORR
+       Jean-Jacques Delaunay, FhG-ISE Freiburg, (jean@ise.fhg.de)
+
+AACCKKNNOOWWLLEEDDGGEEMMEENNTTSS
+       The work on this program was supported by the German  Federal  Ministry
+       for  Research  and Technology (BMFT) under contract No. 0329294A, and a
+       scholarship from the French Environment and Energy Agency (ADEME) which
+       was co-funded by Bouygues.  Many thanks to Peter Apian-Bennewitz, Arndt
+       Berger, Ann Kovach, R. Perez, C. Gueymard and G. Ward for their help.
+
+SSEEEE AALLSSOO
+       gensky(1), rpict(1), rview(1), xform(1)
+
+
+
+RADIANCE ISE/ADEME EXTENSIONS       4/12/94                       GENDAYLIT(1)

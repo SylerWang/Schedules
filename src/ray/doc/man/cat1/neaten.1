@@ -1,0 +1,49 @@
+NEATEN(1)                                                            NEATEN(1)
+
+
+
+NNAAMMEE
+       neaten - neaten up output columns
+
+SSYYNNOOPPSSIISS
+       nneeaatteenn [ ffoorrmmaatt ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _N_e_a_t_e_n  reads  from its standard input and neatens up columns separated
+       by white space using the specified format.  The format is a string con-
+       sisting  of  a  positive integer followed by an alignment character and
+       another integer.  The alignment character is usually  a  decimal  point
+       ('.'), but it can be any non-digit.
+
+       The  alignment  character  is used as the central point of each column.
+       The total column field width will be the number  to  the  left  of  the
+       alignment  character  plus  one for the alignment character itself plus
+       the number to the right of the alignment character.
+
+       If a field does not contain the alignment character, it will be printed
+       to the left of where the alignment character would have appeared.  If a
+       field is too long to print within  the  specified  format,  the  entire
+       field will be printed and that row will not be aligned with the rest.
+
+       The default format is "8.8".
+
+EEXXAAMMPPLLEE
+       To examine a file with columns of numbers:
+
+         neaten 10.8 < input | more
+
+BBUUGGSS
+       Columns  wider than the total width of the format specification will be
+       printed without any separating white space.
+
+       The program does not do anything special with tabs on the input.
+
+AAUUTTHHOORR
+       Greg Ward
+
+SSEEEE AALLSSOO
+       cnt(1), rcalc(1), rlam(1), total(1)
+
+
+
+RADIANCE                           11/15/93                          NEATEN(1)

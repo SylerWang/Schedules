@@ -1,0 +1,47 @@
+DGRAPH(1)                                                            DGRAPH(1)
+
+
+
+NNAAMMEE
+       dgraph - do a set of graphs to a dumb terminal
+
+SSYYNNOOPPSSIISS
+       ddggrraapphh [ --ww wwiiddtthh ][ --ll lleennggtthh ][ ++vvaarriiaabbllee vvaalluuee ....  ][ ffiillee ....  ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _D_g_r_a_p_h reads each graph _f_i_l_e in sequence and converts it to a character
+       plot displayable on any ascii device.  If no files are given, the stan-
+       dard input is read.
+
+       Across  the top of the plot, the extrema are printed.  This is the only
+       indication of the axis size.  Curves are represented with their respec-
+       tive  letter  ('A' for curve A, etc.) at each point.  Where two or more
+       curves cross, a number is shown instead.
+
+       The size of the output array can be specified as a  certain  _w_i_d_t_h  and
+       _l_e_n_g_t_h_.  The default size is 79 by 22.
+
+       Variables  can  be  set  explicitly  with _+_v_a_r_i_a_b_l_e _v_a_l_u_e options.  See
+       bgraph(1) for details.
+
+EEXXAAMMPPLLEE
+       To get a quick glimpse of the sine function from 0 to 4.
+            dgraph
+            A(x)=sin(x)
+            Anpoints=100
+            xmin=0
+            xmax=4
+            ^D
+
+AAUUTTHHOORR
+       Greg Ward
+
+BBUUGGSS
+       There is no mechanism provided for undefining a variable.
+
+SSEEEE AALLSSOO
+       bgraph(1), gcomp(1), icalc(1), igraph(1)
+
+
+
+RADIANCE                            6/24/98                          DGRAPH(1)

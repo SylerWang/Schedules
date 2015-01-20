@@ -1,0 +1,57 @@
+HISTO(1)                                                              HISTO(1)
+
+
+
+NNAAMMEE
+       histo - compute 1-dimensional histogram of N data columns
+
+SSYYNNOOPPSSIISS
+       hhiissttoo [[--cc]][[--pp]] xxmmiinn xxmmaaxx nnbbiinnss
+       hhiissttoo [[--cc]][[--pp]] iimmiinn iimmaaxx
+
+DDEESSCCRRIIPPTTIIOONN
+       _H_i_s_t_o bins columnular data on the standard input between the given min-
+       imum and maximum values.  If three command line  arguments  are  given,
+       the  third  is  taken  as the number of data bins between the first two
+       real numbers.  If only two arguments are given, they are  both  assumed
+       to be integers, and the number of data bins will be equal to their dif-
+       ference plus one.  The bins are always of equal size.
+
+       The output is N+1 columns of data (for  N  columns  input),  where  the
+       first column is the centroid of each division, and each row corresponds
+       to the frequencies for each column around that value.
+
+       If the _-_c option is present, then _h_i_s_t_o computes  the  cumulative  his-
+       togram  for each column instead of the straight frequencies.  The upper
+       value of each bin is printed also instead of the centroid.  This may be
+       useful in computing percentiles, for example.  Values below the minimum
+       specified are still counted in the cumulative total.
+
+       The _-_p option tells _h_i_s_t_o to report the percentage of the total  number
+       of input lines rather than the absolute counts.  In the case of a cumu-
+       lative total, this yeilds the percentile values directly.  Values above
+       the maximum are counted as well as values below in this case.
+
+       All  input  data  is  interpreted  as  real values, and columns must be
+       white-space separated.  If any  value  is  less  than  the  minimum  or
+       greater  than  the  maximum, it will be ignored unless the _-_c option is
+       specified.
+
+EEXXAAMMPPLLEE
+       To count data values between -1 and 1 in 50 bins:
+
+         histo -1 1 50 < input.dat
+
+       To count frequencies of integers between 0 and 255:
+
+         histo 0 255 < input.dat
+
+AAUUTTHHOORR
+       Greg Ward
+
+SSEEEE AALLSSOO
+       cnt(1), neaten(1), rcalc(1), rlam(1), tabfunc(1), total(1)
+
+
+
+RADIANCE                            9/6/96                            HISTO(1)

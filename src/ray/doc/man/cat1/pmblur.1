@@ -1,0 +1,72 @@
+PMBLUR(1)                                                            PMBLUR(1)
+
+
+
+NNAAMMEE
+       pmblur - generate views for camera motion blurring
+
+SSYYNNOOPPSSIISS
+       ppmmbblluurr ssppeeeedd nnssaammpp vv00ffiillee vv11ffiillee
+
+DDEESSCCRRIIPPTTIIOONN
+       _P_m_b_l_u_r  takes  two  viewfiles  and  generates _n_s_a_m_p views starting from
+       _v_0_f_i_l_e and moving towards _v_1_f_i_l_e_.  When rendered and averaged together,
+       these  views  will result in a picture with motion blur due to a camera
+       changing from v0 to v1 in a relative time unit of 1, whose  shutter  is
+       open  starting  at v0 for _s_p_e_e_d of these time units.  Either _p_i_n_t_e_r_p_(_1_)
+       or _r_p_i_c_t_(_1_) may be called to do the actual  work.   (The  given  _v_0_f_i_l_e
+       must  also  be passed on the command line to the chosen renderer, since
+       _p_m_b_l_u_r provides supplemental view specifications only.)
+
+       For _p_i_n_t_e_r_p_, feed the output of _p_m_b_l_u_r to the standard input of _p_i_n_t_e_r_p
+       and  apply  the  _-_B  option to blur views together.  In most cases, two
+       pictures with z-buffers at v0 and v1 will get  a  satisfactory  result,
+       though the perfectionist may wish to apply the _-_f_f option together with
+       the _-_f_r option of _p_i_n_t_e_r_p_.
+
+       To use _p_m_b_l_u_r with _r_p_i_c_t_, apply the _-_S option to indicate  a  rendering
+       sequence, and set the _-_o option with a formatted file name to save mul-
+       tiple output pictures.  When all the renderings are  finished,  combine
+       them  with  the  _p_c_o_m_b_(_1_)  program,  using  appropriate scalefactors to
+       achieve an average.  Note that using _r_p_i_c_t is MUCH more expensive  than
+       using  _p_i_n_t_e_r_p_, and it is only recommended if the scene and application
+       absolutely demand it (e.g. there is prominent refraction that  must  be
+       modeled accurately).
+
+       For  both  _p_i_n_t_e_r_p and _r_p_i_c_t_, the computation time will be proportional
+       to the number of views from _p_m_b_l_u_r_.  We  have  found  a  _n_s_a_m_p  setting
+       somewhere  between 5 and 10 to be adequate for most images.  Relatively
+       larger values are appropriate for faster camera motion.
+
+       The _-_p_m option of _r_p_i_c_t may be used instead or in combination  to  blur
+       animated  frames,  with the added advantage of blurring reflections and
+       refractions according to their proper  motion.   However,  this  option
+       will result in more noise and expense than using _p_m_b_l_u_r with _p_i_n_t_e_r_p as
+       a post-process.  If both blurring methods are  used,  a  smaller  value
+       should  be  given  to  the  _r_p_i_c_t _-_p_m option equal to the shutter speed
+       divided by the number of pmblur views.  This will  be  just  enough  to
+       blur  the boundaries of the ghosts which may appear using _p_m_b_l_u_r with a
+       small number of time samples.
+
+EEXXAAMMPPLLEESS
+       To use _p_i_n_t_e_r_p to simulate motion blur between two frames  of  a  walk-
+       through  animation,  where  the  camera  shutter is open for 1/4 of the
+       interframe distance:
+
+         pmblur .25 8 fr1023.hdr fr1024.hdr | pinterp -B -vf fr1023.hdr -x 640
+         -y 480 fr1023.hdr fr1023.zbf fr1024.hdr fr1024.zbf > fr1023b.hdr
+
+AAUUTTHHOORR
+       Greg Ward
+
+BBUUGGSS
+       Changes in the view shift and lift vectors or the fore and aft clipping
+       planes are not blurred.
+
+SSEEEE AALLSSOO
+       pcomb(1),  pdfblur(1),  pinterp(1),  pmdblur(1),  rcalc(1),   rpict(1),
+       vwright(1)
+
+
+
+RADIANCE                            3/3/98                           PMBLUR(1)

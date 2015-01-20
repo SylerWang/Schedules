@@ -1,0 +1,56 @@
+GCOMP(1)                                                              GCOMP(1)
+
+
+
+NNAAMMEE
+       gcomp - do computations on a graph file.
+
+SSYYNNOOPPSSIISS
+       ggccoommpp [ --aammiillhh ][ ++vvaarriiaabbllee vvaalluuee ....  ][ ffiillee ....  ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _G_c_o_m_p reads each graph _f_i_l_e in sequence and computes the specified cal-
+       culations.  The type options are as follows:
+
+       --nn        Print the name of each curve.
+
+       --aa        Print average and standard deviation of each curve.
+
+       --mm        Print minimum and maximum for each curve.
+
+       --ii        Print Romberg's approximation to the integral of each  curve.
+
+       --ll        Print the slope, intercept, and correlation coefficient using
+                 the least squares method of linear regression.
+
+       --hh        Do not print a header in the output.
+
+       The calculations will be displayed as columns in  the  order  they  are
+       specified  on  the  command  line.  If no files are given, the standard
+       input is read.
+
+       Variables can be set explicitly with _+_v_a_r_i_a_b_l_e _v_a_l_u_e options.  The only
+       truely  useful  variables  for  this  program  are xmin and xmax.  They
+       determine boundaries for the calculations.
+
+EEXXAAMMPPLLEE
+       To compute the approximate integral of sin(x)/log(x) from 2 to 4:
+            gcomp -i
+            A(x)=sin(x)/log(x);
+            Anpoints=100;
+            xmin=2;
+            xmax=4;
+            ^D
+
+AAUUTTHHOORR
+       Greg Ward
+
+BBUUGGSS
+       Only the y values can be used for computation.
+
+SSEEEE AALLSSOO
+       bgraph(1), dgraph(1), icalc(1), igraph(1)
+
+
+
+RADIANCE                            6/24/98                           GCOMP(1)

@@ -1,0 +1,1583 @@
+~s Radiance Digest, Vol. 2, No. 10
+Dear Radiance users:
+
+Here is a long overdue installment of the Radiance Digest, your peek at
+conversations between me and users like yourself.  If you don't consider
+yourself a "user;" you have kicked the habit and would like to kick the
+mailing list as well, write to me at:
+
+	radiance-request@hobbes.lbl.gov
+
+Please do not respond directly to this mailing, as we don't have a proper
+list server.  (And please don't ask why not.)
+
+Here is the list of topics covered in this edition:
+
+	GENSKY AND COLOR		How to color the sky and ground
+	ANIMATION			Steps towards walk-through animations
+	SETTINGS AND ACCURACY		How renderer settings map to accuracy
+	MAPPING BARK TO BRANCHES	How patterns map to cylinders
+	MUNGING PICTURE HEADERS		How to change the header on a picture
+	MODELING A LASER		How to model laser light sources
+	FALSECOLOR IN BLACK AND WHITE	Getting B&W display from falsecolor
+	COMPILE SWITCHES		What are all those things in makeall?
+	TRANS PARAMETERS		Making sense of trans primitive
+	SOLAR ECLIPSE			Sampling a solar penumbra
+	RETROREFLECTORS			Modeling SAE reflectors
+
+In other news, I plan very shortly to release version 3.0 of Radiance,
+which includes (among other things) a new type for single-scatter modeling
+of participating media, and an animation control program called ranimate.
+I decided to call it 3.0 instead of 2.6 since I made so many major revisions
+and it's been nearly a year since 2.5 was released.  Watch this list for
+an announcement.
+
+Happy rendering!
+-Greg
+
+======================================================================
+GENSKY AND COLOR
+
+From HXZZDUBIELJ@cluster.north-london.ac.uk Wed Oct 25 10:09:15 1995
+Date: Wed, 25 Oct 95 17:06 BST
+From: HXZZDUBIELJ@cluster.north-london.ac.uk
+To: GREG <GREG@theo.lbl.gov>
+Subject: Re: Floodlit Radiance pictures
+
+To: Greg Ward
+
+From: Jo Dubiel and Aris Tsangrassoulis
+
+Hi Greg,
+You may remember that I was going to send you some pics via xfer, and a couple
+of papers. I have not forgotten, just not got round to it yet.
+
+Aris is visiting us from the University of Athens. He seems to be the only
+person in Greece who is using RADIANCE at the moment.
+
+We are both working on a new project here, looking at daylighting under sunny
+skies, and we will use RADIANCE simulations. This has brought up a couple
+of questions:
+
+(1) What is the difference between using the '-g' option on gensky, and using
+    a ground of the same reflectivity as follows:
+
+skyfunc glow ground_glow
+0
+0
+4  0.2  0.2  0.2  0
+
+(2) If using the 'glow' material type for the sky, how do we arrive at correct values for the r,g,b ? Is the magnitude of these values important? What r,g,b
+values would you recommend for the colours of different sky types?
+
+skyfunc glow skyglow
+0
+0 
+4  0.9  0.9  1  0
+
+We hope to hear from you soon,
+
+Aris & Jo
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+From: j.dubiel@unl.ac.uk
+
+      Jo Dubiel
+      Low Energy Architecture Research Unit
+      University of North London
+      Spring House
+      6 - 40 Holloway Road
+      London N7 8JL
+
+      Tel:  0171- 753- 7006
+
+      Fax:  0171- 753- 5780
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+From greg Wed Oct 25 10:24:08 1995
+Date: Wed, 25 Oct 95 10:23:33 PDT
+From: greg (Gregory J. Ward)
+To: HXZZDUBIELJ@cluster.north-london.ac.uk
+Subject: Re: Floodlit Radiance pictures
+
+Hi Aris and Jo,
+
+Working kind of late, aren't we?
+
+You should use the -g option of gensky rather than reducing the color param's
+on your glow material.  If you want to add color to either your ground or
+your sky, make sure that the luminance is still 1 so that when you combine it
+with the skyfunc pattern, the total luminance will be correct.
+
+To do this, use the following formula for luminance from (r,g,b):
+
+	l = .265*r + .670*g + .065*b
+
+(This is in units of .00559 cd/m^2, but never mind that.)  Then, say you want
+your color (hue,saturation) to be the same as (r,g,b)=(.5,.1,.05) -- a nice
+brown.  The values you would use for your glow would be these divided by the
+luminance as defined above, i.e. divided by (.256*.5 + .670*.1 + .065*.05),
+which is .198.  Thus, you would use:
+
+	skyfunc glow groundglow
+	0
+	0
+	4 2.52 .504 .252 0
+
+Apply the same type of calculation to the sky.  I don't know the best color
+to use for anything, unfortunately.  You'll just have to pick your own
+preference for that.  Beware highly saturated colors, as they tend to result
+in odd-looking interiors with strong color casts on the floor and ceiling.
+
+Good luck!
+-Greg
+
+[And here's the question once more from someone else -- I can't believe I
+ forgot that I had answered it before, but I've probably done it before and
+ will probably do it again....]
+
+From jst_ibp@mars.IPA.FhG.de Thu May 23 00:43:59 1996
+Date: Thu, 23 May 1996 09:43:50 EDT
+From: jst_ibp@mars
+To: %mx%"greg@hobbes.lbl.gov"@mars
+Subject: Gensky problem
+
+Dear Greg,
+
+We were asked the following questions by Dr. Hans Schmidt, Siemens,
+which we are not able to answer and therefore would very much 
+appreciate your help. Probably the answers are very straight forward
+for you...
+
+H. Schmidt noticed that the colour used for the sky influences
+the luminances on the pictures and asked the following questions:
+
+1) How do the RGB values for sky_glow and ground_glow have to be set 
+to get the "original" CIE sky luminances and realistic values for the
+ground (R=G=B=1 ?)
+
+2) How does the -g option influence the result? Are the values of skyfunc
+in the "lower" hemisphere weighted by using this factor?
+
+3) R=G=B=1 results in a sky which is much too bright. Dark blue (for 
+clear sky) and dark grey (for overcast sky) seems to be much better.
+What can be done to get a realistic visualization and too be correct
+according to CIE definition at the same time?
+
+Thanks for your help.
+
+Best regards,
+
+Juergen
+
+*********************************************************************
+Juergen Stoffel
+Fraunhofer Institute of Building Physics, Division of Heat Technology
+Nobelstrasse 12, 70569 Stuttgart, Germany
+Tel +49 711 970 3327, Fax +49 711 970 3399, e-mail: jst@ibp.fhg.de
+*********************************************************************
+
+From greg Thu May 23 10:27:36 1996
+Date: Thu, 23 May 96 10:27:12 PDT
+From: greg (Gregory J. Ward)
+To: jst@ibp.fhg.de, jst_ibp@mars
+Subject: Re:  Gensky problem
+
+Hi Juergen,
+
+> 1) How do the RGB values for sky_glow and ground_glow have to be set 
+> to get the "original" CIE sky luminances and realistic values for the
+> ground (R=G=B=1 ?)
+
+For a blue sky, I recommend the following glow material:
+
+	skyfunc glow sky_glow
+	0
+	0
+	4 0.986 0.986 1.205
+
+	sky_glow source sky
+	0
+	0
+	4 0 0 1 180
+
+This will give a slight blue tint without affecting the luminosity.
+I computed this using the formula:  grey = .265*R + .670*G + .065*B
+
+> 2) How does the -g option influence the result? Are the values of skyfunc
+> in the "lower" hemisphere weighted by using this factor?
+
+Yes, gensky's -g option does affect the luminance of the lower hemisphere.
+You should therefore make sure that it agrees with the grey value of the
+color of the ground plane, if any.  If your ground plane is not grey,
+you should also use the above formula to compute an appropriate glow
+source for the ground.  For example, let's say that your ground plane
+has the color (R=.4, G=.3, B=.1).  Then, your -g option should be set
+to (.265*.4 + .670*.3 + .065*.1) = .3135, and your glow material should
+have these values divided by the grey value, i.e., (R=.4/.3135, G=.3/.3135,
+B=.1/.3135), thus:
+
+	!gensky {date} +s -g .3135 {other options}
+
+	void plastic ground_mat
+	0 0
+	5 .4 .3 .1 0 0
+
+	ground_mat ring ground_plane
+	0 0
+	8 0 0 0 0 0 1 0 100
+
+	skyfunc glow ground_glow
+	0 0
+	4 1.28 .957 .319 0
+
+	ground_glow source ground
+	0 0
+	4 0 0 -1 180
+
+> 3) R=G=B=1 results in a sky which is much too bright. Dark blue (for 
+> clear sky) and dark grey (for overcast sky) seems to be much better.
+> What can be done to get a realistic visualization and too be correct
+> according to CIE definition at the same time?
+
+This is a dynamic range problem, and there is little one can do about it.
+The same problem occurs with an ordinary camera -- one simply cannot expose
+both the inside and outside simultaneously and get decent results.  When a
+person is in the acutal environment, their pupils and retina adjust as they
+look out the window then back at their desk.  On a picture or a computer
+monitor, however, we cannot easily mimic this.  The best you can do is to
+readjust the exposure in ximage using the '=' or '@' commands.  Others have
+substituted a fake sky out the window to overcome this problem, but that
+seems like a lot of work and a bit of a cheat if you ask me.
+
+Hope this helps.
+-Greg
+
+From MFKPGMA@fs1.ar.man.ac.uk Fri Nov 24 03:07:17 1995
+From: Mohd Hamdan Ahmad <MFKPGMA@fs1.ar.man.ac.uk>
+Organization: Planning and Architecture.
+To: greg@hobbes.lbl.gov
+Date: Fri, 24 Nov 1995 11:04:20 GMT0BST
+Subject: RADIANCE
+
+Dear Greg,
+ 
+I am using Radiance to get DF results for my scenes.
+I would like to ask if there is a way by which I can get rtrace to generate
+periodic reports (similar to "rad") while I run my simulations. 
+The reason behind is due to the long simulation time needed to do an 
+rtrace to get my illuminance measurements.
+
+My rtrace script is as follows:
+
+rtrace -h -i -ds 0.02 -dt 0 -dc 1 -ab 2 -aa .15 -ad 512 -ar 128 -as 256 \
+*.oct < points | rcalc -e '$1=($1*0.3+$2*0.59+$3*0.11)/(PI*8.9)' \
+>> df_file
+
+Another question I would like to ask refers to the gensky command.
+I am currently using the Standard CIE Overcast sky. if I use the following
+rad file:
+
+    !gensky 01 01 13 -c -a 52.3 -o 0 -m 0 -B 27.93
+    
+    skyfunc glow skyglow
+    0
+    0
+    4 1 1 1 0
+    
+    skyglow source sky
+    0
+    0
+    4 0 0 1 180
+ 
+ 
+ Is it safe to assume that this will generate an even sky distribution. 
+ The reason I ask is because I've tested this sky on a symmetrical model
+ ie. a box) with no roof and I get DF results that are not the same 
+ on opposite ends of my model (I have used the same material reflective 
+ properties for all my surfaces). Is there anyway I can improve on the
+ results or is this really how RADIANCE behaves. If my illuminance readings
+ are not the same on opposite ends of my  room, then should I assume that
+ the -c (CIE overcast sky) parameter for gensky takes into account a
+ sun source at an angle? Please enlighten me on this.
+ 
+ Cheers,
+ 
+ Hamdan Ahmed
+ email: mfkpgma@orpheus.man.ac.uk
+
+From greg Mon Nov 27 11:16:35 1995
+Date: Mon, 27 Nov 95 11:16:02 PST
+From: greg (Gregory J. Ward)
+To: MFKPGMA@fs1.ar.man.ac.uk
+Subject: Re:  RADIANCE
+
+Hello Hamdan,
+
+The only way to know how far rtrace has progressed is to use the -x option
+to cause it to flush its output after each point.  Then, use the -u option
+to rcalc to make it flush its buffer, also.  The number of lines in the
+output file (which can be determined simply with the "wc" program) will tell
+you how many of the total points have been computed.  Your command would change
+to:
+
+rtrace -x 1 -h -i -ds 0.02 -dt 0 -dc 1 -ab 2 -aa .15 -ad 512 -ar 128 -as 256 \
+*.oct < points | rcalc -u -e '$1=($1*0.3+$2*0.59+$3*0.11)/(PI*8.9)' \
+>> df_file
+
+I hope you realize also the difference between the rtrace -i and -I options.
+The former, which you are using, sends rays from the point in the direction
+given to intersect a surface and compute the irradiance at the intersected
+point.  If, instead, you want to compute the irradiance at a specific point,
+which may not lie on any surface (e.g., the workplane), the you should use
+the -I option instead.
+
+The gensky command you are using will compute a symmetric CIE overcast sky
+distribution.  It is not uniform, because it changes as a function of
+altitude, but it is not a function of azimuthal direction, so your daylight
+factors on opposite sides of a symmetric room should match.  That they don't
+is not unusual, but it may indicate that more samples (-ad parameter) are
+required for better accuracy.  Don't expect the values to ever match exactly,
+however, since Monte Carlo calculations always have some random error
+associated with them (as opposed to a systematic error, which may match).
+
+I hope this helps.
+
+-Greg
+
+=====================================================================
+ANIMATION
+
+From takehiko@MIT.EDU Tue Dec 12 06:55:01 1995
+To: greg@hobbes.lbl.gov (Gregory J. Ward)
+Subject: Re: Question 2.
+Date: Tue, 12 Dec 1995 09:54:23 EST
+From: Takehiko Nagakura <takehiko@MIT.EDU>
+
+Mr. Ward;
+ Thank you for the tips about rendering parameters.
+ I tried to boost up -ad and -as values and am getting better
+ image qualities now (takes a moment on my workstation, though).
+
+ I am starting to work on a project to visualize interior space
+ of famous but unbuilt architecture from the early 20 century now
+ and interested in making animations.
+ I have a few experience of making CG film of architecutre
+ in Alias and Wavefront, but
+ for this interior project, I would love to try with Radiance.
+
+ Phil Thompson showed me a few of his animated work that he 
+ did with Radiance before, and I am wondering if there is any utility
+ to do animation that you or other people made? I found one
+ on the Web made by New Zealand people (
+http://archpropplan.auckland.ac.nz/Graphics/radiance/ra_sunrun.html)
+, but if there is any other utilities for doing walk-through or
+ lighting-animation, etc, will you let me know where I should
+ look into? (I could not find any on your radiance manual. I am
+ currently running radiance2.5, and maybe something is in 2.6?)
+
+ I have some experience in cshell and c programming, and I would
+ love to build myeslf some thing that I can contribute, but I
+ would also like to know what is available now.
+
+ Thank you for taking time for reading this again.
+
+Takehiko Nagakura (Assist. Prof. of Architecture, MIT)
+
+From greg Tue Dec 12 09:59:19 1995
+Date: Tue, 12 Dec 95 09:59:05 PST
+From: greg (Gregory J. Ward)
+To: takehiko@MIT.EDU
+Subject: Re: Question 2.
+
+Hello Prof. Nagakura,
+
+Unfortunately, there are no general animation tools in Radiance.  I have done
+lighting and walk-through animations myself, and I find it is always better
+to write the scripts to do them (using the C-shell or Tcl or Pearl or
+whatever) and customize them each time.  There are simply too many different
+optimizations and different ways of doing things to have a general utility.
+I have tried and failed to design one several times.
+
+You should study the utility programs cnt and rcalc, and the image inter-
+polation program pinterp, which uses the -z option of rpict.  Other rpict
+options you should know are -S and -o.  Check the man page for explanations.
+
+My usual method to create a walk-through animation is to select keyframe
+points using rview and the "view key.vf -t #seconds" command to add a new
+keyframe with a separation (in seconds) from the previous view.  Then, I
+use the following script to take this file and create a .cal file appropriate
+for use with rcalc and the "spline.cal" file, which can be found in the
+ray/src/cal/cal directory.  Rcalc may be used with cnt to generate a sequence
+of evenly-spaced views as input to rpict.  These steps again are:
+
+	1.  Run rview, and use the "v key.vf -t #secs" command to add views
+		to a keyframe file.
+
+	2.  Use the attached script, mkspline, to generate a .cal file for
+		use with rcalc:
+
+		% mkspline key.vf > key.cal
+
+	3.  Use cnt with rcalc, key.cal and spline.cal to render a sequence
+		of frames.  You may want to do this in low resolution first
+		to check everything:
+
+		% cnt 200 | rcalc -f spline.cal -f key.cal -e '5=$1/Ttot' \
+			-o view.fmt | rpict [rendering options] \
+			-S 1 -o anim%03d.pic -z anim%03d.zbf scene.oct &
+
+		(The file view.fmt contains something like this:
+VIEW= -vp ${s(Px)} ${s(Py)} ${s(Pz)} -vd ${s(Dx)} ${s(Dy)} ${s(Dz)}
+		)
+
+	4.  Use the generated anim*.pic and anim*.zbf with pinterp to
+		interpolate frames inbetween for a smoother animation.
+
+The same command issued in step 3 above may be repeated on different machines
+sharing the filesystem over NFS.  Each process will render the next unrendered
+frame in the sequence.  If you are performing an interreflection calculation
+(i.e., -ab >=1), be sure to use the -af option to rpict so that values are
+shared between renderings and processes.
+
+Also note that the views put out by rcalc AMMEND the initial view you may
+set on the rpict command line.  View parameters that stay the same, such
+as view type, resolution and probably up vector and size, need only be given
+once on the command line.
+
+I hope this is enough to get you started.  I'm sorry that I don't have a
+canned solution to provide you.  Maybe someday, with help from users such
+as you, I can gain enough insight into this problem to devise a general
+approach.
+
+-Greg
+
+----------------------------------------------- mkspline
+#!/bin/csh -f
+#
+# Make a .cal file for use with spline.cal from a set of keyframes
+#
+if ( $#argv != 1 ) then
+	echo Usage: $0 viewfile
+	exit 1
+endif
+cat <<_EOF_
+{
+	Keyframe file created by $0
+	from view file "$1"
+	`date`
+}
+_EOF_
+rcalc -i 'rview -vtv -vp ${Px} ${Py} ${Pz} -vd ${Dx} ${Dy} ${Dz} -vu ${Ux} ${Uy} ${Uz} -vh ${H} -vv ${V} -vs 0 -vl 0 -vo 0 -va 0 -t ${T}'\
+	-o '${recno} ${Px} ${Py} ${Pz} ${Dx} ${Dy} ${Dz} ${Ux} ${Uy} ${Uz} ${H} ${V} ${T}'\
+	$1 | tabfunc Px Py Pz Dx Dy Dz Ux Uy Uz H V T
+
+[I have since written a new program, called ranimate, which handles many
+ of the nasty details of running long animations.  It will be included in
+ the 2.6 release, due any day now. -G]
+
+======================================================================
+SETTINGS AND ACCURACY
+
+From karner@fcggsg02.icg.tu-graz.ac.at Mon Jan 29 13:28:25 1996
+Return-Path: <karner@fcggsg02.icg.tu-graz.ac.at>
+Date: Mon, 29 Jan 1996 22:17:43 +0100 (MET)
+From: Konrad Karner <karner@icg.tu-graz.ac.at>
+To: GJWard@lbl.gov
+Subject: Accuracy!
+Status: R
+
+Hi Greg,
+
+Thank you for your quick answer of my last question.
+
+I'm using Radiance (rpict and rtrace) to calculate luminance values
+respectively illuminance values in my test scene. 
+
+I used your recommended rendering options (min, fast, accurate) to 
+calculate the luminance values for the same point and I saw that there 
+occur large differences. So I'm interested how close are the value 
+of the accurate simulation to the maximum option. 
+
+For example, I got 30cd/m2 for the min. option
+	  	   38cd/m2 for the fast option
+	       and 88cd/m2 for the accurate option
+
+I had to stop the calculation with the max. option because it took to 
+much time (I got no results after 3 days on a SGI Power Challenge).
+
+I also studied the convergence of the algorithm by calculating the 
+luminance values in 11 equally steps between the fast and the accurate 
+option by interpolating the parameters. The luminance values of 50% of the 
+points in the last steps exhibits no convergent behavior.
+
+Do you have any data of the accuracy of the algorithm?
+
+Do you know how large are the errors in the min, fast, accurate and max 
+option could be?
+
+Thanks,
+	Konrad 
+
+|************************************************************|
+| Konrad F. KARNER                                           |
+| Institute for Computer Graphics                            |
+| Graz University of Technology                              |
+| -----------------------------------------------------------|
+| Muenzgrabenstrasse 11                                      |
+| 8010 Graz, Austria                                         |
+| Tel.: (+316) 873-5022    	Fax: (+316) 873-5050         |
+| E-mail: karner@icg.tu-graz.ac.at                           |
+| WWW: http://www.icg.tu-graz.ac.at/                         |
+|____________________________________________________________|
+
+
+From greg Mon Jan 29 13:37:37 1996
+Date: Mon, 29 Jan 96 13:37:15 PST
+From: greg (Gregory J. Ward)
+To: karner@icg.tu-graz.ac.at
+Subject: Re:  Accuracy!
+
+Hi Konrad,
+
+The accuracy of the calculation depends a lot on your scene, so there is no
+direct correlation between most of the rendering options and a percentage
+accuracy value.  This is an unfortunate but necessary characteristic of
+this approach to lighting calculation.  The only method that can truly
+claim convergence under arbitrary conditions is naive Monte Carlo, which
+would never finish in our lifetimes for most scenes.
+
+My best advice is to employ the "rad" program to set options for you based
+on qualitative scene characteristics.  Using "rad", you can expect about
+20% pixel accuracy for "low" quality, 10% pixel accuracy for "medium"
+quality, and 5% pixel accuracy for "high" quality settings.  There will
+be exceptions, of course.
+
+The kind of bad convergence you are seeing would seem to indicate that you
+are not choosing an appropriate value for the -av setting, which is very
+important as an initial guess of average scene radiance.  Without it, you
+are relying entirely on Radiance to follow every bit of light around your
+scene, through all its random bounces ad infinitum.  It doesn't do that so
+well.
+
+The main parameter that will affect convergence in simple scenes is -ab,
+followed by -ad.
+
+-Greg
+
+P.S.  Radiance has been validated against other calculations and model
+measurements, and is (at least potentially) quite accurate.  The problem
+is applying it properly, which can be difficult.
+
+===================================================================
+MAPPING BARK TO BRANCHES
+
+From cs4gp6ar@maccs.dcss.mcmaster.ca Thu Feb 29 12:30:59 1996
+Date: Thu, 29 Feb 1996 15:27:23 -0500 (EST)
+From: Janik       ME <cs4gp6ar@escher.dcss.McMaster.CA>
+To: greg@hobbes.lbl.gov
+Subject: radiance
+
+Hello there,
+
+We are working on a project at McMaster University with Dr.Jones to 
+generate various trees using L-systems.
+
+We would like to map bark and leaf textures onto them, but we are having 
+a difficult time finding examples or methods in the available 
+literature. 
+
+If you could please  tell us where to look for such examples, or send us 
+an example we would greatly appreciate it.
+
+			Thanks
+				Marta Janik
+
+From greg Thu Feb 29 12:41:01 1996
+Date: Thu, 29 Feb 96 12:39:28 PST
+From: greg (Gregory J. Ward)
+To: cs4gp6ar@escher.dcss.McMaster.CA
+Subject: Re:  radiance
+
+Hi Marta,
+
+I don't have a really good example handy, but for mapping onto branches
+and the like, I've used a cylindrical mapping, that looks like this:
+
+void colorpict bark_pat
+7 red green blue pinebark.pic cyl.cal cyl_match_u cyl_match_v
+0
+2 1.5225225 .25
+
+The first real argument is the aspect ratio of the pattern's picture
+(pinebark.pic in this case), and the second real argument is the
+unit scale for this picture (larger values yield larger tiles).
+
+This pattern must then be transformed (along with the branch) to the
+appropriate position.  The cylindrical mapping in cyl.cal assume you
+have a cylinder with unit radius whose axis is along the Z coordinate axis.
+
+You may use a cone with a slight graduation instead of a cylinder and you
+won't notice much difference.
+
+I hope this helps.
+-Greg
+
+====================================================================
+MUNGING PICTURE HEADERS
+
+From courret@lesosun2.epfl.ch Fri Mar  1 02:32:30 1996
+Return-Path: <courret@lesosun2.epfl.ch>
+Date: Fri, 1 Mar 96 11:30:22 +0100
+From: courret@lesosun2.epfl.ch (Courret)
+To: greg@hobbes.lbl.gov
+Subject: findglare
+Status: RO
+
+Hi greg,
+
+I would like to compute the Guth's comfort index for a picture obtained
+by pcomb. I have seen in the man page of findglare that, this command
+will not work on pictures processed by pcomb. Is there a way to go around
+this limitation? Or, would it be possible to extend the capability of
+findglare?
+Note: I have tried also to add the view information lost by pcomb using
+the option -vf view.vp in the commande that calls findglare,
+but without success...
+
+Regards,
+
+--------------------------------------------------------
+Mr Gilles COURRET
+Laboratoire d'Energie SOlaire et de Physique du Bbtiment
+ITB/DA
+Ecole Polytechnique Fidirale de Lausanne
+1015 Lausanne
+Suisse
+Til: xx.21.693.55.53
+Fax: xx.21.693.55.50
+e-mail:courret@lesosun1.epfl.ch
+
+From greg Fri Mar  1 09:37:15 1996
+Date: Fri, 1 Mar 96 09:35:40 PST
+From: greg (Gregory J. Ward)
+To: courret@lesosun2.epfl.ch
+Subject: Re:  findglare
+
+Hi Gilles,
+
+The main problem with pcomb is not that it loses the view information
+(though this may be why findglare fails), but that it performs arbitrary
+operations on the pixels, so it is easy to mess up.
+
+You can get around the information header stuff by editing it yourself,
+like so:
+
+	% getinfo < picture > header
+	% vi header
+	% getinfo - < picture >> header
+	% mv header picture
+
+The "getinfo -" command takes a picture from standard input and strips off
+the header, thus the above replaces the header of "picture" with whatever
+you create in vi.
+
+Hope this helps.
+-Greg
+
+================================================================
+MODELING A LASER
+
+From jm@dmu.ac.uk Tue Mar 26 06:12:37 1996
+Date: Tue, 26 Mar 1996 14:12:35 GMT
+From: John Mardaljevic <jm@dmu.ac.uk>
+To: greg@hobbes.lbl.gov
+Subject: Re:  Mist extinction
+
+Two things:
+
+(1) How do I specify a non-diverging ("laser") beam, other than using
+a long focus spot; and
+
+(2) I thought you'd like to know, if you don't already - the
+Bartlett School (Univ. College London) have just advertised
+a "Lighting Researcher" post specifically asking for Radiance
+experience.  It's only one year, but I guess they feel they are
+being left behind without some direct involvement.  Be interesting
+to see who they get.
+
+-John
+
+From greg Tue Mar 26 11:04:14 1996
+Date: Tue, 26 Mar 96 11:03:57 PST
+From: greg (Gregory J. Ward)
+To: jm@dmu.ac.uk
+Subject: laser
+
+Hi John,
+
+The only way I can think to model a laser beam is to set the radiance to
+increase as a function of distance, but be non-zero only within a cylinder
+projected from the source.  I.e.:
+
+	# Beam function with cancellation of fall-off (A1 is beam radius)
+	void brightfunc laser_beam
+	2 if(Ts*Ts*(1-Rdot*Rdot)-A1*A1,0,Ts*Ts/(PI*A1*A1)) .
+	0
+	1 .125
+
+	# Laser beam emittance (in watts/sq.meter)
+	laser_beam spotlight laser
+	0
+	0
+	7 1000 0 0  1  0 1 0
+
+	# Laser source (radius should match laser_beam A1 above)
+	laser ring laser_source
+	0
+	0
+	8
+		0	0	0
+		0	1	0
+		0	.125
+
+The function in laser_beam does two things -- first, it checks to see whether
+or not a sample point is within the cylindrical beam.  If it isn't, a value
+of zero is returned.  If it is, then a value that will cancel the normal
+R-squared falloff is returned.  This, when multiplied by an initial radiant
+emittance, will result in the same irradiance for any surface oriented
+towards the laser source at any distance.
+
+The spotlight type is only used for efficiency, so we don't have to check
+the source in all directions, just 1 degree around the aimed direction.
+
+That's curious about the Bartlett School position.  I wish Radiance drew
+the sort of crowd here that it does in England!  Maybe I should have you
+come out to California to run my publicity campaign!
+
+-Greg
+
+================================================================
+FALSECOLOR IN BLACK AND WHITE
+
+From sfa@sizemorefloyd.com Thu Apr  4 14:44:41 1996
+Date: Thu, 4 Apr 1996 17:44:30 -0500
+To: greg@hobbes.lbl.gov
+From: "Sizemore Floyd Architects, Inc." <sfa@sizemorefloyd.com>
+Subject: falsecolor question
+
+Hi Greg,
+
+I have a (hopefully) brief question for you:
+
+We am trying to put together a presentation for our clients, where we need
+to make a _greyscale_ graphical represention of the "value" of one
+daylighting design over a presumably less optimal one.
+
+(Since I have virtually /no time/ to do this,) my idea was to 
+use some perspective renderings of the two designs at issue,
+then use 'falsecolor' with the -r/-g/-b switches so that the 
+range of falsecolors representing the luminance gradient would go 
+from white to black instead of red to green to blue.  We could then
+(hopefully, with a little help from Photoshop) use these images to visually
+illustrate our point.  (In addition to the daylight factor (etc.) numbers.)
+
+The docs say:
+
+      "The remaining options, -r, -g, and -b are for changing 
+      the mapping of values to colors. These are expressions 
+      of the variable v, where v varies from 0 to 1. These 
+      options are not recommended for the casual user."
+
+Well, I'm pretty casual but I'd like to try this anyway...
+Can you please point me toward any information on how to go about
+tweaking these options?  Hope the intent of what I'm thinking of is clear.
+
+Oh yeah, please email me at stuartl@netcom.com instead of the reply-to address.
+
+Thanks!
+
+-Stuart
+
+PS:  I've set up a new Pentium Pro in the office with Linux expressly for
+the purposes of running Radiance.  (It's not an Indigo, but...)  It
+multiple-boots Windoze NT and DOS also.
+
+Stuart Lewis,
+Sizemore Floyd Architects, Inc.
+stuartl@sizemorefloyd.com
+
+From greg Thu Apr  4 15:16:52 1996
+Date: Thu, 4 Apr 96 15:16:28 PST
+From: greg (Gregory J. Ward)
+To: stuartl@netcom.com
+Subject: falsegrey
+
+Hi Stuart,
+
+Glad to hear you're still struggling with Radiance in your new capacity....
+
+Try the following:
+
+	-r 'if(frac((x-y)*v/10)-v,1,0)'
+	-g 'if(frac((x-y)*v/10)-v,1,0)'
+	-b 'if(frac((x-y)*v/10)-v,1,0)'
+
+This should result in a dashed line, the length of which is controlled
+by the value.  (I'm assuming you're using the -cl and -p options of
+falsecolor as well.)  I tried it on one example, and it seems to work
+for B&W output.  The only problem is that the dashes aren't computed
+according to the line orientation (which is unknown to the program),
+so diagonals one way look better than diagonals the other way.
+
+-Greg
+
+From stuartl@netcom.com Fri Apr  5 07:56:26 1996
+Return-Path: <stuartl@netcom.com>
+From: stuartl@netcom.com (Stuart Lewis)
+Subject: grayscale revisited
+To: greg@hobbes.lbl.gov
+Date: Fri, 5 Apr 1996 07:56:05 -0800 (PST)
+Status: RO
+
+Hi Greg,
+
+I tried both the solutions you offered, but they didn't do /exactly/
+what I had in mind- hopefully it's simpler than that.  We are not going
+to contour lines at all on these images.  The intent is to convey
+different degrees of brightness to the viewers (who wouldn't
+understand the numbers, anyway.)
+
+Any ideas?  Your solutions /will/ be valuable in the future, since we
+don't do very many color submittals.
+
+Thanks again!
+
+-Stuart
+
+From greg Fri Apr  5 10:00:59 1996
+Date: Fri, 5 Apr 96 10:00:34 PST
+From: greg (Gregory J. Ward)
+To: stuartl@netcom.com
+Subject: Re:  grayscale revisited
+
+Well, all I can suggest is setting "-r v -g v -b v", thereby mapping to
+greyscale with a legend, and see if that's good enough.
+
+-G
+
+From jedev@MIT.EDU Tue May  7 13:10:10 1996
+To: greg@hobbes.lbl.gov (Gregory J. Ward)
+Subject: lighting units 
+Date: Tue, 07 May 1996 16:10:15 EDT
+From: John E de Valpine <jedev@MIT.EDU>
+
+Greg:
+
+I apologize if this is somewhere that I should be able to discover it
+myself, but what are the proper units for "nits". I assume that "nits"
+are the appropiate term for radiance and irradiance values, is this
+correct? 
+
+And while I am on the subject, when one uses the mouse and the "L" key
+to query a radiance image what are the units returned, is it lux? How
+can I create an image that has a series of these values displayed which
+the image is first opened with ximage?
+
+My knowledge of lighting is largely experiential derived through
+experimentation with radiance, so these are probably fairly naive questions.
+
+Thanks.
+
+-Jack de Valpine
+
+
+From greg Tue May  7 13:21:18 1996
+Return-Path: <greg>
+Date: Tue, 7 May 96 13:21:05 PDT
+From: greg (Gregory J. Ward)
+To: jedev@MIT.EDU
+Subject: Re:  lighting units
+Status: R
+
+Hi Jack,
+
+"Nits" is shorthand for "candelas per square meter", which is shorthand for
+"lumens per steradian per square meter".  This is the photometric unit
+reported by the "l" commmand of ximage when run on a standard Radiance picture.
+If, on the other hand, the Radiance picture was generated using the -i option,
+then the values reported would be in terms of lux (lumens per square meter).
+
+The units of radiance are actually watts per steradian per square meter.  These
+get converted from watts to lumens using a factor of 179 lumens/watt and the
+proper proportions of red, green and blue to match the human eye's sensitivity
+to different wavelengths.
+
+There is no way to get ximage to come up displaying point luminances, unless
+you write a program or something to stick mouse events into its input queue.
+(I don't know enough about X11 to even be sure this is possible.)  A better
+approach is to use the "falsecolor" program to convert your image to one
+that displays luminance or whatever with a corresponding legend.  Check out
+the manual page for examples.
+
+-Greg
+
+P.S.  Your questions are not too naive.  A lot of users don't know this stuff,
+and it's rather difficult to explain/understand.
+
+====================================================================
+COMPILE SWITCHES
+
+From audile@onramp.net Fri May 24 10:43:14 1996
+Subject: RE: optimized rpict
+Date: Fri, 24 May 96 12:42:53 -0500
+From: Robert Kay <robert@audile.com>
+To: "Kevin Matthews" <matthews@aaa.uoregon.edu>,
+        "Greg Ward" <greg@hobbes.lbl.gov>
+
+Hi Greg and Kevin:
+
+I thought I'd let you know of my progress in optimizing the rpict code.  
+Although I'm in almost daily contact with Motorola with bug reports on 
+their compiler, I have made some good progress with the project.
+
+The large image in the texture folder which originally took around 30 
+hours now completes in around 10.  The compiler is causing some of the 
+classic size/speed issues; not in the produced code (it is actually 
+smaller) but in the memory usage of the program when running.  I have 
+gotten stack overflows several times.  As soon as I figure out how to 
+adjust stack size, I will.
+
+There are still several outstanding issues which I do not understand.  
+The new rpict cannot properly execute commands (!'s) within an object.  
+It is as if the pipe which sends the data back to rpict always comes up 
+empty.  I can't figure out why.
+
+Other problems include the inability to fully optimize the files 
+calfunc.c and o_instance.c and particularly header.c, which causes the 
+compiler to crash the machine when it is optimized !!!
+
+I have also not been able to get the compiler to properly do 
+interprocedural analysis across different source files, which I'm sure 
+will help quite a bit.  I have a plan to make that happen, but first I 
+have to figure out what makes the optimizers freak out with the above 
+three files.
+
+Greg -- is there any place I can find out just what all of the Radiance 
+compile switches really are for?  Most are obvious, but other's are a 
+little harder to figure out.  I have tried to go through the makeall 
+script to figure out when they get set, but it's not quite enough info.
+
+So that's where I am.  I look forward to making this rpict binary 
+available to everyone when I get it fixed.  I really think it makes the 
+Mac a more than just viable rendering platform.  Next we'll try to get it 
+out of the UNIX operating system, which slows it down.  Seems like it 
+should be possible (with frozen octrees at least).  Maybe after that 
+we'll figure out Mac distributed rendering.
+
+take care,
+
+robert
+
+From greg Tue May 28 11:22:32 1996
+Date: Tue, 28 May 96 11:22:06 PDT
+From: greg (Gregory J. Ward)
+To: robert@audile.com
+Subject: RE: optimized rpict
+Cc: matthews@aaa.uoregon.edu
+
+Hi Robert,
+
+Your work sounds quite ambitious to me!  I'm glad that you're making such
+progress.  In answer to your query regarding compile switches, here's a
+quick list:
+
+	-DALIGN=(type)	Alignment type, machine-dependent.  Most RISC
+			architectures align on 8-word boundaries (double).
+			The default alignment type is int.
+
+	-DSPEED=(MIPS)	Millions of instructions per second for this
+			processor (approximate).  This is used to decide
+			certain unimportant timing issues such as how many
+			rays to trace before checking input in rview and
+			whether or not to optimize the color table in ximage
+			on 8-bit displays.
+
+	-DWFLUSH=(rays)	Override for number of rays before flush in rview.
+
+	-DBSD		Operating system has a strong Berkeley flavor, meaning
+			that bcopy() and bzero() are present but maybe memcpy()
+			and memset() are not.  (See common/standard.h for other
+			things this flag affects.)  Also affects certain system
+			calls, such as signal handling and resource tracking.
+
+	-DDCL_ATOF	The function atof() (ASCII to float) is not defined
+			in either stdio.h or math.h, so we need to declare it.
+			In better days, a duplicate declaration of such a
+			function would never have been a problem, but with
+			the advent of prototypes and idiot systems that define
+			these things as macros, portability is Hell.
+
+	-DBIGMEM	The system has lots of RAM available, so size hash
+			tables and the like accordingly.  Also provides for
+			larger overall scene descriptions (262,080 primitives
+			rather than 32,704).  Even larger scenes can be
+			accommodated by defining MAXOBJBLK > 4096.
+
+	-DSMLFLT	This setting tells Radiance to use short floats
+			(4-bytes) throughout, which saves lots of memory
+			but can cause calculation inaccuracies in many
+			cases.  Its use has been discontinued for this reason.
+
+Other defines may be used to overcome portability problems on various operating
+systems.  A common trick, for example, is -Dvoid=char to overcome systems that
+define malloc() as returning pointer to void, which is prohibited on other
+systems and disagrees with the way I've defined things in Radiance.  (Again,
+this wouldn't be such a problem if there was consistency as to when and where
+malloc() and other such declarations show up.)
+
+I hope this helps.
+-Greg
+
+==========================================================================
+TRANS PARAMETERS
+
+From jedev@MIT.EDU Fri May 31 11:40:07 1996
+From: jedev@MIT.EDU
+To: greg@hobbes.lbl.gov (Gregory J. Ward)
+Subject: More question on 'trans'
+Date: Fri, 31 May 1996 14:40:45 EDT
+
+Greg:
+
+Based on our previous discussions I modeled a cloth membrane in the
+following manner:
+
+	void trans trans_cloth
+	0
+	0
+	7 0.35 0.35 0.35 0.1 0 1 0.1
+
+which assuming I have worked this out properly should yield the
+following behavior:
+
+	void trans id
+	0
+	0
+	7 r g b spec rough trans tspec
+
+	d_ref =	((1 - spec) * (1 - trans) * rgb_avg)
+		((1 - 0.1) * (1 - 1) * 0.35) = 0
+	I'm not sure about this one, in our last correspondence you said
+	that I needed to add in a (1 - specular_reflection)
+
+	d_trans = (rgb_avg * trans * (1 - tspec))
+		  (0.35 * 1 * (1 - 0.1)) =  31.5%
+
+	s_trans = (rgb_avg * trans * tspec)
+		  (0.35 * 1 * 0.1) = 3.5%
+
+This yields a material that from the interior appears as a light grey
+and through which the shadows of the external photovoltaics can be
+seen. But from the exterior this material appears as a fairly dark
+grey. Now on the one hand this may make sense, because of the darker
+interior and the high diffuse transmitted component we are seeing a
+farily dark surface. But the effect that I am now looking for which
+seems to make intuitive sense to me, but may not make physical sense, is
+a material that is 'white,' from the outside, 'light grey' inside ,and
+diffusely transmits approximately 35% of incoming light while reflecting
+approximately 65%.
+
+In the initial case did I model a 'grey' trans material?
+
+Would 'white' be something like the following:
+
+	void trans trans_cloth
+	0
+	0
+	7 1 1 1 0.07 0.2 0.35 0.1
+
+
+	d_ref =	((1 - spec) * (1 - trans) * rgb_avg)
+		((1 - 0.07) * (1 - 0.35) * 1) = 60.45%
+
+	d_trans = (rgb_avg * trans * (1 - tspec))
+		  (1 *  0.35 * (1 - 0.1)) =  31.5%
+
+	s_trans = (rgb_avg * trans * tspec)
+		  (1 * 0.35 * 0.1) = 3.5%
+
+How does roughness get factored in?
+
+What am I missing? Is there somewhere that I should look to find these
+various formula/relationships?
+
+As always thank you very much for your time.
+
+-Jack de Valpine
+
+From greg Fri May 31 12:04:23 1996
+Date: Fri, 31 May 96 12:03:57 PDT
+From: greg (Gregory J. Ward)
+To: jedev@MIT.EDU
+Subject: Re:  More question on 'trans'
+
+Hi Jack,
+
+The formulas for various materials may be found in the file ray/doc/material.1,
+or in PostScript form in ray/doc/ps/material.1.  What you have written here
+is mostly correct, except that the diffuse transmittance needs another
+factor of (1 - spec) in there.
+
+The problem is as you have stated it; i.e., you want more diffuse reflection
+than your original material has.  It would be highly abnormal for a material
+to diffusely transmit light without also diffusely reflecting it, which is
+why the results disagree with your intuition (which I would call 'experience').
+
+Your revised values I think should give you a much more satisfactory, and
+realistic, result.  The roughness determines how much specular light is
+scattered, which affects how clear reflected and transmitted images appear.
+I am not sure in this case if you really want any specular reflection --
+I would be tempted to set the fourth argument to zero.  If you set the
+roughness also to zero, then you will be able to see objects clearly
+through the material.  I don't know if this is what you want, though.
+
+-Greg
+
+====================================================================
+SOLAR ECLIPSE
+
+From jromera@dolmen.tid.es Thu Oct 19 10:24:32 1995
+Date: Thu, 19 Oct 1995 18:25:17 GMT
+From: jromera@dolmen.tid.es (Juan Romera Arroyo)
+To: greg@hobbes.lbl.gov
+Subject: ECLIPSES
+
+Hi Greg,
+
+long time ago I sent you a mail about simulating an eclipse.
+The problem was that the penumbra was not accurate.
+
+I'm trying to reproduce the situation of the next total eclipse (24th Oct 1995)
+
+The radiance file I'm working on is something like this:
+
+
+void plastic blue
+0
+0
+5  0.2  0.1  0.8  0.00  0.00
+ 
+void plastic gray
+0
+0
+5  0.8  0.8  0.8  0.00  0.00
+
+void illum sunlight
+1 bright
+0
+3  90000  90000  90000
+ 
+ 
+void light bright
+0
+0
+3  5 0.2 0
+
+sunlight sphere sun
+0
+0
+4 -70.837471 162.4618481 71.9712839 109.245
+
+!xform -s 1.0 -t 20282.884754 10793.67311 4681.0978365363  earth.norm
+!xform -s 0.273 -t 20232.3077 10767.19458 4669.9966 moon.norm
+
+earth.norm is:
+
+blue sphere ball
+0
+0
+4  0 0 0 1.0
+
+moon.norm is:
+
+gray sphere ball2
+0
+0
+4  0 0 0 1.0
+
+The coordinates of the moon, earth and sun are exactly the same ones as
+on 24th Oct. 1995 at 4:30 PM GMT. All of them are scaled to the radius
+of the earth. (Radius earth=1.0)
+
+When I render this file using rpict with the following parameters:
+
+
+rpict -ps 1 -dj 0.50 -pj .9 -ds 0.1 -vv 2 -vh 2 -x 480 -y 480 -t 5 
+-vp 20200 10740 4650 -vd 82 53 31 -av .00 .00 .00 
+
+I get the moon shadow on the earth. However despite the "artifacts" I get
+in the border of the shadow, it's also too big and too much sharp. The area
+of total obscurity should be much smaller than the one I get.
+
+Am I doing something wrong ? maybe changing the rpict parameters ? ...
+
+Hope you can help me on this.
+
+Thank you
+
+Juan Romera
+
+From greg Thu Oct 19 11:14:39 1995
+Date: Thu, 19 Oct 95 11:14:22 PDT
+From: greg (Gregory J. Ward)
+To: jromera@dolmen.tid.es
+Subject: Re:  ECLIPSES
+
+Hello Juan,
+
+I do not understand why you used an illum for your sun source.  I would have
+just used the light specification with the illum arguments, i.e.:
+
+void light sunlight
+0
+0
+3 90000 90000 90000
+
+Anyway, this doesn't affect penumbra so it doesn't really address your question.
+
+The basic problem you are facing is the fact that Radiance does not do
+high-accuracy penumbra for spherical sources.  I would recommend that you
+replace your sun with a tessellated sphere.  I took the following right from
+the gensurf man page:
+
+	!gensurf sunlight sun 'X+R*sin(PI*s)*cos(2*PI*t)' 'Y+R*cos(PI*s)' \
+			'Z+R*sin(PI*s)*sin(2*PI*t)' 7 10 -e 'R:109.245' \
+			-e 'X:-70.837471;Y:162.4618481;Z:71.9712839'
+
+Use it in place of your solar sphere, and I think you'll start to see a better
+penumbra.
+
+-Greg
+
+==================================================================
+RETROREFLECTORS
+
+From esp@sirius.com Mon Oct  9 16:48:41 1995
+Date: Mon, 9 Oct 1995 16:50:58 -0700
+To: gjward@lbl.gov
+From: esp@sirius.com (Erich Phillips)
+Subject: SAE Retroreflectors (and your memory)
+
+Hi Greg-
+You may remeber sometime ago, you helped me figure out how to model
+retrofeflectors on cars as specified by the SAE. I am trying to resurrect
+this, and I am confused on some points. The SAE specs give values in
+millicandelas per incident lux. This strange unit is provided for 3
+entrance angles at each of 2 observation angles. The table for a red
+retroreflector is as follows:
+
+                0 degrees       10 degrees      20 degrees
+Observation     Entrance        Entrance        Entrance
+Angle (deg)     Angle           Angle           Angle
+
+0.2             420             280             140
+1.5             6                 5               3
+
+The SAE spec also states that "...reflectors may have any linear or area
+dimension; but, for the photometric test, a maximum projected area of 7740
+mm2 contained within a 254mm diameter circle shall be exposed". As I
+recall, your calculations took this area restriction into account somehow.
+
+If you wouldn't mind, could you help me resolve this puzzle? I have
+attached the following three files that you created before:
+
+reflector.cal - the function file
+sae_refl.dat - the data file for red reflectors
+sae_retro.rad - the radiance description file for a 2" x 2" square reflector
+
+Lastly, my old mail server appears to be down.  I can also be reached at
+esp@sirius.com, the server from which this message originates.
+
+Thanks,
+
+{reflector.cal
+
+	Retroreflector BRDF's
+	from Greg Ward
+	A5 is the surface area of the reflector in square meters
+}
+	{divied value by projected area}
+sae_refl(v) = v / Rdot / A5;
+	{angle of source to normal}
+sae_theta (x,y,z) = Acos(x*Nx+y*Ny+z*Nz)*180/PI;
+	{angle of view to source}
+sae_phi(x,y,z) = Acos(-(x*Dx+y*Dy+z*Dz))*180/PI;
+
+
+#  sae_refl.dat
+
+2
+0 20 3
+.2 1.5 2
+
+1.67 .026
+1.12 .019
+.558 .011
+
+
+# sae_retro.rad
+
+#
+# SAE Red Road reflectors
+#
+# Units originally in inches
+#
+
+void metdata sae_red
+5 sae_refl sae_refl.dat reflector.cal sae_theta sae_phi
+0
+5 1 .01 .01 .9 .00258
+
+sae_red polygon reflector
+0 0
+12 -1 -1 -240
+    -1  1 -240
+    1  1 -240
+    1 -1 -240
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ Erich S. Phillips, Ph.D.            email:  esp@sirius.com
+ Biophysics                          work:   (415) 597-4300
+ FTI Corporation                     FAX:    (415) 597-4344
+ 55 Hawthorne Street, 10th Floor
+ San Francisco, CA  94105
+ U.S.A.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<   
+
+
+From greg Mon Oct  9 17:55:47 1995
+Date: Mon, 9 Oct 95 17:55:30 PDT
+From: greg (Gregory J. Ward)
+To: esp@sirius.com
+Subject: Re:  SAE Retroreflectors (and your memory)
+
+Hi Erich,
+
+I do remember this, though not terribly well.  Are the files I did for the
+reflector data you included in your message?  If so, I have not succeeded
+in reproducing the values in the sae.dat file, though the calculation seems
+to be generally correct, at least if the millicandelas/lux are relative to
+lux measured perpendicular to the reflector plane.  If the lux values in the
+SAE spec. are measured relative to the incident beam rather than the reflector,
+then an additional correction factor may be needed.
+
+As for the limitation on measurement conditions, there is no correction I
+can see for the fact that the reflector may exceed the measurement conditions.
+As long as your reflector is less than 12 square inches and fits within a 10"
+diameter circle (converting to units my brain is familiar with), there is
+no need for concern.  Is this not the case?
+
+-Greg
+
+From esp@sirius.com Tue Oct 10 17:37:17 1995
+Date: Tue, 10 Oct 1995 17:39:49 -0700
+To: gjward@lbl.gov
+From: esp@sirius.com (Erich Phillips)
+Subject: metdata and my ignorance (clue: GDG)
+
+Hello again, do you like my hat?
+No, I do not like that hat.
+Goodbye, again.
+Goodbye!
+
+Do you know the source?  You get a wonderful prize for the correct answer.
+
+This is not really why I rang.  I admit that I am still confused by the
+metdata material type.  I do not understand exactly what it is I am
+computing for the data file.  In the example I sent you, how would one
+compute the values that go into the sae_refl.dat file?  For example, at 0
+degrees entrance angle and 0.2 degrees observation angle, the sae spec is
+420 millicandela per incident lux.  Do I want to compute the effective
+reflectance?  In my understanding, this would be Reflectance =
+Pi*Luminance/Illuminance.  But I do not know the luminance, I know that I
+have a reflected luminous intensity of 0.42 candela for each incident lux.
+Furthermore, why in the reflector.cal function file am I dividing by the
+projected source area (I assume Rdot*A5 is the projected source area).
+
+I guess what I am asking is how would one structure the files to create a
+retroreflector meeting the SAE specs.  And one more related question, if I
+am permitted.  I also have specs for some retroreflective sheeting where
+the reflectance is given in units of specific intensity per unit area (such
+as candela/lux/square meter).  How would one perform a similar computation
+with such data.
+
+I thank you for your prompt attention, as usual, to my questions.  If my
+ignorance should ever become too intolerable, please feel free to question
+my heritage.
+
+Thanks,
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ Erich S. Phillips, Ph.D.            email:  esp@sirius.com
+ Biophysics                          work:   (415) 597-4300
+ FTI Corporation                     FAX:    (415) 597-4344
+ 55 Hawthorne Street, 10th Floor
+ San Francisco, CA  94105
+ U.S.A.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<   
+
+
+From greg Wed Oct 11 10:09:46 1995
+Date: Wed, 11 Oct 95 10:09:29 PDT
+From: greg (Gregory J. Ward)
+To: esp@sirius.com
+Subject: Re:  metdata and my ignorance (clue: GDG)
+
+Hi Erich,
+
+I don't blame you for your confusion in the least.  I'll have to
+say that those are about the most confusing units I've ever run across,
+even in lighting!
+
+Here's my logic for the conversion of 420 millicandelas/lux to the required
+units of 1/steradian for the BRDF of metdata:
+
+	420 millicandelas/lux -> 420/1000 candelas/lux
+	-> .42 lumens/sr/(lumens/m^2) -> .42 m^2/sr
+
+Note that the photometric quantities cancelled, so 420 millicandelas/lux
+might as well be .42 (watts/sr)/(watts/m^2) (as long as we don't take
+the spectrum into account).
+
+Now, the metdata calculation in Radiance looks like the following:
+
+	radiance (watts/sr/m^2) Lo = spec * cos(theta_i) * omega_i * Li * f
+
+where:	f	= computed BRDF in 1/sr
+	omega_i	= solid angle of source in sr
+	Li	= avg. radiance of source in watts/sr/m^2
+	theta_i	= angle between surface normal and source direction
+	spec	= multiplier for specular component from material arguments
+
+>From the above formula, the incident beam irradiance is simply:
+
+	beam irradiance (watts/m^2) Ei = omega_i * Li
+
+This is the quantity our SAE spec is in terms of, so our formula should
+resemble the following:
+
+	radiant intensity (watts/sr) = SAE_value * Ei
+
+However, since Radiance never deals in units of radiant intensity, only
+in units of radiance, we need to divide the radiant intensity by the
+projected area in the viewing direction to get the radiance, i.e.:
+
+	Lo = SAE_value * Ei / A_proj
+
+where:	A_proj = A * Rdot
+
+>From this, we can see that our BRDF is actually:
+
+	f = SAE_value / (A * Rdot) / cos(theta_i)
+
+It was this final cos(theta_i) that I didn't have in my original calculation,
+I guess because I thought the lux value in the SAE spec was relative to the
+plane of the reflector.  Thinking more on it (and you should check this), it
+makes more sense that the lux is relative to the incident beam, which may be
+at an angle to the reflector.
+
+So, getting back to your original question, you can either plug the SAE values
+into the data file directly (dividing each by 1000), and modify the .cal file
+so that:
+
+	sae_refl(v,x,y,z) = v / Rdot / A5 / (x*Nx+y*Ny+z*Nz) ;
+
+Or, probably better, divide each value by the cosine of the incident angle.
+Taking the table you gave me:
+
+			0 degrees       10 degrees      20 degrees
+	Observation     Entrance        Entrance        Entrance
+	Angle (deg)     Angle           Angle           Angle
+
+	0.2             420             280             140
+	1.5             6                 5               3
+
+This yields a data file of:
+
+	2
+	0 20 3
+	.2 1.5 2
+
+	.42	.006
+	.276	.0049
+	.132	.0028
+
+Just one final warning.  You should be very careful about how you analyze
+the data from your calculations involving reflectors.  A simple Radiance
+picture may give you correct pixel values, but these super-bright pixels
+will of course flare out when they get to your eye and retina under scotopic
+adaptation.  I think that's the wisdom behind using luminous intensity rather
+than luminance.
+
+As for the sheeting, you can simply remove the area condition from the
+sae_refl formula in the .cal file -- i.e. take out A5.  This should do it.
+
+Now, "Go, Dog, Go!"
+
+-G
+
+From greg Wed Oct 11 10:13:18 1995
+Date: Wed, 11 Oct 95 10:13:03 PDT
+From: greg (Gregory J. Ward)
+To: esp@sirius.com
+Subject: P.S.
+
+I forgot to mention that my original calculation could actually have been
+right, but I don't have the data so I can't check whether or not I divided
+by the additional cosine factor in computing those values.  Also, you really
+need to find out for sure what plane the SAE lux value is measured in.
+
+From esp@sirius.com Wed Oct 11 12:11:33 1995
+Date: Wed, 11 Oct 1995 12:14:04 -0700
+To: gjward@lbl.gov
+From: esp@sirius.com (Erich Phillips)
+Subject: Thanks and YOU WIN!!
+
+Greg-
+Thank you for you e-mail.  What you are saying, believe it or not, makes
+things much clearer.  I checked, and in fact the illuminance in the SAE
+spec is relative to the incident beam, not the surface of the reflector.
+This actually comes from the definitions of Specific Intensity (SI) and
+Specific Intensity per Unit Area (SIA), as defined in Federal Test Method
+Standard 370, "Instrumental Photometric Measurements of Retroreflective
+Materials and Retroreflective Devices," March 1, 1977.  Not that's a
+mouthful.  I found reference to this standard in a NHTSA sponsored study on
+Truck Conspicuity (one of my favorite words).  If you have any interest in
+the section dealing with photometry of retroreflectors, please let me know
+and I would be happy to send it.
+
+Now on to more important matters. I don't know about you, but I really
+enjoy rediscovering things from my childhood through the eyes of my kids.
+"GO DOG GO" is one good example.  Now, I must come up with a suitable prize
+for your correct answer.   Let me think on it, and I will come up with
+something guarenteed not to disappoint.  Perhaps a party hat...
+
+Thanks again,
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ Erich S. Phillips, Ph.D.            email:  esp@sirius.com
+ Biophysics                          work:   (415) 597-4300
+ FTI Corporation                     FAX:    (415) 597-4344
+ 55 Hawthorne Street, 10th Floor
+ San Francisco, CA  94105
+ U.S.A.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<   
+
++-------------------------------------------------------------------------+
+| Radiance Digest mailing list (mod.):   greg@hobbes.lbl.gov              |
+| Mail requests to subscribe/cancel to:  radiance-request@hobbes.lbl.gov  |
+| Archives available from:               ftp://hobbes.lbl.gov/pub/digest  |
+| Radiance world-wide web site:          http://radsite.lbl.gov/radiance/ |
++-------------------------------------------------------------------------+

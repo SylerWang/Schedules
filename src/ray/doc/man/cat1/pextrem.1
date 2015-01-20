@@ -1,0 +1,41 @@
+PEXTREM(1)                                                          PEXTREM(1)
+
+
+
+NNAAMMEE
+       pextrem - find minimum and maximum values in RADIANCE picture
+
+SSYYNNOOPPSSIISS
+       ppeexxttrreemm [ --oo ] [ picture ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _P_e_x_t_r_e_m  locates  the minimum and maximum values for the input _p_i_c_t_u_r_e_,
+       and prints their pixel locations and  color  values.   The  first  line
+       printed  contains  the x and y pixel location (x measured from the left
+       margin, y measured from the bottom), followed by  the  red,  green  and
+       blue values.  The second line printed contains the same information for
+       the maximum value.
+
+       The _-_o option prints the original (radiance) values, undoing any  expo-
+       sure or color correction done on the picture.
+
+       If no input _p_i_c_t_u_r_e is given, the standard input is read.
+
+AAUUTTHHOORR
+       Greg Ward
+
+BBUUGGSS
+       The  luminance value is used for comparison of pixels, although in cer-
+       tain anomolous cases (ie. highly saturated colors) it is possible  that
+       _p_e_x_t_r_e_m  will not pick the absolute minimum or maximum luminance value.
+       This is because a fast integer-space comparison is used.  A more  reli-
+       able  floating-point  comparison  would be slower by an order of magni-
+       tude.
+
+SSEEEE AALLSSOO
+       falsecolor(1), getinfo(1), pcomb(1), pcompos(1), pextrem(1),  pfilt(1),
+       pflip(1), protate(1), psign(1), rpict(1), ximage(1)
+
+
+
+RADIANCE                           11/15/93                         PEXTREM(1)

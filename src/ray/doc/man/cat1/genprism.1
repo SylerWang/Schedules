@@ -1,0 +1,43 @@
+GENPRISM(1)                                                        GENPRISM(1)
+
+
+
+NNAAMMEE
+       genprism - generate a RADIANCE description of a prism
+
+SSYYNNOOPPSSIISS
+       ggeennpprriissmm mmaatt nnaammee { -- | vvffiillee | NN vv11 vv22 .... vvNN } [ --ll llvveecctt ][ --rr rraaddiiuuss
+       ][ --cc ][ --ee ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _G_e_n_p_r_i_s_m produces a RADIANCE scene description of a prism, or  extruded
+       polygon.   The  polygon to extrude lies in the z==0 plane, and is given
+       as a list of (x,y) pairs on the standard input (-), or  from  the  file
+       _v_f_i_l_e_,  or  on  the command line preceded by the number of vertices, _N_.
+       The order of the vertices  and  the  extrusion  vector  _l_v_e_c_t  (default
+       (0,0,1)) determine the surface orientations.  The surfaces that make up
+       the prism will be modified by _m_a_t and their identifiers will begin with
+       _n_a_m_e_.   The  _-_r  option  may be used to round the corners of the object
+       using spheres and cylinders.  The _-_c option inhibits  generation  of  a
+       face  connecting  the last vertex to the first.  The _-_e option inhibits
+       generation of the end polygons.
+
+EEXXAAMMPPLLEE
+       To produce a equilateral triangular prism:
+
+         genprism clear_plastic prism 3 0 0 .5 .866 1 0
+
+AAUUTTHHOORR
+       Greg Ward
+
+BBUUGGSS
+       The rounding option only works for opaque prisms  with  outward  facing
+       normals.  If the normals face inward, the appearance will be bizarre.
+
+SSEEEE AALLSSOO
+       genbox(1),   genrev(1),   gensurf(1),   genworm(1),  rpict(1),  rvu(1),
+       xform(1)
+
+
+
+RADIANCE                            3/19/96                        GENPRISM(1)

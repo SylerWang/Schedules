@@ -1,0 +1,50 @@
+OBJLINE(1)                                                          OBJLINE(1)
+
+
+
+NNAAMMEE
+       objline - create metafile line drawings of RADIANCE object(s)
+
+SSYYNNOOPPSSIISS
+       oobbjjlliinnee [input ..]
+
+DDEESSCCRRIIPPTTIIOONN
+       _O_b_j_l_i_n_e takes one or more RADIANCE scene files and produces four paral-
+       lel line projections using calls to _r_a_d_2_m_g_f_(_1_)  and  _m_g_f_2_m_e_t_a_(_1_)_.   The
+       output must be redirected to a suitable destination for _m_e_t_a_f_i_l_e_(_5_) 2-d
+       graphics, such as _x_1_1_m_e_t_a_(_1_) or _p_s_m_e_t_a_(_1_)_.
+
+       The four projections presented are along the X-axis (displayed  in  the
+       upper  left quadrant), along the Y-axis (upper right), along the Z-axis
+       (lower left) and an oblique view (lower right).  If  multiple  RADIANCE
+       input  files  are  given,  they  are shown in different colors and line
+       styles.  (Materials are ignored,  so  materials  files  are  best  left
+       out.)   If  no  input files are given on the command line, the standard
+       input is read.
+
+EEXXAAMMPPLLEESS
+       To create a line drawing of the RADIANCE file "myfile.rad" and  display
+       under X11:
+
+         objline myfile.rad | x11meta -r &
+
+       To  create a line drawing of three objects in different colors and send
+       to the printer:
+
+         objline obj1.rad obj2.rad obj3.rad | psmeta | lpr
+
+       To create a line drawing of a room and convert into a  1024x1024  RADI-
+       ANCE picture:
+
+         objline room.rad | meta2tga -x 1024 -y 1024 | ra_t8 -r > drawing.hdr
+
+AAUUTTHHOORR
+       Greg Ward
+
+SSEEEE AALLSSOO
+       meta2tga(1), metafile(5), mgf2meta(1), psmeta(1), ra_t8(1), rad2mgf(1),
+       x11meta(1)
+
+
+
+RADIANCE                           10/27/95                         OBJLINE(1)

@@ -1,0 +1,153 @@
+PVALUE(1)                                                            PVALUE(1)
+
+
+
+NNAAMMEE
+       pvalue - convert RADIANCE picture to/from alternate formats
+
+SSYYNNOOPPSSIISS
+       ppvvaalluuee [ ooppttiioonnss ] [ ffiillee ]
+       ppvvaalluuee --rr [ ooppttiioonnss ] [ ffiillee11 [ ffiillee22 ffiillee33 ] ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _P_v_a_l_u_e  converts  the  pixels  of a RADIANCE picture to or from another
+       format.  In the default mode, pixels are sent to the  standard  output,
+       one per line, in the following ascii format:
+
+            xpos ypos red  green     blue
+
+       If no _f_i_l_e is given, the standard input is read.
+
+       The reverse conversion option _(_-_r_) may be used with a single input file
+       or when reading from the standard input, but if the second form is used
+       with three separate input files, the three primaries are presumed to be
+       separated in these files.
+
+       --uu        Print only unique values in  the  output,  skipping  runs  of
+                 equal  pixels.  Specifying _+_u turns this option off, which is
+                 the default.
+
+       --oo        Print original values, before exposure compensation.  If  the
+                 input file is in XYZE format, the Y (green) channel will cor-
+                 respond to units of  candelas/meter^2.   Otherwise,  the  RGB
+                 values should be in spectral watts/steradian/meter^2.  Speci-
+                 fying _+_o uses final exposed values, which is the default.
+
+       --hh        Do not print header.  Specifying _+_h causes the header  to  be
+                 printed, which is the default.
+
+       --HH        Do  not print the resolution string.  (See also the _-_r option
+                 below.)  Specifying an input resolution for  reverse  conver-
+                 sion  also  turns  this option off.  Specifying _+_H causes the
+                 resolution string to be printed, which is the default.
+
+       --ss _n_b_y_t_e_s Skip the specified number of bytes on the input header.  This
+                 option  is useful for skipping unintelligible headers in for-
+                 eign file formats.  (Does not work when reading from standard
+                 input.)
+
+       --ee _e_x_p_o_s_u_r_e
+                 Adjust the exposure by the amount specified.  If the exposure
+                 is being given as a conversion factor, use _+_e instead, so  an
+                 EXPOSURE line will not be recorded in the header (if any).
+
+       --gg _g_a_m_m_a  Set  gamma correction for conversion.  When converting from a
+                 RADIANCE picture to another  format,  the  inverse  gamma  is
+                 applied  to correct for monitor response.  When converting to
+                 a RADIANCE picture _(_-_r option), the gamma is applied directly
+                 to  recover  the  linear values.  By default, _g_a_m_m_a is set to
+                 1.0, meaning no gamma correction is performed.
+
+       --dd        Data only, do not print x and y pixel position.
+
+       --ddaa       Same as _-_d_.
+
+       --ddii       Print ascii integer values from 0 to 255+.  If _+_d_i is  given,
+                 the  integer  values  will  be  preceded by the x and y pixel
+                 locations.
+
+       --ddbb       Output binary byte values from 0 to 255.
+
+       --ddww       Output binary 16-bit words from 0 to 65535.
+
+       --ddWW       Output binary 16-bit words from 0 to 65535, byte-swapped.
+
+       --ddff       Output binary float values.
+
+       --ddFF       Output byte-swapped binary float values.
+
+       --dddd       Output binary double values.
+
+       --ddDD       Output byte-swapped binary double values.
+
+       --RR        Reverse ordering of colors so that the output  is  blue  then
+                 green  then red.  The default ordering (specified with _+_R_) is
+                 red then green then blue.
+
+       --nn        The RGB values are non-interleaved, meaning that all the red,
+                 green  and  blue data are stored together in separate chunks.
+                 Interleaving may be turned on with the _+_n  option,  which  is
+                 the default.
+
+       --bb        Print brightness values rather than RGB.  Specifying _+_b turns
+                 this option off, which is the default.
+
+       --pp_P       Put out only the primary _P_, where _P is one of upper or  lower
+                 case  'R',  'G'  or 'B' for red, green or blue, respectively.
+                 This option may be used to separate  the  Radiance  primaries
+                 into  three files with three separate runs of _p_v_a_l_u_e_, or only
+                 one file when only one primary is needed.  Note that there is
+                 no space between this option and its argument.
+
+       --rr        Perform  reverse conversion.  Input is in the format given by
+                 the other options.  The x and y resolution must be  specified
+                 on  the  command line, unless the image file contains a Radi-
+                 ance resolution string at the beginning (see _-_H option  above
+                 and _-_y option below).  Specifying _+_r converts from a Radiance
+                 picture to other values, which is the default.
+
+       --yy _r_e_s    Set the output y resolution to _r_e_s_.  If _+_y is specified, then
+                 the scanlines are assumed to be in increasing order (ie. bot-
+                 tom to top).  The default value for this option is  0,  which
+                 means that the picture size and scanline order must appear as
+                 the first line after the header (if any) in the  input  file.
+                 Either  an  upper  or  lower  case  'Y'  may be used for this
+                 option.  Since Radiance files always  contain  such  a  line,
+                 this option has no effect for forward conversions.
+
+       ++xx _r_e_s    Set the output x resolution to _r_e_s_.  If _-_x is specified, then
+                 the scanlines are assumed to  be  in  decreasing  order  (ie.
+                 right to left).  The ordering of the _-_y and _+_x options deter-
+                 mines whether the scanlines are sorted along x  or  along  y.
+                 Most Radiance pictures are sorted top to bottom, then left to
+                 right.  This corresponds to a specification of the  form  "-y
+                 yres +x xres".  Either an upper or lower case 'X' may be used
+                 for this option.  Like the _-_y  option,  _-_x  options  have  no
+                 effect for forward conversions.
+
+EEXXAAMMPPLLEE
+       To look at the original, unique pixels in picture:
+
+         pvalue -o -u picture | more
+
+       To  convert from a 512x400 8-bit greyscale image in bottom to top, left
+       to right scanline ordering:
+
+         pvalue -r -db -b -h +y 400 +x 512 input.im > flipped.hdr
+         pflip -v flipped.hdr > final.hdr
+
+AAUUTTHHOORR
+       Greg Ward
+
+BBUUGGSS
+       The _-_r option does not work with the  _-_u  option.   Also,  input  pixel
+       locations  are ignored during a reverse conversion, so this information
+       is not used in determining the scanline ordering or picture size.
+
+SSEEEE AALLSSOO
+       getinfo(1),  pcompos(1),  pfilt(1),  pflip(1),  protate(1),   rpict(1),
+       rtrace(1), rvu(1)
+
+
+
+RADIANCE                            1/15/99                          PVALUE(1)

@@ -1,0 +1,38 @@
+GENBOX(1)                                                            GENBOX(1)
+
+
+
+NNAAMMEE
+       genbox - generate a RADIANCE description of a box
+
+SSYYNNOOPPSSIISS
+       ggeennbbooxx mmaatt nnaammee xxssiizz yyssiizz zzssiizz [ --ii ][ --rr rraadd | --bb bbeevv ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _G_e_n_b_o_x  produces  a RADIANCE scene description of a parallelepiped with
+       one corner at the origin and the opposite corner at _(_x_s_i_z_, _y_s_i_z_, _z_s_i_z_)_.
+       The  sides  of the box will be parallel to the three coordinate planes.
+       The surfaces that make up the box will be modified  by  _m_a_t  and  their
+       identifiers will begin with _n_a_m_e_.  The _-_i option can be used to produce
+       a box with inward directed surface normals.  The _-_r option can be  used
+       to  specify the radius for rounded edges.  The _-_b option can be used to
+       specify the indentation for beveled edges.
+
+EEXXAAMMPPLLEE
+       To produce a rectangular box made of wood with beveled edges:
+
+         genbox wood box1 5 8 3 -b .5 > box1
+
+AAUUTTHHOORR
+       Greg Ward
+
+BBUUGGSS
+       Because spheres and cylinders are used to construct boxes with  rounded
+       edges, a transparent box of this type appears quite messy.
+
+SSEEEE AALLSSOO
+       genrev(1), gensurf(1), genworm(1), rpict(1), rvu(1), xform(1)
+
+
+
+RADIANCE                           11/15/93                          GENBOX(1)

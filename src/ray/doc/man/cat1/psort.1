@@ -1,0 +1,43 @@
+PSORT(1)                                                              PSORT(1)
+
+
+
+NNAAMMEE
+       psort - sort primitives in metafile as requested
+
+SSYYNNOOPPSSIISS
+       ppssoorrtt [ ++//--xx ][ ++//--yy ][ ++//--XX ][ ++//--YY ] file ..
+
+DDEESSCCRRIIPPTTIIOONN
+       _P_s_o_r_t reads each metafile _f_i_l_e in sequence and sorts primitives between
+       globals according to the option specification.  Lower case options mean
+       the  corresponding  minimum, upper case indicates the maximum value.  A
+       '+' before the option means sort in order  of  increasing  values,  '-'
+       means  decreasing.  The order the options appear on the command line is
+       the order in which the extrema are examined.  For example, the  options
+       _-_Y  _+_x  would  mean "sort on decreasing ymax, then increasing xmin val-
+       ues".
+
+       If no input files are specified, the standard input is read.
+
+EEXXAAMMPPLLEE
+       To sort the file "meta" in order of increasing  xmax,  then  decreasing
+       ymin:
+
+         psort +X -y meta
+
+FFIILLEESS
+       /tmp/psXXXXa /tmp/psXXXXb
+
+BBUUGGSS
+       Aborting the program will sometimes leave files in /tmp.
+
+AAUUTTHHOORR
+       Greg Ward
+
+SSEEEE AALLSSOO
+       metafile(5), pexpand(1)
+
+
+
+RADIANCE                            6/24/98                           PSORT(1)

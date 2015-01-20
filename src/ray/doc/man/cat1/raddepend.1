@@ -1,0 +1,37 @@
+RADDEPEND(1)                                                      RADDEPEND(1)
+
+
+
+NNAAMMEE
+       raddepend - find RADIANCE scene dependencies
+
+SSYYNNOOPPSSIISS
+       rraaddddeeppeenndd file ..
+
+DDEESSCCRRIIPPTTIIOONN
+       _R_a_d_d_e_p_e_n_d  uses _g_e_t_b_b_o_x_(_1_) to expand scene file arguments and find file
+       dependencies for _m_a_k_e_(_1_) or _r_a_d_(_1_)_.  _R_a_d_d_e_p_e_n_d looks only in  the  cur-
+       rent directory, so dependencies hidden elsewhere in the filesystem will
+       not be found or named.
+
+       The output is the name of files, one per line, that were accessed  dur-
+       ing  the expansion of the input file arguments.  The file arguments are
+       excluded from the list.  If no input  files  are  given,  the  standard
+       input is read.
+
+AAUUTTHHOORR
+       Greg Ward
+
+BBUUGGSS
+       On  some  older  NFS  systems,  the  file  access dates are not updated
+       promptly.  As a result, _r_a_d_d_e_p_e_n_d may not be  100%  reliable  on  these
+       systems.  If the output seems to be missing essential files, this is no
+       doubt why.  The only fix is to put in a longer sleep time  between  the
+       _g_e_t_b_b_o_x call and the final _l_s_(_1_)_.
+
+SSEEEE AALLSSOO
+       make(1), oconv(1), rad(1), xform(1)
+
+
+
+RADIANCE                            4/15/94                       RADDEPEND(1)

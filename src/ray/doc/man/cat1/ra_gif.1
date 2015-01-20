@@ -1,0 +1,41 @@
+RA_GIF(1)                                                            RA_GIF(1)
+
+
+
+NNAAMMEE
+       ra_gif - convert RADIANCE picture to Compuserve GIF
+
+SSYYNNOOPPSSIISS
+       rraa__ggiiff  [ --bb ][ --dd ][ --cc nnccoolloorrss ][ --gg ggaammmmaa ][ --ee ++//--ssttooppss ][ --nn ssaammpp--
+       ffaacc ] iinnppuutt [ oouuttppuutt ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _R_a___g_i_f converts from RADIANCE  to  Compuserve  GIF  color-mapped,  com-
+       pressed  image  files.  In the default mode, a RADIANCE picture is con-
+       verted to a color-mapped GIF file of the same horizontal  and  vertical
+       dimensions  with 8-bits per pixel.  The _-_b option converts the image to
+       black and white.  The _-_d option turns off  dithering.   The  _-_c  option
+       allows fewer than 256 colors (and fewer than 8 bits per pixel).  The _-_g
+       option specifies the exponent used in  gamma  correction;  the  default
+       value  is  2.2.  An exponent of 1.0 turns gamma correction off.  The _-_e
+       option specifies an exposure compensation in f-stops (powers  of  two).
+       Only  integer  stops are allowed, for efficiency.  The _-_n option speci-
+       fies a sampling factor for neural  network  color  quantization.   This
+       value  should  be  between 1 and 80, where 1 takes the longest and pro-
+       duces the best results in small areas of the image.   If  no  value  is
+       given,  a  faster  median cut algorithm is used.  If the output file is
+       missing, the standard output is used.
+
+AAUUTTHHOORRSS
+       Greg Ward
+       Paul Haeberli
+       David Rowley
+       Anthony Dekker provided the code for neural network color quantization
+
+SSEEEE AALLSSOO
+       pfilt(1),  ra_bmp(1),  ra_bn(1),   ra_ppm(1),   ra_pr(1),   ra_pr24(1),
+       ra_t8(1), ra_t16(1), ra_tiff(1), ximage(1)
+
+
+
+RADIANCE                            6/10/94                          RA_GIF(1)

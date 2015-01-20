@@ -1,0 +1,46 @@
+GENSKYVEC(1)                                                      GENSKYVEC(1)
+
+
+
+NNAAMMEE
+       genskyvec - compute patch radiance averages for a specific sky
+
+SSYYNNOOPPSSIISS
+       ggeennsskkyyvveecc [ --mm NN ][ --cc rr gg bb ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _G_e_n_s_k_y_v_e_c  samples  the  _R_a_d_i_n_a_c_e sky description given on the standard
+       input to generate a list of average patch radiances.  If there is a sun
+       in  the  description,  _g_e_n_s_k_y_v_e_c  will  include its contribution in the
+       three nearest sky patches, distributing energy  according  to  centroid
+       proximity.
+
+       By default, _g_e_n_s_k_y_v_e_c divides the sky into 2305 patches, plus one patch
+       for the ground.  This corresponds to Reinhart's extension of  the  Tre-
+       genza  sky,  where the original 145 patches are subdivided into 16 sub-
+       patches, except at the zenith.  A different subdivision may  be  speci-
+       fied via the _-_m option.  The value given will be used to subdivide each
+       dimension, so the default of 4 yields almost 16 times as  many  patches
+       as  the  original  Tregenza  sky,  which can be specified with _-_m _1_.  A
+       higher resolution sky is  generally  better  for  daylight  coefficient
+       analysis where solar position is important.
+
+       The  _-_c  option  may  be used to specify a color for the sky.  The gray
+       value should equal 1 for proper energy balance The default sky color is
+       _-_c _0_._9_6_0 _1_._0_0_4 _1_._1_1_8 _.
+
+EEXXAAMMPPLLEE
+       To  generate 578 patches corresponding to a 2x2 subdivision of the Tre-
+       genza sky on a sunny equinox noon:
+
+         gensky 9 21 12 | genskyvec -m 2 > sky09_21_12.dat
+
+AAUUTTHHOORR
+       Greg Ward
+
+SSEEEE AALLSSOO
+       dctimestep(1), gensky(1), gentregvec(1), rtcontrib(1), rtrace(1)
+
+
+
+RADIANCE                           12/09/09                       GENSKYVEC(1)

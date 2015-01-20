@@ -1,0 +1,33 @@
+PROTATE(1)                                                          PROTATE(1)
+
+
+
+NNAAMMEE
+       protate - rotate a RADIANCE picture.
+
+SSYYNNOOPPSSIISS
+       pprroottaattee [ --cc ][ --rr ] iinnppuutt [ oouuttppuutt ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _P_r_o_t_a_t_e rotates a RADIANCE picture 90 degrees.  This is useful for out-
+       put on hardcopy devices with aspect ratios opposite to the  input  pic-
+       ture.   By  default, the image is rotated clockwise.  The _-_r option may
+       be used to rotate the image counter-clockwise instead.
+
+       The _-_c option indicates that the action is to correct an improper orig-
+       inal  image orientation, thus the recorded scanline ordering should not
+       be changed.
+
+NNOOTTEESS
+       To rotate an image 180 degrees, use _p_f_l_i_p_(_1_) with both the  _-_h  and  _-_v
+       options.
+
+AAUUTTHHOORR
+       Greg Ward
+
+SSEEEE AALLSSOO
+       getinfo(1), pcompos(1), pfilt(1), pflip(1), psign(1), rpict(1)
+
+
+
+RADIANCE                           10/27/98                         PROTATE(1)

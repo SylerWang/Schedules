@@ -1,0 +1,127 @@
+arch2rad(1)	- convert Architrion text file to RADIANCE description
+bgraph(1)	- do a set of batch graphs to a metafile
+cnt(1)	- index counter
+compamb(1)	- compute good ambient value for a rad input file
+cv(1)	- convert between metafile formats
+dayfact(1)	- compute illuminance and daylight factor on workplane
+dctimestep(1)	- compute annual simulation time-step via matrix multiplication
+dgraph(1)	- do a set of graphs to a dumb terminal
+ev(1)	- evaluate expressions
+falsecolor(1)	- make a false color RADIANCE picture
+fieldcomb(1)	- combine two or more field frames for video animation
+findglare(1)	- locate glare sources in a RADIANCE scene
+gcomp(1)	- do computations on a graph file.
+genblinds(1)	- generate a RADIANCE description of venetian blinds
+genbox(1)	- generate a RADIANCE description of a box
+genclock(1)	- generate a RADIANCE description of a clock
+gendaylit(1)	- generates a RADIANCE description of the daylit sources using Perez models for diffuse and direct components
+genklemsamp(1)	- generate ray samples over surfaces using Klems BSDF basis
+genprism(1)	- generate a RADIANCE description of a prism
+genrev(1)	- generate a RADIANCE description of surface of revolution
+gensky(1)	- generate a RADIANCE description of the sky
+genskyvec(1)	- compute patch radiance averages for a specific sky
+gensurf(1)	- generate a RADIANCE or Wavefront description of a curved surface
+genworm(1)	- generate a RADIANCE description of a functional worm
+getbbox(1)	- compute bounding box for RADIANCE scene
+getinfo(1)	- get header information from a RADIANCE file
+glare(1)	- perform glare and visual comfort calculations
+glarendx(1)	- calculate glare index
+glrad(1)	- render a RADIANCE scene using OpenGL
+histo(1)	- compute 1-dimensional histogram of N data columns
+icalc(1)	- interactive calculator
+ies2rad(1)	- convert IES luminaire data to RADIANCE description
+igraph(1)	- interactive graphing program
+.SH DESCRIPTION
+.I Igraph
+is(1)	a crude interactive program for creating line and scatter
+plots.
+Provisions(1)	for reading and writing graph files as well
+as(1)	changing variables and getting output are provided from
+a(1)	menu.
+.PP
+Graph(1)	files and variables are as described in bgraph(1).
+.SH AUTHOR
+Greg(1)	Ward
+.SH BUGS
+There(1)	is no mechanism provided for undefining a variable.
+.SH "SEE ALSO"
+bgraph(1), icalc(1), metafile(5)
+lampcolor(1)	- compute spectral radiance for diffuse emitter
+lookamb(1)	- examine ambient file values
+macbethcal(1)	- compute color compensation based on measured Macbeth chart
+meta2bmp(1)	- convert metafile to Windows Bitmap (BMP) File
+meta2tga(1)	- convert metafile to Targa image format
+mgf2meta(1)	- convert Materials and Geometry Format file to Metafile graphics
+mgf2rad(1)	- convert Materials and Geometry Format file to RADIANCE description
+mkillum(1)	- compute illum sources for a RADIANCE scene
+mksource(1)	- compute distant sources for RADIANCE image-based lighting
+neaten(1)	- neaten up output columns
+normpat(1)	- normalize RADIANCE pictures for use as patterns.
+normtiff(1)	- tone-map and convert RADIANCE picture or HDR TIFF to standard TIFF
+obj2mesh(1)	- create a compiled RADIANCE mesh file from Wavefront .OBJ input
+obj2rad(1)	- convert Wavefront .obj file to RADIANCE description
+objline(1)	- create metafile line drawings of RADIANCE object(s)
+objview(1)	- view RADIANCE object(s)
+oconv(1)	- create an octree from a RADIANCE scene description
+pcomb(1)	- combine RADIANCE pictures
+pcompos(1)	- composite RADIANCE pictures.
+pcond(1)	- condition a RADIANCE picture for output
+pdfblur(1)	- generate views for depth-of-field blurring
+pexpand(1)	- expand requested commands in metafile
+pextrem(1)	- find minimum and maximum values in RADIANCE picture
+pfilt(1)	- filter a RADIANCE picture
+pflip(1)	- flip a RADIANCE picture.
+phisto(1)	- compute a luminance histogram from one or more RADIANCE pictures
+pinterp(1)	- interpolate/extrapolate view from pictures
+plotin(1)	- convert plot(5) to metafile(5) primitives
+pmblur(1)	- generate views for camera motion blurring
+pmdblur(1)	- generate views for combined camera motion and depth blurring
+protate(1)	- rotate a RADIANCE picture.
+psign(1)	- produce a RADIANCE picture from text.
+psmeta(1)	- convert metafile to PostScript
+psort(1)	- sort primitives in metafile as requested
+pvalue(1)	- convert RADIANCE picture to/from alternate formats
+ra_bmp - convert RADIANCE picture to/from Windows BMP image
+ra_gif - convert RADIANCE picture to Compuserve GIF
+ra_pict - convert Radiance pictures to Macintosh PICT files
+ra_ppm - convert RADIANCE picture to/from a Poskanzer Portable Pixmap
+ra_ps - convert RADIANCE picture to a PostScript file
+ra_rgbe - convert between different RADIANCE picture types
+ra_t16 - convert RADIANCE picture to/from Targa 16 or 24-bit image file
+ra_t8 - convert RADIANCE picture to/from Targa 8-bit image file
+ra_tiff - convert RADIANCE picture to/from a TIFF color or greyscale image
+ra_xyze - convert between RADIANCE RGBE and XYZE formats
+rad(1)	- render a RADIANCE scene
+rad2mgf(1)	- convert RADIANCE scene description to Materials and Geometry Format
+raddepend(1)	- find RADIANCE scene dependencies
+ran2tiff(1)	- expose and convert a RADIANCE animation to TIFF frames
+ranimate(1)	- compute a RADIANCE animation
+ranimove(1)	- render a RADIANCE animation with motion
+rcalc(1)	- record calculator
+replmarks(1)	- replace triangular markers in a RADIANCE scene description
+rhcopy(1)	- copy ray information into a holodeck
+rhinfo(1)	- print information about a RADIANCE holodeck file
+rholo(1)	- generate/view a RADIANCE holodeck
+rhoptimize(1)	- optimize beam locations in holodeck file
+rhpict(1)	- render a RADIANCE picture from a holodeck file
+rlam(1)	- laminate records from multiple files
+rpict(1)	- generate a RADIANCE picture
+rpiece(1)	- render pieces of a RADIANCE picture
+rsensor(1)	- compute sensor signal from a RADIANCE scene
+rtcontrib(1)	- compute contribution coefficients in a RADIANCE scene
+rtrace(1)	- trace rays in RADIANCE scene
+rvu(1)	- generate RADIANCE images interactively
+tabfunc(1)	- convert table to functions for rcalc, etc.
+tmesh2rad(1)	- convert a triangular mesh to a RADIANCE scene description
+total(1)	- sum up columns
+trad(1)	- graphical user interface to Radiance rad(1) program
+ttyimage(1)	- RADIANCE driver for dumb ASCII terminal
+vwrays(1)	- compute rays for a given picture or view
+vwright(1)	- normalize a RADIANCE view, shift it to the right
+x11meta(1)	- output metafile graphics to X11
+xform(1)	- transform a RADIANCE scene description
+xglaresrc(1)	- dislpay glare sources under X11
+ximage(1)	- RADIANCE picture display for X window system
+xshowtrace(1)	- interactively show rays traced on RADIANCE image under X11
+libmeta.a - simplified interface to metafile(5)
+metafile(5)	- graphics command interface, similar to plot(5)

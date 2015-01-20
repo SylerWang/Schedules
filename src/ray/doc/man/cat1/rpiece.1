@@ -1,0 +1,120 @@
+RPIECE(1)                                                            RPIECE(1)
+
+
+
+NNAAMMEE
+       rpiece - render pieces of a RADIANCE picture
+
+SSYYNNOOPPSSIISS
+       rrppiieeccee  [  --vv ][ --xx xxrreess ][ --yy yyrreess ][ --XX xxddiivv ][ --YY yyddiivv ][ --FF||RR ssyynncc--
+       ffiillee ][ --TT ttiimmeelliimm ] [ $$EEVVAARR ] [ @@ffiillee ] [ rpict options ]  --oo  ppiiccttuurree
+       ooccttrreeee
+
+DDEESSCCRRIIPPTTIIOONN
+       _R_p_i_e_c_e  renders  a RADIANCE picture a piece at a time, calling _r_p_i_c_t_(_1_)
+       to do the actual work.  This is useful for running multiple _r_p_i_c_t  pro-
+       cesses  on  cooperating machines to render a single picture, which is a
+       shared file specified with the _-_o option.  The overall  picture  dimen-
+       sions will be _x_r_e_s by _y_r_e_s (or smaller, depending on the _-_p_a option and
+       other view options), and the picture will be rendered in _x_d_i_v  by  _y_d_i_v
+       pieces.
+
+       There are two basic methods for telling _r_p_i_e_c_e which piece(s) of a pic-
+       ture to render.  The explicit method is to write on the standard  input
+       the _X and _Y position of the desired piece(s), where _X runs from zero to
+       _x_d_i_v_-_1 and _Y runs from zero to _y_d_i_v_-_1_.  (The lower left piece of a pic-
+       ture corresponds to (0,0) in this system.)  Alternatively, the implicit
+       specification method uses a synchronization  file  to  determine  which
+       piece  is  to be rendered next.  Specified with the _-_F option, _s_y_n_c_f_i_l_e
+       initially contains the values for _x_d_i_v and  _y_d_i_v_,  so  the  _-_X  and  _-_Y
+       options  are unnecessary.  (However, they are used if _s_y_n_c_f_i_l_e does not
+       exist.)  The first _r_p_i_e_c_e process puts a lock on _s_y_n_c_f_i_l_e and  modifies
+       its  contents before starting work on the first piece of the image.  It
+       writes the _X and _Y position of the piece it will work on, so  the  next
+       _r_p_i_e_c_e  process to modify _s_y_n_c_f_i_l_e will start on the next piece.  (When
+       it finishes with its piece, it appends the index to the  end  of  _s_y_n_c_-
+       _f_i_l_e_._)   This  procedure  continues  until  all the pieces are done, at
+       which point all of the _r_p_i_e_c_e processes will terminate.
+
+       The _-_R option may be used instead of _-_F if some of the pieces were  not
+       properly  finished  by  previous  (killed) runs of _r_p_i_e_c_e_.  This option
+       should be used by at most one _r_p_i_e_c_e process,  which  must  be  started
+       first and with _n_o _o_t_h_e_r _r_p_i_e_c_e _p_r_o_c_e_s_s_e_s _r_u_n_n_i_n_g or else it will reren-
+       der the same pieces other  processes  have  begun.   Once  the  recover
+       process  is  started, you may start other _r_p_i_e_c_e processes using the _-_F
+       option to run simultaneously.  If some processes die during  execution,
+       leaving one or more half-finished pieces in the picture even though the
+       other processes think the work is done, you may  run  a  single  _r_p_i_e_c_e
+       with the _-_R option by itself to repair the holes.
+
+       The _-_v flag switches on verbose mode, where _r_p_i_e_c_e reports to the stan-
+       dard output after each piece begins and after each piece is finished.
+
+       Options may be given on the command line and/or read from the  environ-
+       ment and/or read from a file.  A command argument beginning with a dol-
+       lar sign ('$') is immediately replaced by the  contents  of  the  given
+       environment  variable.   A  command  argument beginning with an at sign
+       ('@') is immediately replaced by the contents of the given file.
+
+EEXXAAMMPPLLEE
+       First _r_p_i_e_c_e process is started on the machine "goober":
+
+         goober% echo 1 8 > syncfile
+         goober% echo -F syncfile -x 1024 -y 1024 -vf view -o picture octree >
+         args
+         goober% rpiece @args &
+
+       Second _r_p_i_e_c_e processes is started on the machine "sucker":
+
+         sucker% rpiece @args &
+
+NNOOTTEESS
+       Due  to  NFS  file  buffering,  the network lock manager is employed to
+       guarantee consistency in the output file  even  though  non-overlapping
+       writes  are  used.   This would tend to slow the process down if _r_p_i_e_c_e
+       were to wait for this I/O to  complete  before  starting  on  the  next
+       piece,  so  _r_p_i_e_c_e  forks separate processes to hang around waiting for
+       I/O completion.  The number of processes thus designated is set by  the
+       MAXFORK  macro in the program (compiled in the src/util directory).  If
+       the fork call is slow on a system, it may actually  be  better  to  set
+       MAXFORK  to  zero.   In other cases, the network lock manager may be so
+       slow that this value should be increased to get the best utilization.
+
+       The output picture is not run-length encoded, and can be  quite  large.
+       The  approximate size (in kilobytes) can be computed by the simple for-
+       mula:
+
+         filesize = xres*yres/256
+
+       Make sure that there is enough space on  the  filesystem  to  hold  the
+       entire  picture  before  beginning.   Once the picture is finished, the
+       _r_a___r_g_b_e_(_1_) program with the -r option may  be  used  to  convert  to  a
+       run-length   encoded  picture  for  more  efficient  storage,  although
+       _p_f_i_l_t_(_1_) or any of the other Radiance picture filters will do the  same
+       thing.
+
+       The  ALRM  signal may be used to gracefully terminate an _r_p_i_e_c_e process
+       after it finishes the current piece.  This permits other currently run-
+       ning  or  subsequently started _r_p_i_e_c_e process(es) to continue rendering
+       the picture without loss.  The _-_T option will send the ALRM  signal  to
+       _r_p_i_e_c_e after the specified number of (decimal) hours.  This is the best
+       way to force a time limit on the computation,  since  information  will
+       not  be  lost, though the process may continue for some time afterwards
+       to finish its current piece.
+
+BBUUGGSS
+       This program may not work on some systems whose  NFS  lock  manager  is
+       unreliable.  In particular, some System V derivative UNIX systems often
+       have problems with the network lock manager.  If the output  is  scram-
+       bled or rpict aborts with some ambient file related problem, you should
+       just remove the ambient file and go back to normal rendering.
+
+AAUUTTHHOORR
+       Greg Ward
+
+SSEEEE AALLSSOO
+       getinfo(1), pfilt(1), ra_rgbe(1), rpict(1), ximage(1)
+
+
+
+RADIANCE                            10/1/98                          RPIECE(1)

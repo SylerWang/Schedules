@@ -1,0 +1,63 @@
+RA_RGBE(1)                                                          RA_RGBE(1)
+
+
+
+NNAAMMEE
+       ra_rgbe - convert between different RADIANCE picture types
+
+SSYYNNOOPPSSIISS
+       rraa__rrggbbee [ --rr ][ --ee ++//--ssttooppss ][ --ff ][ --nn ffrraammeennoo ] [ iinnppuutt [ oouuttssppeecc ] ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _R_a___r_g_b_e converts between RADIANCE run-length encoded and flat  formats,
+       and  separates concatanated animation frames produced by _r_p_i_c_t_(_1_)_.  The
+       _-_e option specifies an exposure  compensation  in  f-stops  (powers  of
+       two).   Only  integer  stops  are allowed, for efficiency.  By default,
+       _r_a___r_g_b_e produces a flat RADIANCE picture file from any type of RADIANCE
+       input  picture.   The  _-_r option causes _r_a___r_g_b_e to produce a run-length
+       encoded file instead.
+
+       If the input file consists of multiple animation frames as produced  by
+       _r_p_i_c_t  with the _-_S option, _r_a___r_g_b_e will read each frame and write it to
+       the output file created by calling _p_r_i_n_t_f_(_3_) with the output specifica-
+       tion and frame number as arguments.  If the output specification begins
+       with an exclamation mark ('!'), then  this  interpreted  as  a  command
+       spec.,  which  is  also run through _p_r_i_n_t_f with the frame number to get
+       the final command.  This command must accept a Radiance picture on  its
+       standard  input, and may write results either to a file or to the stan-
+       dard output.  The _-_n option may be used to select a specific frame  for
+       output,  and  other frames in the input will be skipped.  Normally, all
+       frames will be read and written.
+
+       _R_a___r_g_b_e will report an error and exit if the target output file already
+       exists,  unless the _-_f option is given.  If the output file is missing,
+       the standard output is used.  If the input file is missing  or  set  to
+       '-', the standard input is used.
+
+NNOOTTEESS
+       The  file  format for RADIANCE pictures was changed between release 1.4
+       and release 2.0.  The older format can still be read by  all  the  pro-
+       grams, but only the newer format is produced.  This newer format cannot
+       be read by RADIANCE software prior to release 2.0.
+
+       _R_a___r_g_b_e provides some downward compatibility by  producing  files  that
+       can  be  read by older RADIANCE software.  The resultant files are also
+       easier to manipulate with programs designed to read raw raster data.
+
+       The other use for _r_a___r_g_b_e is as a quicker way to adjust the exposure of
+       a  RADIANCE picture than _p_f_i_l_t_(_1_)_, since _r_a___r_g_b_e only allows integer f-
+       stop changes.  In this mode, _r_a___r_g_b_e should be used with the _-_r option.
+
+AAUUTTHHOORR
+       Greg Ward
+
+AACCKKNNOOWWLLEEDDGGEEMMEENNTT
+       Work  on  this program was initiated and sponsored by the LESO group at
+       EPFL in Switzerland.
+
+SSEEEE AALLSSOO
+       pfilt(1), printf(1), ra_xyze(1), rpict(1)
+
+
+
+RADIANCE                            1/23/98                         RA_RGBE(1)

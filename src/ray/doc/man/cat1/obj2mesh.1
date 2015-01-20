@@ -1,0 +1,169 @@
+OBJ2MESH(1)                                                        OBJ2MESH(1)
+
+
+
+NNAAMMEE
+       obj2mesh  -  create  a  compiled RADIANCE mesh file from Wavefront .OBJ
+       input
+
+SSYYNNOOPPSSIISS
+       oobbjj22mmeesshh [ --aa mmaattffiillee ][ --ll mmaattlliibb ][ --nn oobbjjlliimm ][ --rr mmaaxxrreess ][ --ww ]  [
+       iinnppuutt..oobbjj [ oouuttppuutt..rrttmm ] ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _O_b_j_2_m_e_s_h  reads  a  Wavefront .OBJ file from _i_n_p_u_t_._o_b_j (or the standard
+       input) and compiles it into a RADIANCE triangle mesh, which is sent  to
+       _o_u_t_p_u_t_._r_t_m  (or  standard  output).  Any RADIANCE material descriptions
+       included via one or more _-_a options will be compiled and stored in  the
+       mesh as well.  If the _-_l option is used to specify a material file, the
+       RADIANCE library locations are searched.  This mesh may be included  in
+       a RADIANCE scene description via the _m_e_s_h primitive, thus:
+
+         mod mesh id
+         1+ output.rtm [xform args]
+         0
+         0
+
+       The  syntax and semantics are identical to the RADIANCE _i_n_s_t_a_n_c_e primi-
+       tive.  If _m_o_d is "void", then the stored mesh materials will be applied
+       during rendering.  Otherwise, the given material will be substituted on
+       all the mesh surfaces.
+
+       The _-_n option specifies the maximum surface set size  for  each  voxel.
+       Larger  numbers  result  in  quicker  mesh  generation, but potentially
+       slower rendering.  Values below 6 are not recommended,  since  this  is
+       the  median  valence  for a mesh vertex (the number of adjacent faces),
+       and smaller values will result in pointless  octree  subdivision.   The
+       default setting is 9.
+
+       The  _-_r option specifies the maximum octree resolution.  This should be
+       greater than or equal to the ratio of the  mesh  bounding  box  to  the
+       smallest triangle.  The default is 16384.
+
+       The _-_w option suppresses warnings.
+
+       Although  the  mesh  file  format is binary, it is meant to be portable
+       between machines.  The only limitation is that machines with  radically
+       different integer sizes will not work together.
+
+DDEETTAAIILLSS
+       The  following  Wavefront  statements  are  understood  and compiled by
+       _o_b_j_2_m_e_s_h_.
+
+       vv _x _y _z   A vertex location, given by its Cartesian  coordinates.   The
+                 final  mesh  position may of course be modified by the trans-
+                 form arguments given to the _m_e_s_h primitive  in  the  Radiance
+                 scene description.
+
+       vvnn _d_x _d_y _d_z
+                 A  vertex  normal vector, given by its three direction compo-
+                 nents, which will be normalized by _o_b_j_2_m_e_s_h_.  Normals will be
+                 interpolated  over  the  mesh  during  rendering to produce a
+                 smooth surface.  If no vertex normals are present,  the  mesh
+                 will  appear  tesselated.  A zero length normal (i.e., 0 0 0)
+                 will generate a syntax error.
+
+       vvtt _u _v    A local vertex texture coordinate.  These coordinates will be
+                 interpolated and passed to the "Lu" and "Lv" variables during
+                 rendering.  Local coordinates can  extend  over  any  desired
+                 range of values.
+
+       uusseemmttll _m_n_a_m_e
+                 A  material  name.   The  following  faces will use the named
+                 material, which is taken from the material definitions in the
+                 _-_a input file(s).
+
+       gg _g_n_a_m_e   Group  association.   The following faces are associated with
+                 the named group.  If no "usemtl" statement has  been  encoun-
+                 tered,  the  current  group  is used for the surface material
+                 identifier.
+
+       ff _v_1_/_t_1_/_n_1 _v_2_/_t_2_/_n_2 _v_3_/_t_3_/_n_3 ....
+                 A polygonal face.  Polygon vertices are  specified  as  three
+                 indices  separated  by slashes ('/').  The first index is the
+                 vertex location, the second index is the local (u,v)  texture
+                 coordinate, and the third index is the vertex surface normal.
+                 Positive indices count from the beginning of the input, where
+                 the  first  vertex position ( _v statement) is numbered 1, and
+                 likewise for the first texture coordinate and the first  sur-
+                 face  normal.   Negative indices count backward from the cur-
+                 rent position in the input,  where  -1  is  the  last  vertex
+                 encountered,  -2  is the one before that, etc.  An index of 0
+                 may be used for the vertex  texture  or  normal  to  indicate
+                 none,  or  these may be left off entirely.  All faces will be
+                 broken into triangles in the final mesh.  _O_b_j_2_m_e_s_h  currently
+                 makes  an  unsafe assumption that faces are convex, which may
+                 result in odd results if they are not.
+
+       All other statement types will be ignored  on  the  input.   Statements
+       understood  by  _o_b_j_2_r_a_d_(_1_)  will  be ignored silently; other statements
+       will generate a warning message after translation to indicate how  much
+       was missed.
+
+DDIIAAGGNNOOSSTTIICCSS
+       There are four basic error types reported by obj2mesh:
+
+              warning - a non-fatal input-related error
+
+              fatal - an unrecoverable input-related error
+
+              system - a system-related error
+
+              internal - a fatal error related to program limitations
+
+              consistency - a program-caused error
+
+       Most  errors  are  self-explanatory.   However,  the following internal
+       errors should be mentioned:
+
+       Set overflow in addobject (id)
+              This error occurs when too many surfaces are close together in a
+              scene.  Sometimes a dense mesh can be accommodated by increasing
+              the maximum resolution (by powers of two) using the  _-_r  option,
+              but usually this error indicates something is wrong.  Either too
+              many surfaces are lying right on  top  of  each  other,  or  the
+              bounding  cube is inflated from disparate geometry in the input.
+              Chances are, the face number "id"  is  near  those  causing  the
+              problem.
+
+       Hash table overflow in fullnode
+              This  error  is caused by too many surfaces, and there is little
+              hope of compiling this mesh.
+
+EEXXAAMMPPLLEESS
+       To create a compiled triangle mesh from the scene file  mesh.obj  using
+       materials from the file mesh.mat:
+
+         obj2mesh -a mesh.mat mesh.obj mesh.rtm
+
+       To  use  local  coordinates  to  place  a  square tiled image on a mesh
+       object:
+
+       void colorpict tiled_pat
+       7 red green blue mytile.hdr . frac(Lu) frac(Lv)
+       0
+       0
+
+       tiled_pat plastic tiled_mat
+       0
+       0
+       5 .9 .9 .9 0 0
+
+       tiled_mat mesh tiled_mesh
+       1 mymesh.rtm
+       0
+       0
+
+EENNVVIIRROONNMMEENNTT
+       RAYPATH        the directories to search for material files.
+
+AAUUTTHHOORR
+       Greg Ward
+
+SSEEEE AALLSSOO
+       gensurf(1),  getinfo(1),  make(1),  obj2rad(1),   oconv(1),   rpict(1),
+       rvu(1), rtrace(1), xform(1)
+
+
+
+RADIANCE                           03/11/03                        OBJ2MESH(1)

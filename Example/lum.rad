@@ -1,0 +1,10 @@
+## Lum.rad
+void light bright
+0
+0
+3 256.966647 244.312202 134.770912
+    
+bright sphere bulb
+0
+0
+4	0	0	0	0.03

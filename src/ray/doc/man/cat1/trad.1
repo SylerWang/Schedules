@@ -1,0 +1,81 @@
+TRAD(1)                                                                TRAD(1)
+
+
+
+NNAAMMEE
+       trad - graphical user interface to Radiance rad(1) program
+
+SSYYNNOOPPSSIISS
+       ttrraadd [ rrffiillee ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _T_r_a_d is a graphical user interface to _r_a_d_(_1_)_, which controls the opera-
+       tion of the basic Radiance scene compiling, rendering and picture  fil-
+       tering  programs.  Trad also includes links to a few utilities for dis-
+       playing and converting results, but most of what it does can be done by
+       editing a small text file, called the "rad input file".  Scene creation
+       still requires the use of a text or graphical  editor,  or  translation
+       from some external CAD format.
+
+       _T_r_a_d  is  based on the Tcl/Tk _w_i_s_h_(_1_) "windowing shell" written by John
+       Ousterhout.  (See below for instructions on installing this package  if
+       you do not have it already.)
+
+       The  _t_r_a_d  interface  divides the rendering problem into seven screens:
+       File, Scene, Zone, Views, Options, Action and Results.  The File screen
+       is  used  to load and save rad input files (a.k.a. project files).  The
+       Scene screen is used to name the Radiance input files associated with a
+       particular  project.   The  Zone screen is used to assign _r_a_d variables
+       specific to the section of the model being rendered.  The Views  screen
+       is  used  to  define  specific views to be rendered and set the picture
+       file names and dimensions.  The Options screen is used to  adjust  ren-
+       dering quality and other parameters.  The Action screen is used to ini-
+       tiate interactive and batch renderings.  The Results screen is used  to
+       display, convert and print the rendered Radiance pictures.
+
+       If  _t_r_a_d  is called with no rad input file name on the command line, it
+       will start with the File screen and you must enter a valid project file
+       before  you  will be allowed to continue.  If _r_f_i_l_e is given, then _t_r_a_d
+       attempts to open this file.  If no such file exists, _t_r_a_d  assumes  you
+       are  creating  a  new file by this name and goes to the Scene screen so
+       you may identify the appropriate Radiance input  files.   If  the  file
+       exists  but  not  all renderings have been finished, _t_r_a_d goes first to
+       the Action screen, assuming you will want to do something.  If the file
+       exists  and all renderings have completed and are up-to-date, _t_r_a_d goes
+       to the Results screen so that you may examine the final pictures.
+
+       _T_r_a_d includes an extensive help facility, which may be accessed  either
+       by  pressing  the  "HELP" button and searching through the category and
+       topic menus, or by holding the Control key and pressing the left  mouse
+       button on the mysterious widget (i.e. the button, entry window, or list
+       box you are curious about).
+
+IINNSSTTAALLLLIINNGG TTCCLL//TTKK
+       The Tcl/Tk package is available  by  anonymous  ftp  from  ftp.smli.com
+       (204.153.12.45)  in the /pub/tcl directory.  (Tcl stands for "Tool Com-
+       mand Language," and is pronounced  "tickle".)   _T_r_a_d  is  based  on  Tk
+       release  4.0, which in turn is based on Tcl release 7.4.  Although _t_r_a_d
+       uses only the _w_i_s_h program from this package, _w_i_s_h  itself  depends  on
+       additional  Tcl and Tk libraries, and the two toolkits must be compiled
+       one after the other.
+
+       To compile the Tcl/Tk package, download the  files  "tcl7.4.tar.Z"  and
+       "tk4.0.tar.Z" and uncompress and untar them.  Then, follow the instruc-
+       tions in the README file in the  tcl7.4/  directory  to  configure  the
+       Makefile  for  your  system  and install the software.  (Usually, it is
+       best to do this as root or have it done by your system administrator if
+       you  do  not  have  root  privileges.)  Then, do the same in the tk4.0/
+       directory.
+
+       _T_r_a_d should run without modification once this is done correctly.
+
+AAUUTTHHOORR
+       Greg Ward
+       _w_i_s_h and Tcl/Tk language by John Ousterhout
+
+SSEEEE AALLSSOO
+       oconv(1), pfilt(1), rad(1), rpict(1), rvu(1), wish(1), ximage(1)
+
+
+
+RADIANCE                            1/24/96                            TRAD(1)

@@ -1,0 +1,40 @@
+XGLARESRC(1)                                                      XGLARESRC(1)
+
+
+
+NNAAMMEE
+       xglaresrc - dislpay glare sources under X11
+
+SSYYNNOOPPSSIISS
+       xxggllaarreessrrcc [ --nn wwiinnddoowwnnaammee ][ --cc rr gg bb ] ppiiccttffiillee [ ggllaarreeffiillee ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _X_g_l_a_r_e_s_r_c  displays  the sources located by _f_i_n_d_g_l_a_r_e_(_1_) in the picture
+       _p_i_c_t_f_i_l_e by displaying their  average  luminance  and  drawing  circles
+       around  them  in  the image.  If _p_i_c_t_f_i_l_e is already being displayed by
+       _x_i_m_a_g_e_(_1_)_, _x_g_l_a_r_e_s_r_c will raise (or deiconify) this window.   If  _p_i_c_t_-
+       _f_i_l_e  is  not  being  displayed,  _x_g_l_a_r_e_s_r_c will start _x_i_m_a_g_e_(_1_) in the
+       background automatically.  (To quit from _x_i_m_a_g_e_(_1_)_, you can type 'q' in
+       its display window.)  Usually, _p_i_c_t_f_i_l_e will be the image that was used
+       by _f_i_n_d_g_l_a_r_e_(_1_) to locate glare sources.
+
+       If the desired image is being displayed under a different name, perhaps
+       even  by  a different display program than _x_i_m_a_g_e_(_1_)_, the _-_n option can
+       be used to give an alternative _w_i_n_d_o_w_n_a_m_e for locating the correct dis-
+       play  window, and the _-_c option can be used to specify a different line
+       and text color (default 1 0 0).  If the inpute _g_l_a_r_e_f_i_l_e is not  given,
+       _x_g_l_a_r_e_s_r_c reads from its standard input.
+
+AAUUTTHHOORR
+       Greg Ward
+
+AACCKKNNOOWWLLEEDDGGEEMMEENNTT
+       Work  on  this program was initiated and sponsored by the LESO group at
+       EPFL in Switzerland.
+
+SSEEEE AALLSSOO
+       findglare(1), glare(1), glarendx(1), ximage(1)
+
+
+
+RADIANCE                           11/15/93                       XGLARESRC(1)
