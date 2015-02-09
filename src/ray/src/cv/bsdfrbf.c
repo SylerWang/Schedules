@@ -1,5 +1,5 @@
 #ifndef lint
-static const char RCSid[] = "$Id: bsdfrbf.c,v 2.16 2013/11/08 23:49:07 greg Exp $";
+static const char RCSid[] = "$Id: bsdfrbf.c,v 2.26 2014/08/22 05:38:44 greg Exp $";
 #endif
 /*
  * Radial basis function representation for BSDF data.
@@ -29,19 +29,19 @@ static const char RCSid[] = "$Id: bsdfrbf.c,v 2.16 2013/11/08 23:49:07 greg Exp 
 #include "bsdfrep.h"
 
 #ifndef RSCA
-#define RSCA		2.2		/* radius scaling factor (empirical) */
+#define RSCA		2.0		/* radius scaling factor (empirical) */
 #endif
 #ifndef SMOOTH_MSE
 #define SMOOTH_MSE	5e-5		/* acceptable mean squared error */
 #endif
 #ifndef SMOOTH_MSER
-#define SMOOTH_MSER	0.07		/* acceptable relative MSE */
+#define SMOOTH_MSER	0.03		/* acceptable relative MSE */
 #endif
 #define MAX_RAD		(GRIDRES/8)	/* maximum lobe radius */
 
 #define	RBFALLOCB	10		/* RBF allocation block size */
 
-				/* our loaded grid for this incident angle */
+					/* loaded grid or comparison DSFs */
 GRIDVAL			dsf_grid[GRIDRES][GRIDRES];
 
 /* Start new DSF input grid */
@@ -72,10 +72,8 @@ add_bsdf_data(double theta_out, double phi_out, double val, int isDSF)
 	ovec[1] = sin((M_PI/180.)*phi_out) * ovec[2];
 	ovec[2] = sqrt(1. - ovec[2]*ovec[2]);
 
-	if (val <= 0)			/* truncate to zero */
-		val = 0;
-	else if (!isDSF)
-		val *= ovec[2];		/* convert from BSDF to DSF */
+	if (!isDSF)
+		val *= COSF(ovec[2]);	/* convert from BSDF to DSF */
 
 					/* update BSDF histogram */
 	if (val < BSDF2BIG*ovec[2] && val > BSDF2SML*ovec[2])
@@ -83,16 +81,16 @@ add_bsdf_data(double theta_out, double phi_out, double val, int isDSF)
 
 	pos_from_vec(pos, ovec);
 
-	dsf_grid[pos[0]][pos[1]].vsum += val;
-	dsf_grid[pos[0]][pos[1]].nval++;
+	dsf_grid[pos[0]][pos[1]].sum.v += val;
+	dsf_grid[pos[0]][pos[1]].sum.n++;
 }
 
 /* Compute minimum BSDF from histogram (does not clear) */
 static void
 comp_bsdf_min()
 {
-	int	cnt;
-	int	i, target;
+	unsigned long	cnt, target;
+	int		i;
 
 	cnt = 0;
 	for (i = HISTLEN; i--; )
@@ -116,7 +114,7 @@ empty_region(int x0, int x1, int y0, int y1)
 
 	for (x = x0; x < x1; x++)
 	    for (y = y0; y < y1; y++)
-		if (dsf_grid[x][y].nval)
+		if (dsf_grid[x][y].sum.n)
 			return(0);
 	return(1);
 }
@@ -134,8 +132,8 @@ smooth_region(int x0, int x1, int y0, int y1)
 	memset(xvec, 0, sizeof(xvec));
 	for (x = x0; x < x1; x++)
 	    for (y = y0; y < y1; y++)
-		if ((n = dsf_grid[x][y].nval) > 0) {
-			double	z = dsf_grid[x][y].vsum;
+		if ((n = dsf_grid[x][y].sum.n) > 0) {
+			double	z = dsf_grid[x][y].sum.v;
 			rMtx[0][0] += x*x*(double)n;
 			rMtx[0][1] += x*y*(double)n;
 			rMtx[0][2] += x*(double)n;
@@ -158,8 +156,8 @@ smooth_region(int x0, int x1, int y0, int y1)
 	sqerr = 0.0;			/* compute mean squared error */
 	for (x = x0; x < x1; x++)
 	    for (y = y0; y < y1; y++)
-		if ((n = dsf_grid[x][y].nval) > 0) {
-			double	d = A*x + B*y + C - dsf_grid[x][y].vsum/n;
+		if ((n = dsf_grid[x][y].sum.n) > 0) {
+			double	d = A*x + B*y + C - dsf_grid[x][y].sum.v/n;
 			sqerr += n*d*d;
 		}
 	if (sqerr <= nvs*SMOOTH_MSE)	/* below absolute MSE threshold? */
@@ -169,31 +167,45 @@ smooth_region(int x0, int x1, int y0, int y1)
 }
 
 /* Create new lobe based on integrated samples in region */
-static void
+static int
 create_lobe(RBFVAL *rvp, int x0, int x1, int y0, int y1)
 {
 	double	vtot = 0.0;
 	int	nv = 0;
+	double	wxsum = 0.0, wysum = 0.0, wtsum = 0.0;
 	double	rad;
 	int	x, y;
 					/* compute average for region */
 	for (x = x0; x < x1; x++)
-	    for (y = y0; y < y1; y++) {
-		vtot += dsf_grid[x][y].vsum;
-		nv += dsf_grid[x][y].nval;
-	    }
+	    for (y = y0; y < y1; y++)
+		if (dsf_grid[x][y].sum.n) {
+		    const double	v = dsf_grid[x][y].sum.v;
+		    const int		n = dsf_grid[x][y].sum.n;
+
+		    if (v > 0) {
+			double	wt = v / (double)n;
+			wxsum += wt * x;
+			wysum += wt * y;
+			wtsum += wt;
+		    }
+		    vtot += v;
+		    nv += n;
+		}
 	if (!nv) {
 		fprintf(stderr, "%s: internal - missing samples in create_lobe\n",
 				progname);
 		exit(1);
 	}
+	if (vtot <= 0)			/* only create positive lobes */
+		return(0);
 					/* peak value based on integral */
 	vtot *= (x1-x0)*(y1-y0)*(2.*M_PI/GRIDRES/GRIDRES)/(double)nv;
 	rad = (RSCA/(double)GRIDRES)*(x1-x0);
 	rvp->peak =  vtot / ((2.*M_PI) * rad*rad);
-	rvp->crad = ANG2R(rad);
-	rvp->gx = (x0+x1)>>1;
-	rvp->gy = (y0+y1)>>1;
+	rvp->crad = ANG2R(rad);		/* put peak at centroid */
+	rvp->gx = (int)(wxsum/wtsum + .5);
+	rvp->gy = (int)(wysum/wtsum + .5);
+	return(1);
 }
 
 /* Recursive function to build radial basis function representation */
@@ -235,15 +247,18 @@ build_rbfrep(RBFVAL **arp, int *np, int x0, int x1, int y0, int y1)
 			return(-1);
 	}
 					/* create lobes for leaves */
-	if (!branched[0])
-		create_lobe(*arp+(*np)++, x0, xmid, y0, ymid);
-	if (!branched[1])
-		create_lobe(*arp+(*np)++, xmid, x1, y0, ymid);
-	if (!branched[2])
-		create_lobe(*arp+(*np)++, x0, xmid, ymid, y1);
-	if (!branched[3])
-		create_lobe(*arp+(*np)++, xmid, x1, ymid, y1);
-	nadded += nleaves;
+	if (!branched[0] && create_lobe(*arp+*np, x0, xmid, y0, ymid)) {
+		++(*np); ++nadded;
+	}
+	if (!branched[1] && create_lobe(*arp+*np, xmid, x1, y0, ymid)) {
+		++(*np); ++nadded;
+	}
+	if (!branched[2] && create_lobe(*arp+*np, x0, xmid, ymid, y1)) {
+		++(*np); ++nadded;
+	}
+	if (!branched[3] && create_lobe(*arp+*np, xmid, x1, ymid, y1)) {
+		++(*np); ++nadded;
+	}
 	return(nadded);
 }
 
@@ -258,8 +273,14 @@ make_rbfrep()
 	comp_bsdf_min();
 				/* create RBF node list */
 	rbfarr = NULL; nn = 0;
-	if (build_rbfrep(&rbfarr, &nn, 0, GRIDRES, 0, GRIDRES) <= 0)
-		goto memerr;
+	if (build_rbfrep(&rbfarr, &nn, 0, GRIDRES, 0, GRIDRES) <= 0) {
+		if (nn)
+			goto memerr;
+		fprintf(stderr,
+			"%s: warning - skipping bad incidence (%.1f,%.1f)\n",
+				progname, theta_in_deg, phi_in_deg);
+		return(NULL);
+	}
 				/* (re)allocate RBF array */
 	newnode = (RBFNODE *)realloc(rbfarr,
 			sizeof(RBFNODE) + sizeof(RBFVAL)*(nn-1));
@@ -286,7 +307,6 @@ make_rbfrep()
 			newnode->vtotal);
 #endif
 	insert_dsf(newnode);
-
 	return(newnode);
 memerr:
 	fprintf(stderr, "%s: Out of memory in make_rbfrep()\n", progname);

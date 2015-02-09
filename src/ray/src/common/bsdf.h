@@ -25,7 +25,6 @@
 
 #include "fvect.h"
 #include "ccolor.h"
-#include <stdio.h>
 
 #ifdef __cplusplus
 extern "C" {

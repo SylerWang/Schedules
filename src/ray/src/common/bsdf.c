@@ -1,5 +1,5 @@
 #ifndef lint
-static const char RCSid[] = "$Id: bsdf.c,v 2.46 2013/07/04 15:14:45 greg Exp $";
+static const char RCSid[] = "$Id: bsdf.c,v 2.49 2014/12/08 23:51:12 greg Exp $";
 #endif
 /*
  *  bsdf.c
@@ -558,8 +558,7 @@ SDdiffuseSamp(FVECT outVec, int outFront, double randX)
 	SDmultiSamp(outVec, 2, randX);
 	SDsquare2disk(outVec, outVec[0], outVec[1]);
 	outVec[2] = 1. - outVec[0]*outVec[0] - outVec[1]*outVec[1];
-	if (outVec[2] > 0)		/* a bit of paranoia */
-		outVec[2] = sqrt(outVec[2]);
+	outVec[2] = sqrt(outVec[2]*(outVec[2]>0));
 	if (!outFront)			/* going out back? */
 		outVec[2] = -outVec[2];
 }
@@ -764,8 +763,7 @@ SDsampBSDF(SDValue *sv, FVECT ioVec, double randX, int sflags, const SDData *sd)
 		cdarr[i] = (*rdf->comp[i].func->getCDist)(inVec, &rdf->comp[i]);
 		if (cdarr[i] == NULL)
 			cdarr[i] = &SDemptyCD;
-		else
-			sv->cieY += cdarr[i]->cTotal;
+		sv->cieY += cdarr[i]->cTotal;
 	}
 	if (sv->cieY <= 1e-6) {		/* anything to sample? */
 		sv->cieY = .0;
@@ -790,7 +788,7 @@ SDsampBSDF(SDValue *sv, FVECT ioVec, double randX, int sflags, const SDData *sd)
 		randX -= sd->tLamb.cieY;
 	}
 					/* else one of cumulative dist. */
-	for (i = 0; i < n && randX < cdarr[i]->cTotal; i++)
+	for (i = 0; i < n && randX > cdarr[i]->cTotal; i++)
 		randX -= cdarr[i]->cTotal;
 	if (i >= n)
 		return SDEinternal;

@@ -1,5 +1,5 @@
 #ifndef lint
-static const char	RCSid[] = "$Id: total.c,v 1.8 2013/06/07 18:49:30 greg Exp $";
+static const char	RCSid[] = "$Id: total.c,v 1.10 2014/03/25 05:36:22 greg Exp $";
 #endif
 /*
  *  total.c - program to reduce columns of data.
@@ -213,8 +213,10 @@ putrecord(			/* write out results record */
 		return;
 	}
 						/* ASCII output */
-	while (n-- > 0)
-		fprintf(fp, "%.9g%c", *field++, tabc);
+	while (n-- > 0) {
+		fprintf(fp, "%.9g", *field++);
+		if (n) fputc(tabc, fp);
+	}
 	fputc('\n', fp);
 }
 
@@ -241,6 +243,10 @@ char  *fname
 	}
 	if (nbicols)
 		SET_FILE_BINARY(fp);
+#ifdef getc_unlocked				/* avoid lock/unlock overhead */
+	flockfile(fp);
+#endif
+
 	ltotal = 0;
 	while (!feof(fp)) {
 		if (ltotal == 0) {			/* initialize */

@@ -1,5 +1,5 @@
 #ifndef lint
-static const char	RCSid[] = "$Id: rad.c,v 2.109 2013/11/08 18:08:07 greg Exp $";
+static const char	RCSid[] = "$Id: rad.c,v 2.111 2014/10/26 17:35:53 greg Exp $";
 #endif
 /*
  * Executive program for oconv, rpict and pfilt
@@ -24,6 +24,7 @@ static const char	RCSid[] = "$Id: rad.c,v 2.109 2013/11/08 18:08:07 greg Exp $";
   #define RENAMECMD "mv"
   #include <sys/types.h>
   #include <sys/wait.h>
+  #include <signal.h>
 #endif
 
 				/* variables (alphabetical by name) */
@@ -1099,7 +1100,7 @@ specview(				/* get proper view spec from vs */
 			cent[i] += .5*dim[i];
 		}
 		mult = vlet(ZONE)=='E' ? 2. : .45 ;
-		sprintf(cp, " -vp %.2g %.2g %.2g -vd %.2g %.2g %.2g",
+		sprintf(cp, " -vp %.3g %.3g %.3g -vd %.3g %.3g %.3g",
 				cent[0]+xpos*mult*dim[0],
 				cent[1]+ypos*mult*dim[1],
 				cent[2]+zpos*mult*dim[2],
@@ -1131,7 +1132,7 @@ specview(				/* get proper view spec from vs */
 			break;
 		case VT_PAR:
 			d = sqrt(dim[0]*dim[0]+dim[1]*dim[1]+dim[2]*dim[2]);
-			sprintf(cp, " -vh %.2g -vv %.2g", d, d);
+			sprintf(cp, " -vh %.3g -vv %.3g", d, d);
 			cp += strlen(cp);
 			break;
 		case VT_ANG:

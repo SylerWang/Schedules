@@ -1,5 +1,5 @@
 #ifndef lint
-static const char RCSid[] = "$Id: bsdf2ttree.c,v 2.23 2013/11/26 17:35:59 greg Exp $";
+static const char RCSid[] = "$Id: bsdf2ttree.c,v 2.29 2014/08/21 10:33:48 greg Exp $";
 #endif
 /*
  * Load measured BSDF interpolant and write out as XML file with tensor tree.
@@ -25,9 +25,50 @@ int			samp_order = 6;
 				/* super-sampling threshold */
 const double		ssamp_thresh = 0.35;
 				/* number of super-samples */
-const int		nssamp = 100;
+#ifndef NSSAMP
+#define	NSSAMP		100
+#endif
 				/* limit on number of RBF lobes */
 static int		lobe_lim = 15000;
+				/* progress bar length */
+static int		do_prog = 79;
+
+
+/* Start new progress bar */
+#define prog_start(s)	if (do_prog) fprintf(stderr, "%s: %s...\n", progname, s); else
+
+/* Draw progress bar of the appropriate length */
+static void
+prog_show(double frac)
+{
+	char	pbar[256];
+	int	nchars;
+
+	if (do_prog <= 0) return;
+	if (do_prog > sizeof(pbar)-2)
+		do_prog = sizeof(pbar)-2;
+	if (frac < 0) frac = 0;
+	else if (frac > 1) frac = 1;
+	nchars = do_prog*frac + .5;
+	pbar[0] = '\r';
+	memset(pbar+1, '*', nchars);
+	memset(pbar+1+nchars, '-', do_prog-nchars);
+	pbar[do_prog+1] = '\0';
+	fputs(pbar, stderr);
+}
+
+/* Finish progress bar */
+static void
+prog_done(void)
+{
+	int	n = do_prog;
+
+	if (n <= 1) return;
+	fputc('\r', stderr);
+	while (n--)
+		fputc(' ', stderr);
+	fputc('\r', stderr);
+}
 
 /* Output XML prologue to stdout */
 static void
@@ -135,6 +176,9 @@ eval_isotropic(char *funame)
 			exit(1);
 		}
 		SET_FILE_BINARY(ofp);
+#ifdef getc_unlocked				/* avoid lock/unlock overhead */
+		flockfile(ofp);
+#endif
 	} else
 		fputs("{\n", stdout);
 						/* need to assign Dx, Dy, Dz? */
@@ -155,11 +199,8 @@ eval_isotropic(char *funame)
 			iovec[5] = output_orient *
 				sqrt(1. - iovec[3]*iovec[3] - iovec[4]*iovec[4]);
 			if (funame == NULL)
-			    bsdf = eval_rbfrep(rbf, iovec+3) *
-						output_orient/iovec[5];
+			    bsdf = eval_rbfrep(rbf, iovec+3);
 			else {
-			    double	ssa[3], ssvec[6], sum;
-			    int		ssi;
 			    if (assignD) {
 				varset("Dx", '=', -iovec[3]);
 				varset("Dy", '=', -iovec[4]);
@@ -167,10 +208,14 @@ eval_isotropic(char *funame)
 				++eclock;
 			    }
 			    bsdf = funvalue(funame, 6, iovec);
+#if (NSSAMP > 0)
 			    if (abs_diff(bsdf, last_bsdf) > ssamp_thresh) {
-				sum = 0;	/* super-sample voxel */
-				for (ssi = nssamp; ssi--; ) {
-				    SDmultiSamp(ssa, 3, (ssi+frandom())/nssamp);
+				int	ssi;
+				double	ssa[3], ssvec[6], sum = 0;
+						/* super-sample voxel */
+				for (ssi = NSSAMP; ssi--; ) {
+				    SDmultiSamp(ssa, 3, (ssi+frandom()) *
+							(1./NSSAMP));
 				    ssvec[0] = 2.*(ix+ssa[0])/sqres - 1.;
 				    ssvec[1] = .0;
 				    ssvec[2] = input_orient *
@@ -181,15 +226,16 @@ eval_isotropic(char *funame)
 						sqrt(1. - ssvec[3]*ssvec[3] -
 							ssvec[4]*ssvec[4]);
 				    if (assignD) {
-					varset("Dx", '=', -iovec[3]);
-					varset("Dy", '=', -iovec[4]);
-					varset("Dz", '=', -iovec[5]);
+					varset("Dx", '=', -ssvec[3]);
+					varset("Dy", '=', -ssvec[4]);
+					varset("Dz", '=', -ssvec[5]);
 					++eclock;
 				    }
 				    sum += funvalue(funame, 6, ssvec);
 				}
-				bsdf = sum/nssamp;
+				bsdf = sum/NSSAMP;
 			    }
+#endif
 			}
 			if (pctcull >= 0)
 				fwrite(&bsdf, sizeof(bsdf), 1, ofp);
@@ -200,6 +246,7 @@ eval_isotropic(char *funame)
 		}
 		if (rbf != NULL)
 			free(rbf);
+		prog_show((ix+1.)*(2./sqres));
 	}
 	if (pctcull >= 0) {			/* finish output */
 		if (pclose(ofp)) {
@@ -213,6 +260,7 @@ eval_isotropic(char *funame)
 		fputs("}\n", stdout);
 	}
 	data_epilogue();
+	prog_done();
 }
 
 /* Interpolate and output anisotropic BSDF data */
@@ -239,6 +287,10 @@ eval_anisotropic(char *funame)
 					progname);
 			exit(1);
 		}
+		SET_FILE_BINARY(ofp);
+#ifdef getc_unlocked				/* avoid lock/unlock overhead */
+		flockfile(ofp);
+#endif
 	} else
 		fputs("{\n", stdout);
 						/* need to assign Dx, Dy, Dz? */
@@ -260,11 +312,8 @@ eval_anisotropic(char *funame)
 			iovec[5] = output_orient *
 				sqrt(1. - iovec[3]*iovec[3] - iovec[4]*iovec[4]);
 			if (funame == NULL)
-			    bsdf = eval_rbfrep(rbf, iovec+3) *
-						output_orient/iovec[5];
+			    bsdf = eval_rbfrep(rbf, iovec+3);
 			else {
-			    double	ssa[4], ssvec[6], sum;
-			    int		ssi;
 			    if (assignD) {
 				varset("Dx", '=', -iovec[3]);
 				varset("Dy", '=', -iovec[4]);
@@ -272,13 +321,17 @@ eval_anisotropic(char *funame)
 				++eclock;
 			    }
 			    bsdf = funvalue(funame, 6, iovec);
+#if (NSSAMP > 0)
 			    if (abs_diff(bsdf, last_bsdf) > ssamp_thresh) {
-				sum = 0;	/* super-sample voxel */
-				for (ssi = nssamp; ssi--; ) {
-				    SDmultiSamp(ssa, 4, (ssi+frandom())/nssamp);
+				int	ssi;
+				double	ssa[4], ssvec[6], sum = 0;
+						/* super-sample voxel */
+				for (ssi = NSSAMP; ssi--; ) {
+				    SDmultiSamp(ssa, 4, (ssi+frandom()) *
+							(1./NSSAMP));
 				    SDsquare2disk(ssvec, 1.-(ix+ssa[0])/sqres,
 						1.-(iy+ssa[1])/sqres);
-				    ssvec[2] = output_orient *
+				    ssvec[2] = input_orient *
 						sqrt(1. - ssvec[0]*ssvec[0] -
 							ssvec[1]*ssvec[1]);
 				    SDsquare2disk(ssvec+3, (ox+ssa[2])/sqres,
@@ -287,15 +340,16 @@ eval_anisotropic(char *funame)
 						sqrt(1. - ssvec[3]*ssvec[3] -
 							ssvec[4]*ssvec[4]);
 				    if (assignD) {
-					varset("Dx", '=', -iovec[3]);
-					varset("Dy", '=', -iovec[4]);
-					varset("Dz", '=', -iovec[5]);
+					varset("Dx", '=', -ssvec[3]);
+					varset("Dy", '=', -ssvec[4]);
+					varset("Dz", '=', -ssvec[5]);
 					++eclock;
 				    }
 				    sum += funvalue(funame, 6, ssvec);
 				}
-				bsdf = sum/nssamp;
+				bsdf = sum/NSSAMP;
 			    }
+#endif
 			}
 			if (pctcull >= 0)
 				fwrite(&bsdf, sizeof(bsdf), 1, ofp);
@@ -306,6 +360,7 @@ eval_anisotropic(char *funame)
 		}
 		if (rbf != NULL)
 			free(rbf);
+		prog_show((ix*sqres+iy+1.)/(sqres*sqres));
 	    }
 	if (pctcull >= 0) {			/* finish output */
 		if (pclose(ofp)) {
@@ -316,6 +371,7 @@ eval_anisotropic(char *funame)
 	} else
 		fputs("}\n", stdout);
 	data_epilogue();
+	prog_done();
 }
 
 /* Read in BSDF and interpolate as tensor tree representation */
@@ -365,6 +421,9 @@ main(int argc, char *argv[])
 		case 'l':
 			lobe_lim = atoi(argv[++i]);
 			break;
+		case 'p':
+			do_prog = atoi(argv[i]+2);
+			break;
 		default:
 			goto userr;
 		}
@@ -375,8 +434,7 @@ main(int argc, char *argv[])
 			fprintf(stderr,
 	"%s: need single function with 6 arguments: bsdf(ix,iy,iz,ox,oy,oz)\n",
 					progname);
-			fprintf(stderr, "\tor 3 arguments using Dx,Dy,Dz: bsdf(ix,iy,iz)\n",
-					progname);
+			fprintf(stderr, "\tor 3 arguments using Dx,Dy,Dz: bsdf(ix,iy,iz)\n");
 			goto userr;
 		}
 		++eclock;
@@ -384,16 +442,20 @@ main(int argc, char *argv[])
 		if (dofwd) {
 			input_orient = -1;
 			output_orient = -1;
-			(*evf)(argv[i]);	/* outside reflectance */
+			prog_start("Evaluating outside reflectance");
+			(*evf)(argv[i]);
 			output_orient = 1;
-			(*evf)(argv[i]);	/* outside -> inside */
+			prog_start("Evaluating outside->inside transmission");
+			(*evf)(argv[i]);
 		}
 		if (dobwd) {
 			input_orient = 1;
 			output_orient = 1;
-			(*evf)(argv[i]);	/* inside reflectance */
+			prog_start("Evaluating inside reflectance");
+			(*evf)(argv[i]);
 			output_orient = -1;
-			(*evf)(argv[i]);	/* inside -> outside */
+			prog_start("Evaluating inside->outside transmission");
+			(*evf)(argv[i]);
 		}
 		xml_epilogue();			/* finish XML output & exit */
 		return(0);
@@ -401,6 +463,7 @@ main(int argc, char *argv[])
 	if (i < argc) {				/* open input files if given */
 		int	nbsdf = 0;
 		for ( ; i < argc; i++) {	/* interpolate each component */
+			char	pbuf[256];
 			FILE	*fpin = fopen(argv[i], "rb");
 			if (fpin == NULL) {
 				fprintf(stderr, "%s: cannot open BSDF interpolant '%s'\n",
@@ -412,6 +475,8 @@ main(int argc, char *argv[])
 			fclose(fpin);
 			if (!nbsdf++)		/* start XML on first dist. */
 				xml_prologue(argc, argv);
+			sprintf(pbuf, "Interpolating component '%s'", argv[i]);
+			prog_start(pbuf);
 			if (single_plane_incident)
 				eval_isotropic(NULL);
 			else
@@ -424,6 +489,7 @@ main(int argc, char *argv[])
 	if (!load_bsdf_rep(stdin))
 		return(1);
 	xml_prologue(argc, argv);		/* start XML output */
+	prog_start("Interpolating from standard input");
 	if (single_plane_incident)		/* resample dist. */
 		eval_isotropic(NULL);
 	else

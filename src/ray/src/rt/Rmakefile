@@ -1,4 +1,4 @@
-# RCSid: $Id: Rmakefile,v 2.70 2012/09/06 00:07:43 greg Exp $
+# RCSid: $Id: Rmakefile,v 2.72 2014/04/26 15:59:38 greg Exp $
 #
 # Compiles for ray tracing programs.
 #
@@ -109,7 +109,7 @@ install:	all rayinit.cal
 ogl:	
 
 clean:
-	set nonomatch; rm -f $(PROGS) *.o core
+	set nonomatch; rm -f $(PROGS) *.o
 
 lint:	$(RVSRC)
 	$(LINT) $(LINTFLAGS) -DRVIEW $(RVSRC) $(LIBS)
@@ -222,6 +222,8 @@ initotypes.o srcobstr.o raytrace.o:	otspecial.h
 
 rpmain.o rtmain.o rvmain.o rpict.o \
 srcdraw.o:	../common/view.h ../common/resolu.h
+
+rpict.o:	../common/hilbert.h
 
 x11.o x11twind.o: x11twind.h
 

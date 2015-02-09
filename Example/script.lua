@@ -58,3 +58,6 @@
 
 -- These strategies can be combined in order to create some complex control algorithms, and
 -- even behavioral models.
+
+lum1=1.0
+

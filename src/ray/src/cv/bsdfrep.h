@@ -1,14 +1,18 @@
-/* RCSid $Id: bsdfrep.h,v 2.11 2013/11/09 05:47:49 greg Exp $ */
+/* RCSid $Id: bsdfrep.h,v 2.22 2014/08/22 05:38:44 greg Exp $ */
 /*
  * Definitions for BSDF representation used to interpolate measured data.
  *
  *	G. Ward
  */
 
-#include "bsdf.h"
-#include <stdio.h>
+#ifndef _BSDFREP_H_
+#define _BSDFREP_H_
 
-#define DEBUG		1
+#include "bsdf.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #ifndef GRIDRES
 #define GRIDRES		(1<<8)		/* grid resolution per side */
@@ -17,10 +21,15 @@
 #define ANG2R(r)	(int)((r)*((1<<16)/M_PI))
 #define R2ANG(c)	(((c)+.5)*(M_PI/(1<<16)))
 
-typedef struct {
-	float		vsum;		/* DSF sum */
-	unsigned int	nval;		/* number of values in sum */
-	unsigned short	crad;		/* radius (coded angle) */
+					/* moderated cosine factor */
+#define COSF(z)		(fabs(z)*0.98 + 0.02)
+
+typedef union {
+	struct {
+		float		v;		/* DSF sum */
+		unsigned int	n;		/* number of values in sum */
+	}	sum;			/* sum for averaging */
+	float	val[2];			/* comparison values */
 } GRIDVAL;			/* grid value */
 
 typedef struct {
@@ -84,6 +93,8 @@ extern unsigned long	bsdf_hist[HISTLEN];
 
 				/* BSDF value for boundary regions */
 extern double		bsdf_min;
+extern double		bsdf_spec_peak;
+extern double		bsdf_spec_rad;
 
 				/* processed incident DSF measurements */
 extern RBFNODE		*dsf_list;
@@ -107,7 +118,7 @@ extern MIGRATION	*mig_list;
 extern char		*progname;
 
 				/* get theta value in degrees [0,180) range */
-#define get_theta180(v)	((180./M_PI)*acos((v)[2]))
+#define get_theta180(v)	((180./M_PI)*Acos((v)[2]))
 				/* get phi value in degrees, [0,360) range */
 #define	get_phi360(v)	((180./M_PI)*atan2((v)[1],(v)[0]) + 360.*((v)[1]<0))
 
@@ -142,7 +153,7 @@ extern void		ovec_from_pos(FVECT vec, int xpos, int ypos);
 /* Compute grid position from normalized input/output vector */
 extern void		pos_from_vec(int pos[2], const FVECT vec);
 
-/* Evaluate RBF for DSF at the given normalized outgoing direction */
+/* Evaluate BSDF at the given normalized outgoing direction */
 extern double		eval_rbfrep(const RBFNODE *rp, const FVECT outvec);
 
 /* Insert a new directional scattering function in our global list */
@@ -187,5 +198,23 @@ extern void		build_mesh(void);
 /* Find edge(s) for interpolating the given vector, applying symmetry */
 extern int		get_interp(MIGRATION *miga[3], FVECT invec);
 
+/* Return single-lobe specular RBF for the given incident direction */
+extern RBFNODE *	def_rbf_spec(const FVECT invec);
+
+/* Advect and allocate new RBF along edge (internal call) */
+extern RBFNODE *	e_advect_rbf(const MIGRATION *mig,
+					const FVECT invec, int lobe_lim);
+
+/* Compute distance between two RBF lobes (internal call) */
+extern double		lobe_distance(RBFVAL *rbf1, RBFVAL *rbf2);
+
+/* Compute mass transport plan (internal call) */
+extern void		plan_transport(MIGRATION *mig);
+
 /* Partially advect between recorded incident angles and allocate new RBF */
 extern RBFNODE *	advect_rbf(const FVECT invec, int lobe_lim);
+
+#ifdef __cplusplus
+}
+#endif
+#endif	/* _BSDFREP_H_ */

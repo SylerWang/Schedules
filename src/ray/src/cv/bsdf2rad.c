@@ -1,5 +1,5 @@
 #ifndef lint
-static const char RCSid[] = "$Id: bsdf2rad.c,v 2.5 2013/11/26 17:33:55 greg Exp $";
+static const char RCSid[] = "$Id: bsdf2rad.c,v 2.14 2014/11/20 19:10:48 greg Exp $";
 #endif
 /*
  *  Plot 3-D BSDF output based on scattering interpolant or XML representation
@@ -21,6 +21,12 @@ const float	colarr[6][3] = {
 		1., 1., .5,
 		.5, 1., 1.
 	};
+
+#ifdef _WIN32
+char	validf[] = "-e \"valid(s,t)=X`SYS(s,t)^2+Y`SYS(s,t)^2+Z`SYS(s,t)^2-1e-7\"";
+#else
+char	validf[] = "-e 'valid(s,t)=X`SYS(s,t)^2+Y`SYS(s,t)^2+Z`SYS(s,t)^2-1e-7'";
+#endif
 
 char	*progname;
 
@@ -91,17 +97,23 @@ main(int argc, char *argv[])
 #ifdef DEBUG
 	fprintf(stderr, "Minimum BSDF set to %.4f\n", bsdf_min);
 #endif
-	min_log = log(bsdf_min*.5);
+	min_log = log(bsdf_min*.5 + 1e-5);
 						/* output BSDF rep. */
 	for (n = 0; (n < 6) & (2*n+3 < argc); n++) {
-		double	theta = atof(argv[2*n+2]);
+		double	theta = (M_PI/180.)*atof(argv[2*n+2]);
+		double	phi = (M_PI/180.)*atof(argv[2*n+3]);
+		if (theta < -FTINY) {
+			fprintf(stderr, "%s: theta values must be positive\n",
+					progname);
+			return(1);
+		}
 		if (inpXML) {
-			input_orient = (theta <= 90.) ? 1 : -1;
+			input_orient = (theta <= M_PI/2.) ? 1 : -1;
 			output_orient = doTrans ? -input_orient : input_orient;
 		}
-		idir[2] = sin((M_PI/180.)*theta);
-		idir[0] = idir[2] * cos((M_PI/180.)*atof(argv[2*n+3]));
-		idir[1] = idir[2] * sin((M_PI/180.)*atof(argv[2*n+3]));
+		idir[2] = sin(theta);
+		idir[0] = idir[2] * cos(phi);
+		idir[1] = idir[2] * sin(phi);
 		idir[2] = input_orient * sqrt(1. - idir[2]*idir[2]);
 #ifdef DEBUG
 		fprintf(stderr, "Computing BSDF for incident direction (%.1f,%.1f)\n",
@@ -112,17 +124,21 @@ main(int argc, char *argv[])
 #ifdef DEBUG
 		if (inpXML)
 			fprintf(stderr, "Hemispherical %s: %.3f\n",
-				(output_orient > 0 ? "reflection" : "transmission"),
+				(output_orient > 0 ^ input_orient > 0 ?
+					"transmission" : "reflection"),
 				SDdirectHemi(idir, SDsampSp|SDsampDf |
-						(output_orient > 0 ?
-						 SDsampR : SDsampT), &myBSDF));
+					(output_orient > 0 ^ input_orient > 0 ?
+						 SDsampT : SDsampR), &myBSDF));
 		else if (rbf == NULL)
 			fputs("Empty RBF\n", stderr);
 		else
 			fprintf(stderr, "Hemispherical %s: %.3f\n",
-				(output_orient > 0 ? "reflection" : "transmission"),
+				(output_orient > 0 ^ input_orient > 0 ?
+					"transmission" : "reflection"),
 				rbf->vtotal);
 #endif
+		printf("# Incident direction (theta,phi) = (%.2f,%.2f) deg.\n\n",
+				(180./M_PI)*theta, (180./M_PI)*phi);
 		printf("void trans tmat\n0\n0\n7 %f %f %f .04 .04 .9 1\n",
 				colarr[n][0], colarr[n][1], colarr[n][2]);
 		if (showPeaks && rbf != NULL) {
@@ -130,15 +146,16 @@ main(int argc, char *argv[])
 				1.-colarr[n][0], 1.-colarr[n][1], 1.-colarr[n][2]);
 			for (i = 0; i < rbf->nrbf; i++) {
 				ovec_from_pos(odir, rbf->rbfa[i].gx, rbf->rbfa[i].gy);
-				bsdf = eval_rbfrep(rbf, odir) / (output_orient*odir[2]);
-				bsdf = log(bsdf) - min_log;
+				bsdf = eval_rbfrep(rbf, odir);
+				bsdf = log(bsdf + 1e-5) - min_log;
 				printf("pmat sphere p%d\n0\n0\n4 %f %f %f %f\n",
 					i+1, odir[0]*bsdf, odir[1]*bsdf, odir[2]*bsdf,
 						.007*bsdf);
 			}
 		}
 		fflush(stdout);
-		sprintf(buf, "gensurf tmat bsdf - - - %d %d", GRIDRES-1, GRIDRES-1);
+		sprintf(buf, "gensurf tmat bsdf%d - - - %d %d %s", n+1,
+						GRIDRES-1, GRIDRES-1, validf);
 		fp = popen(buf, "w");
 		if (fp == NULL) {
 			fprintf(stderr, "%s: cannot open '| %s'\n", progname, buf);
@@ -154,9 +171,8 @@ main(int argc, char *argv[])
 					return(1);
 				bsdf = sval.cieY;
 			} else
-				bsdf = eval_rbfrep(rbf, odir) /
-						(output_orient*odir[2]);
-			bsdf = log(bsdf) - min_log;
+				bsdf = eval_rbfrep(rbf, odir);
+			bsdf = log(bsdf + 1e-5) - min_log;
 			fprintf(fp, "%.8e %.8e %.8e\n",
 					odir[0]*bsdf, odir[1]*bsdf, odir[2]*bsdf);
 		    }

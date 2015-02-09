@@ -14,7 +14,7 @@ library_names=''
 old_library='libport.a'
 
 # Libraries that this one depends upon.
-dependency_libs=' -lc'
+dependency_libs=' -lm -lc'
 
 # Version information for libport.
 current=

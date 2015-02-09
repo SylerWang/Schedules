@@ -32,11 +32,12 @@ target_link_libraries(3ds2mgf rtrad)
 
 if (NOT WIN32)
 
-  add_executable(pabopto2bsdf pabopto2bsdf.c bsdfrep.c bsdfrbf.c bsdfmesh.c)
+  add_executable(pabopto2bsdf pabopto2bsdf.c bsdfrep.c bsdfrbf.c bsdfmesh.c bsdftrans.cpp)
   target_link_libraries(pabopto2bsdf rtrad) 
 
-  add_executable(pabopto2rad	pabopto2bsdf.c bsdfrep.c bsdfrbf.c bsdfmesh.c)
+  add_executable(pabopto2rad	pabopto2bsdf.c bsdfrep.c bsdfrbf.c bsdfmesh.c bsdftrans.cpp)
   target_link_libraries(pabopto2rad rtrad)
+  set_target_properties(pabopto2rad PROPERTIES COMPILE_DEFINITIONS TEST_MAIN)
 
 endif()
 
@@ -72,5 +73,5 @@ INSTALL(FILES source.cal tilt.cal lamp.tab window.cal
 
 if (NOT WIN32)
   INSTALL(PROGRAMS optics2rad.csh DESTINATION bin RENAME optics2rad)
-  INSTALL(TARGETS pabopto2rad pabopto2bsdf)
+  INSTALL(TARGETS pabopto2rad pabopto2bsdf DESTINATION bin)
 endif()

@@ -1,5 +1,5 @@
 #ifndef lint
-static const char RCSid[] = "$Id: bsdf2klems.c,v 2.12 2013/11/21 20:09:06 greg Exp $";
+static const char RCSid[] = "$Id: bsdf2klems.c,v 2.16 2014/10/01 23:32:42 greg Exp $";
 #endif
 /*
  * Load measured BSDF interpolant and write out as XML file with Klems matrix.
@@ -27,9 +27,48 @@ static const char	*kbasis = "LBNL/Klems Full";
 static int		npsamps = 256;
 				/* limit on number of RBF lobes */
 static int		lobe_lim = 15000;
+				/* progress bar length */
+static int		do_prog = 79;
+
+
+/* Start new progress bar */
+#define prog_start(s)	if (do_prog) fprintf(stderr, "%s: %s...\n", progname, s); else
+
+/* Draw progress bar of the appropriate length */
+static void
+prog_show(double frac)
+{
+	char	pbar[256];
+	int	nchars;
+
+	if (do_prog <= 1) return;
+	if (do_prog > sizeof(pbar)-2)
+		do_prog = sizeof(pbar)-2;
+	if (frac < 0) frac = 0;
+	else if (frac > 1) frac = 1;
+	nchars = do_prog*frac + .5;
+	pbar[0] = '\r';
+	memset(pbar+1, '*', nchars);
+	memset(pbar+1+nchars, '-', do_prog-nchars);
+	pbar[do_prog+1] = '\0';
+	fputs(pbar, stderr);
+}
+
+/* Finish progress bar */
+static void
+prog_done(void)
+{
+	int	n = do_prog;
+
+	if (n <= 1) return;
+	fputc('\r', stderr);
+	while (n--)
+		fputc(' ', stderr);
+	fputc('\r', stderr);
+}
 
 /* Return angle basis corresponding to the given name */
-ANGLE_BASIS *
+static ANGLE_BASIS *
 get_basis(const char *bn)
 {
 	int	n = nabases;
@@ -297,8 +336,10 @@ eval_function(char *funame)
 		printf("\t%.3e\n", sum/npsamps);
 	    }
 	    putchar('\n');
+	    prog_show((j+1.)/abp->nangles);
 	}
 	data_epilogue();			/* finish output */
+	prog_done();
 }
 
 /* Interpolate and output a radial basis function BSDF representation */
@@ -335,11 +376,11 @@ eval_rbf(void)
 
 		    sum += eval_rbfrep(rbf, vout);
 		}
-		fo_getvec(vout, j+.5, abp);	/* use centered secant */
-		bsdfarr[j*abp->nangles + i] = sum / (npsamps*vout[2]);
+		bsdfarr[j*abp->nangles + i] = sum / (double)npsamps;
 	    }
 	    if (rbf != NULL)
 		free(rbf);
+	    prog_show((i+1.)/abp->nangles);
 	}
 	n = 0;					/* write out our matrix */
 	for (j = 0; j < abp->nangles; j++) {
@@ -348,6 +389,7 @@ eval_rbf(void)
 	    putchar('\n');
 	}
 	data_epilogue();			/* finish output */
+	prog_done();
 }
 
 /* Read in BSDF and interpolate as Klems matrix representation */
@@ -393,6 +435,9 @@ main(int argc, char *argv[])
 		case 'l':
 			lobe_lim = atoi(argv[++i]);
 			break;
+		case 'p':
+			do_prog = atoi(argv[i]+2);
+			break;
 		default:
 			goto userr;
 		}
@@ -401,8 +446,7 @@ main(int argc, char *argv[])
 			fprintf(stderr,
 	"%s: need single function with 6 arguments: bsdf(ix,iy,iz,ox,oy,oz)\n",
 					progname);
-			fprintf(stderr, "\tor 3 arguments using Dx,Dy,Dz: bsdf(ix,iy,iz)\n",
-					progname);
+			fprintf(stderr, "\tor 3 arguments using Dx,Dy,Dz: bsdf(ix,iy,iz)\n");
 			goto userr;
 		}
 		++eclock;
@@ -411,16 +455,20 @@ main(int argc, char *argv[])
 		if (dofwd) {
 			input_orient = -1;
 			output_orient = -1;
-			eval_function(argv[i]);		/* outside reflectance */
+			prog_start("Evaluating outside reflectance");
+			eval_function(argv[i]);
 			output_orient = 1;
-			eval_function(argv[i]);		/* outside -> inside */
+			prog_start("Evaluating outside->inside transmission");
+			eval_function(argv[i]);
 		}
 		if (dobwd) {
 			input_orient = 1;
 			output_orient = 1;
-			eval_function(argv[i]);		/* inside reflectance */
+			prog_start("Evaluating inside reflectance");
+			eval_function(argv[i]);
 			output_orient = -1;
-			eval_function(argv[i]);		/* inside -> outside */
+			prog_start("Evaluating inside->outside transmission");
+			eval_function(argv[i]);
 		}
 		xml_epilogue();			/* finish XML output & exit */
 		return(0);
@@ -436,6 +484,7 @@ main(int argc, char *argv[])
 	if (i < argc) {				/* open input files if given */
 		int	nbsdf = 0;
 		for ( ; i < argc; i++) {	/* interpolate each component */
+			char	pbuf[256];
 			FILE	*fpin = fopen(argv[i], "rb");
 			if (fpin == NULL) {
 				fprintf(stderr, "%s: cannot open BSDF interpolant '%s'\n",
@@ -449,6 +498,8 @@ main(int argc, char *argv[])
 				xml_header(argc, argv);
 				xml_prologue(NULL);
 			}
+			sprintf(pbuf, "Interpolating component '%s'", argv[i]);
+			prog_start(pbuf);
 			eval_rbf();
 		}
 		xml_epilogue();			/* finish XML output & exit */
@@ -459,6 +510,7 @@ main(int argc, char *argv[])
 		return(1);
 	xml_header(argc, argv);			/* start XML output */
 	xml_prologue(NULL);
+	prog_start("Interpolating from standard input");
 	eval_rbf();				/* resample dist. */
 	xml_epilogue();				/* finish XML output & exit */
 	return(0);

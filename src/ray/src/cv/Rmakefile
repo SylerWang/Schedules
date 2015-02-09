@@ -1,4 +1,4 @@
-# RCSid $Id: Rmakefile,v 2.45 2013/11/26 17:35:59 greg Exp $
+# RCSid $Id: Rmakefile,v 2.50 2014/04/26 15:59:38 greg Exp $
 #
 # Makefile for conversion programs
 #
@@ -8,9 +8,11 @@ OPT = -O
 MACH = -DBSD
 
 CFLAGS = -I../common -L../lib $(OPT) $(MACH)
+CXXFLAGS = $(CFLAGS)
 METACFLAGS = -I../meta
 
 CC = cc
+CXX = c++
 
 MLIB = -lm
 
@@ -34,7 +36,7 @@ install:	$(PROGS) $(LIBFILES) optics2rad.csh
 	cp $(LIBFILES) $(LIBDIR)
 
 clean:
-	set nonomatch; rm -f $(PROGS) *.o core
+	set nonomatch; rm -f $(PROGS) *.o
 
 ies2rad:	ies2rad.o
 	$(CC) $(CFLAGS) -o ies2rad ies2rad.o -lrtrad $(MLIB)
@@ -73,23 +75,19 @@ mgf2inv:	mgf2inv.o
 	$(CC) $(CFLAGS) -o 3ds2mgf 3ds2mgf.o rayopt3ds.o vect3ds.o \
 -lmgf -lrtrad $(MLIB)
 
-pabopto2bsdf:	pabopto2bsdf.o bsdfrep.o bsdfrbf.o bsdfmesh.o
-	$(CC) $(CFLAGS) -o pabopto2bsdf pabopto2bsdf.o bsdfrep.o \
-bsdfrbf.o bsdfmesh.o -lrtrad $(MLIB)
+pabopto2bsdf:	pabopto2bsdf.o bsdfrep.o bsdfrbf.o bsdfmesh.o bsdftrans.o
+	$(CXX) $(CXXFLAGS) -o pabopto2bsdf pabopto2bsdf.o bsdfrep.o \
+bsdfrbf.o bsdfmesh.o bsdftrans.o -lrtrad $(MLIB)
 
-pabopto2rad:	pabopto2rad.o bsdfrep.o bsdfrbf.o bsdfmesh.o
+pabopto2rad:	pabopto2rad.o bsdfrep.o bsdfrbf.o 
 	$(CC) $(CFLAGS) -o pabopto2rad pabopto2rad.o bsdfrep.o \
-bsdfrbf.o bsdfmesh.o -lrtrad $(MLIB)
+bsdfrbf.o -lrtrad $(MLIB)
 
 pabopto2rad.o:	pabopto2bsdf.c bsdfrep.h
 	$(CC) $(CFLAGS) -c -DTEST_MAIN -o pabopto2rad.o pabopto2bsdf.c
 
 bsdf2rad:	bsdf2rad.o bsdfrep.o bsdfinterp.o
 	$(CC) $(CFLAGS) -o bsdf2rad bsdf2rad.o bsdfrep.o bsdfinterp.o \
--lrtrad $(MLIB)
-
-hemi:	hemi.o bsdfrep.o bsdfinterp.o
-	$(CC) $(CFLAGS) -o hemi hemi.o bsdfrep.o bsdfinterp.o \
 -lrtrad $(MLIB)
 
 bsdfquery:	bsdfquery.o bsdfrep.o bsdfinterp.o
@@ -144,13 +142,17 @@ mgf2inv.o:	../common/mgf_parser.h ../common/ccolor.h
 pkgBSDF.o:	../common/bsdf.h ../common/fvect.h ../common/ccolor.h \
 ../common/paths.h
 
-bsdf2ttree.o bsdfinterp.o bsdfmesh.o bsdfrbf.o bsdfrep.o bsdf2rad.o hemi.o \
+bsdf2ttree.o bsdfinterp.o bsdfmesh.o bsdfrbf.o bsdfrep.o bsdf2rad.o bsdftrans.o \
 pabopto2bsdf.o:	bsdfrep.h ../common/bsdf.h ../common/fvect.h ../common/ccolor.h
 
 bsdf2ttree.o pabopto2bsdf.o:	../common/platform.h
 
 bsdfrep.o:	../common/resolu.h ../common/rtio.h
 
-bsdf2rad.o hemi.o bsdf2ttree.o:	../common/rtprocess.h
+pabopto2bsdf.o:	../common/resolu.h
+
+bsdf2rad.o bsdf2ttree.o:	../common/rtprocess.h
 
 bsdf2klems.o bsdf2ttree.o mgf2meta.o:	../common/random.h
+
+bsdftrans.o:	transportSimplex.h

@@ -1,4 +1,4 @@
-/* RCSid $Id: object.h,v 2.19 2012/09/07 21:45:22 greg Exp $ */
+/* RCSid $Id: object.h,v 2.22 2014/05/11 21:37:40 greg Exp $ */
 /*
  *  object.h - header file for routines using objects and object sets.
  *
@@ -58,16 +58,16 @@ typedef struct {
 
 #ifndef  MAXOBJBLK
 #ifdef  SMLMEM
-#define  MAXOBJBLK	63		/* maximum number of object blocks */
+#define  MAXOBJBLK	1023		/* maximum number of object blocks */
 #else
-#define  MAXOBJBLK	65535		/* maximum number of object blocks */
+#define  MAXOBJBLK	131071		/* maximum number of object blocks */
 #endif
 #endif
 
 extern OBJREC  *objblock[MAXOBJBLK];	/* the object blocks */
 extern OBJECT  nobjects;		/* # of objects */
 
-#define  OBJBLKSHFT	9
+#define  OBJBLKSHFT	11
 #define  OBJBLKSIZ	(1<<OBJBLKSHFT)	/* object block size */
 #define  objptr(obj)	(objblock[(obj)>>OBJBLKSHFT]+((obj)&(OBJBLKSIZ-1)))
 
@@ -90,6 +90,8 @@ extern OBJECT	objndx(OBJREC *op);
 extern OBJECT	lastmod(OBJECT obj, char *mname);
 extern OBJECT	modifier(char *name);
 extern OBJECT	object(char *oname);
+extern int	eqreal(double d1, double d2);
+extern int	eqobjects(OBJECT obj1, OBJECT obj2);
 extern void	insertobject(OBJECT obj);
 extern void	clearobjndx(void);
 					/* defined in objset.c */

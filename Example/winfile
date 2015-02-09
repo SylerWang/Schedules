@@ -1,0 +1,28 @@
+void glow winmat
+0
+0
+4 1 1 1 0
+
+ void glass black_glass
+0
+0
+3 0 0 0
+
+
+# xform -m winmat
+# xform -rz 0
+#@rfluxmtx h=kf u=Z 
+
+void glass black
+0
+0
+3                  0                  0                  0
+
+winmat polygon window
+0
+0
+12
+                0.1                  0                  1
+                0.1                  0                2.6
+                2.9                  0                2.6
+                2.9                  0                  1

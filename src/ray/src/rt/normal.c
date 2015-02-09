@@ -1,5 +1,5 @@
 #ifndef lint
-static const char RCSid[] = "$Id: normal.c,v 2.65 2012/08/01 15:26:36 greg Exp $";
+static const char RCSid[] = "$Id: normal.c,v 2.68 2014/12/04 05:26:28 greg Exp $";
 #endif
 /*
  *  normal.c - shading function for normal materials.
@@ -188,7 +188,7 @@ m_normal(			/* color a ray that hit something normal */
 		objerror(m, USER, "bad number of arguments");
 						/* check for back side */
 	if (r->rod < 0.0) {
-		if (!backvis && m->otype != MAT_TRANS) {
+		if (!backvis) {
 			raytrans(r);
 			return(1);
 		}
@@ -239,7 +239,7 @@ m_normal(			/* color a ray that hit something normal */
 			if (!(nd.specfl & SP_PURE) &&
 					specthresh >= nd.tspec-FTINY)
 				nd.specfl |= SP_TBLT;
-			if (!hastexture || r->crtype & SHADOW) {
+			if (!hastexture || r->crtype & (SHADOW|AMBIENT)) {
 				VCOPY(nd.prdir, r->rdir);
 				transtest = 2;
 			} else {
@@ -306,7 +306,8 @@ m_normal(			/* color a ray that hit something normal */
 			rayvalue(&lr);
 			multcolor(lr.rcol, lr.rcoef);
 			addcolor(r->rcol, lr.rcol);
-			if (!hastexture && nd.specfl & SP_FLAT) {
+			if (nd.specfl & SP_FLAT &&
+					!hastexture | (r->crtype & AMBIENT)) {
 				mirtest = 2.*bright(lr.rcol);
 				mirdist = r->rot + lr.rt;
 			}
@@ -377,13 +378,7 @@ gaussamp(			/* sample Gaussian specular */
 			(np->specfl & (SP_TRAN|SP_TBLT)) != SP_TRAN)
 		return;
 					/* set up sample coordinates */
-	v[0] = v[1] = v[2] = 0.0;
-	for (i = 0; i < 3; i++)
-		if (np->pnorm[i] < 0.6 && np->pnorm[i] > -0.6)
-			break;
-	v[i] = 1.0;
-	fcross(u, v, np->pnorm);
-	normalize(u);
+	getperpendicular(u, np->pnorm);
 	fcross(v, np->pnorm, u);
 					/* compute reflection */
 	if ((np->specfl & (SP_REFL|SP_RBLT)) == SP_REFL &&

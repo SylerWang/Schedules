@@ -1,5 +1,5 @@
 #ifndef lint
-static const char RCSid[] = "$Id: rpict.c,v 2.86 2013/03/21 00:03:09 greg Exp $";
+static const char RCSid[] = "$Id: rpict.c,v 2.88 2014/05/09 23:28:57 greg Exp $";
 #endif
 /*
  *  rpict.c - routines and variables for picture generation.
@@ -33,7 +33,7 @@ static const char RCSid[] = "$Id: rpict.c,v 2.86 2013/03/21 00:03:09 greg Exp $"
 #include  "view.h"
 #include  "random.h"
 #include  "paths.h"
-#include  "rtmisc.h" /* myhostname() */
+#include  "hilbert.h"
 
 
 #define	 RFTEMPLATE	"rfXXXXXX"
@@ -167,37 +167,35 @@ int  code;
 static void
 report(int dummy)		/* report progress */
 {
-	double  u, s;
+	double		u, s;
 #ifdef BSD
-	struct rusage  rubuf;
+	struct rusage	rubuf;
 #else
-	struct tms  tbuf;
-	double  period;
+	double		period = 1.0 / 60.0;
+	struct tms	tbuf;
 #endif
 
 	tlastrept = time((time_t *)NULL);
 #ifdef BSD
 	getrusage(RUSAGE_SELF, &rubuf);
-	u = rubuf.ru_utime.tv_sec + rubuf.ru_utime.tv_usec/1e6;
-	s = rubuf.ru_stime.tv_sec + rubuf.ru_stime.tv_usec/1e6;
+	u = rubuf.ru_utime.tv_sec + rubuf.ru_utime.tv_usec*1e-6;
+	s = rubuf.ru_stime.tv_sec + rubuf.ru_stime.tv_usec*1e-6;
 	getrusage(RUSAGE_CHILDREN, &rubuf);
-	u += rubuf.ru_utime.tv_sec + rubuf.ru_utime.tv_usec/1e6;
-	s += rubuf.ru_stime.tv_sec + rubuf.ru_stime.tv_usec/1e6;
+	u += rubuf.ru_utime.tv_sec + rubuf.ru_utime.tv_usec*1e-6;
+	s += rubuf.ru_stime.tv_sec + rubuf.ru_stime.tv_usec*1e-6;
 #else
 	times(&tbuf);
 #ifdef _SC_CLK_TCK
 	period = 1.0 / sysconf(_SC_CLK_TCK);
-#else
-	period = 1.0 / 60.0;
 #endif
 	u = ( tbuf.tms_utime + tbuf.tms_cutime ) * period;
 	s = ( tbuf.tms_stime + tbuf.tms_cstime ) * period;
 #endif
 
 	sprintf(errmsg,
-		"%lu rays, %4.2f%% after %.3fu %.3fs %.3fr hours on %s\n",
-			nrays, pctdone, u/3600., s/3600.,
-			(tlastrept-tstart)/3600., myhostname());
+	    "%lu rays, %4.2f%% after %.3fu %.3fs %.3fr hours on %s (PID %d)\n",
+			nrays, pctdone, u*(1./3600.), s*(1./3600.),
+			(tlastrept-tstart)*(1./3600.), myhostname(), getpid());
 	eputs(errmsg);
 #ifdef SIGCONT
 	signal(SIGCONT, report);
@@ -215,7 +213,7 @@ report(int dummy)		/* report progress */
 #endif
 
 
-extern void
+void
 rpict(			/* generate image(s) */
 	int  seq,
 	char  *pout,
@@ -802,15 +800,21 @@ writerr:
 }
 
 static int
-pixnumber(		/* compute pixel index (brushed) */
+pixnumber(		/* compute pixel index (screen door) */
 	int  x,
 	int  y,
 	int  xres,
 	int  yres
 )
 {
-	x -= y;
-	while (x < 0)
-		x += xres;
-	return((((x>>2)*yres + y) << 2) + (x & 3));
+	unsigned	nbits = 0;
+	bitmask_t	coord[2];
+
+	if (xres < yres) xres = yres;
+	while (xres > 0) {
+		xres >>= 1;
+		++nbits;
+	}
+	coord[0] = x; coord[1] = y;
+	return ((int)hilbert_c2i(2, nbits, coord));
 }

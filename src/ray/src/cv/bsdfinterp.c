@@ -1,5 +1,5 @@
 #ifndef lint
-static const char RCSid[] = "$Id: bsdfinterp.c,v 2.15 2013/10/23 03:41:39 greg Exp $";
+static const char RCSid[] = "$Id: bsdfinterp.c,v 2.20 2014/10/26 17:35:53 greg Exp $";
 #endif
 /*
  * Interpolate BSDF data from radial basis functions in advection mesh.
@@ -208,20 +208,21 @@ get_interp(MIGRATION *miga[3], FVECT invec)
 	if (single_plane_incident) {		/* isotropic BSDF? */
 	    RBFNODE	*rbf;			/* find edge we're on */
 	    for (rbf = dsf_list; rbf != NULL; rbf = rbf->next) {
-		if (input_orient*rbf->invec[2] < input_orient*invec[2])
+		if (input_orient*rbf->invec[2] < input_orient*invec[2]-FTINY)
 			break;
 		if (rbf->next != NULL && input_orient*rbf->next->invec[2] <
-							input_orient*invec[2]) {
+						input_orient*invec[2]+FTINY) {
 		    for (miga[0] = rbf->ejl; miga[0] != NULL;
 					miga[0] = nextedge(rbf,miga[0]))
 			if (opp_rbf(rbf,miga[0]) == rbf->next) {
-				double	nf = 1. - rbf->invec[2]*rbf->invec[2];
+				double	nf = 1. -
+					rbf->next->invec[2]*rbf->next->invec[2];
 				if (nf > FTINY) {	/* rotate to match */
 					nf = sqrt((1.-invec[2]*invec[2])/nf);
-					invec[0] = nf*rbf->invec[0];
-					invec[1] = nf*rbf->invec[1];
+					invec[0] = nf*rbf->next->invec[0];
+					invec[1] = nf*rbf->next->invec[1];
 				}
-				return(0);
+				return(0);	/* rotational symmetry */
 			}
 		    break;
 		}
@@ -262,93 +263,7 @@ get_interp(MIGRATION *miga[3], FVECT invec)
 	}
 }
 
-/* Advect and allocate new RBF along edge */
-static RBFNODE *
-e_advect_rbf(const MIGRATION *mig, const FVECT invec, int lobe_lim)
-{
-	double		cthresh = FTINY;
-	RBFNODE		*rbf;
-	int		n, i, j;
-	double		t, full_dist;
-						/* get relative position */
-	t = Acos(DOT(invec, mig->rbfv[0]->invec));
-	if (t < M_PI/grid_res) {		/* near first DSF */
-		n = sizeof(RBFNODE) + sizeof(RBFVAL)*(mig->rbfv[0]->nrbf-1);
-		rbf = (RBFNODE *)malloc(n);
-		if (rbf == NULL)
-			goto memerr;
-		memcpy(rbf, mig->rbfv[0], n);	/* just duplicate */
-		rbf->next = NULL; rbf->ejl = NULL;
-		return(rbf);
-	}
-	full_dist = acos(DOT(mig->rbfv[0]->invec, mig->rbfv[1]->invec));
-	if (t > full_dist-M_PI/grid_res) {	/* near second DSF */
-		n = sizeof(RBFNODE) + sizeof(RBFVAL)*(mig->rbfv[1]->nrbf-1);
-		rbf = (RBFNODE *)malloc(n);
-		if (rbf == NULL)
-			goto memerr;
-		memcpy(rbf, mig->rbfv[1], n);	/* just duplicate */
-		rbf->next = NULL; rbf->ejl = NULL;
-		return(rbf);
-	}
-	t /= full_dist;
-tryagain:
-	n = 0;					/* count migrating particles */
-	for (i = 0; i < mtx_nrows(mig); i++)
-	    for (j = 0; j < mtx_ncols(mig); j++)
-		n += (mtx_coef(mig,i,j) > cthresh);
-						/* are we over our limit? */
-	if ((lobe_lim > 0) & (n > lobe_lim)) {
-		cthresh = cthresh*2. + 10.*FTINY;
-		goto tryagain;
-	}
-#ifdef DEBUG
-	fprintf(stderr, "Input RBFs have %d, %d nodes -> output has %d\n",
-			mig->rbfv[0]->nrbf, mig->rbfv[1]->nrbf, n);
-#endif
-	rbf = (RBFNODE *)malloc(sizeof(RBFNODE) + sizeof(RBFVAL)*(n-1));
-	if (rbf == NULL)
-		goto memerr;
-	rbf->next = NULL; rbf->ejl = NULL;
-	VCOPY(rbf->invec, invec);
-	rbf->nrbf = n;
-	rbf->vtotal = 1.-t + t*mig->rbfv[1]->vtotal/mig->rbfv[0]->vtotal;
-	n = 0;					/* advect RBF lobes */
-	for (i = 0; i < mtx_nrows(mig); i++) {
-	    const RBFVAL	*rbf0i = &mig->rbfv[0]->rbfa[i];
-	    const float		peak0 = rbf0i->peak;
-	    const double	rad0 = R2ANG(rbf0i->crad);
-	    FVECT		v0;
-	    float		mv;
-	    ovec_from_pos(v0, rbf0i->gx, rbf0i->gy);
-	    for (j = 0; j < mtx_ncols(mig); j++)
-		if ((mv = mtx_coef(mig,i,j)) > cthresh) {
-			const RBFVAL	*rbf1j = &mig->rbfv[1]->rbfa[j];
-			double		rad2;
-			FVECT		v;
-			int		pos[2];
-			rad2 = R2ANG(rbf1j->crad);
-			rad2 = rad0*rad0*(1.-t) + rad2*rad2*t;
-			rbf->rbfa[n].peak = peak0 * mv * rbf->vtotal *
-						rad0*rad0/rad2;
-			rbf->rbfa[n].crad = ANG2R(sqrt(rad2));
-			ovec_from_pos(v, rbf1j->gx, rbf1j->gy);
-			geodesic(v, v0, v, t, GEOD_REL);
-			pos_from_vec(pos, v);
-			rbf->rbfa[n].gx = pos[0];
-			rbf->rbfa[n].gy = pos[1];
-			++n;
-		}
-	}
-	rbf->vtotal *= mig->rbfv[0]->vtotal;	/* turn ratio into actual */
-	return(rbf);
-memerr:
-	fprintf(stderr, "%s: Out of memory in e_advect_rbf()\n", progname);
-	exit(1);
-	return(NULL);	/* pro forma return */
-}
-
-/* Partially advect between recorded incident angles and allocate new RBF */
+/* Advect between recorded incident angles and allocate new RBF */
 RBFNODE *
 advect_rbf(const FVECT invec, int lobe_lim)
 {
@@ -365,7 +280,7 @@ advect_rbf(const FVECT invec, int lobe_lim)
 	VCOPY(sivec, invec);			/* find triangle/edge */
 	sym = get_interp(miga, sivec);
 	if (sym < 0)				/* can't interpolate? */
-		return(NULL);
+		return(def_rbf_spec(invec));
 	if (miga[1] == NULL) {			/* advect along edge? */
 		rbf = e_advect_rbf(miga[0], sivec, lobe_lim);
 		if (single_plane_incident)
@@ -375,9 +290,9 @@ advect_rbf(const FVECT invec, int lobe_lim)
 		return(rbf);
 	}
 #ifdef DEBUG
-	if (miga[0]->rbfv[0] != miga[2]->rbfv[0] |
-			miga[0]->rbfv[1] != miga[1]->rbfv[0] |
-			miga[1]->rbfv[1] != miga[2]->rbfv[1]) {
+	if ((miga[0]->rbfv[0] != miga[2]->rbfv[0]) |
+			(miga[0]->rbfv[1] != miga[1]->rbfv[0]) |
+			(miga[1]->rbfv[1] != miga[2]->rbfv[1])) {
 		fprintf(stderr, "%s: Triangle vertex screw-up!\n", progname);
 		exit(1);
 	}

@@ -1,11 +1,14 @@
 #ifndef lint
-static const char RCSid[] = "$Id: rcontrib.c,v 2.18 2012/11/15 19:41:03 greg Exp $";
+static const char RCSid[] = "$Id: rcontrib.c,v 2.23 2014/08/25 13:18:30 greg Exp $";
 #endif
 /*
  * Accumulate ray contributions for a set of materials
  * Initialization and calculation routines
  */
 
+#include "copyright.h"
+
+#include <ctype.h>
 #include "rcontrib.h"
 #include "otypes.h"
 #include "source.h"
@@ -88,7 +91,7 @@ formstr(				/* return format identifier */
 
 /* Add modifier to our list to track */
 MODCONT *
-addmodifier(char *modn, char *outf, char *binv, int bincnt)
+addmodifier(char *modn, char *outf, char *prms, char *binv, int bincnt)
 {
 	LUENT	*lep = lu_find(&modconttab,modn);
 	MODCONT	*mp;
@@ -125,6 +128,7 @@ addmodifier(char *modn, char *outf, char *binv, int bincnt)
 		error(SYSTEM, "out of memory in addmodifier");
 	mp->outspec = outf;		/* XXX assumes static string */
 	mp->modname = modn;		/* XXX assumes static string */
+	mp->params = prms;
 	mp->binv = ebinv;
 	mp->nbins = bincnt;
 	memset(mp->cbin, 0, sizeof(DCOLOR)*bincnt);
@@ -138,7 +142,7 @@ addmodifier(char *modn, char *outf, char *binv, int bincnt)
 
 /* Add modifiers from a file list */
 void
-addmodfile(char *fname, char *outf, char *binv, int bincnt)
+addmodfile(char *fname, char *outf, char *prms, char *binv, int bincnt)
 {
 	char	*mname[MAXMODLIST];
 	int	i;
@@ -148,7 +152,7 @@ addmodfile(char *fname, char *outf, char *binv, int bincnt)
 		error(SYSTEM, errmsg);
 	}
 	for (i = 0; mname[i]; i++)	/* add each one */
-		addmodifier(mname[i], outf, binv, bincnt);
+		addmodifier(mname[i], outf, prms, binv, bincnt);
 }
 
 
@@ -211,29 +215,79 @@ rcinit()
 
 /************************** MAIN CALCULATION PROCESS ***********************/
 
+/* Set parameters for current bin evaluation */
+void
+set_eparams(char *prms)
+{
+	static char	*last_params = NULL;
+	char		vname[RMAXWORD];
+	double		value;
+	char		*cpd;
+					/* check if already set */
+	if ((prms == NULL) | (prms == last_params))
+		return;
+	if (last_params != NULL && !strcmp(prms, last_params))
+		return;
+	last_params = prms;		/* assign each variable */
+	while (*prms) {
+		if (isspace(*prms)) {
+			++prms; continue;
+		}
+		if (!isalpha(*prms))
+			goto bad_params;
+		cpd = vname;
+		while (*prms && (*prms != '=') & !isspace(*prms)) {
+			if (!isid(*prms))
+				goto bad_params;
+			*cpd++ = *prms++;
+		}
+		if (cpd == vname)
+			goto bad_params;
+		*cpd = '\0';
+		while (isspace(*prms)) prms++;
+		if (*prms++ != '=')
+			goto bad_params;
+		value = atof(prms);
+		if ((prms = fskip(prms)) == NULL)
+			goto bad_params;
+		while (isspace(*prms)) prms++;
+		prms += (*prms == ',') | (*prms == ';');
+		varset(vname, '=', value);
+	}
+	return;
+bad_params:
+	sprintf(errmsg, "bad parameter list '%s'", last_params);
+	error(USER, errmsg);
+}
+
+
 /* Our trace call to sum contributions */
 static void
 trace_contrib(RAY *r)
 {
 	MODCONT	*mp;
+	double	bval;
 	int	bn;
 	RREAL	contr[3];
 
 	if (r->ro == NULL || r->ro->omod == OVOID)
+		return;
+						/* shadow ray not on source? */
+	if (r->rsrc >= 0 && source[r->rsrc].so != r->ro)
 		return;
 
 	mp = (MODCONT *)lu_find(&modconttab,objptr(r->ro->omod)->oname)->data;
 
 	if (mp == NULL)				/* not in our list? */
 		return;
-						/* shadow ray not on source? */
-	if (r->rsrc >= 0 && source[r->rsrc].so != r->ro)
-		return;
 
-	worldfunc(RCCONTEXT, r);		/* else get bin number */
-	bn = (int)(evalue(mp->binv) + .5);
-	if ((bn < 0) | (bn >= mp->nbins)) {
-		error(WARNING, "bad bin number (ignored)");
+	worldfunc(RCCONTEXT, r);		/* else set context */
+	set_eparams((char *)mp->params);
+	if ((bval = evalue(mp->binv)) <= -.5)	/* and get bin number */
+		return;				/* silently ignore negatives */
+	if ((bn = (int)(bval + .5)) >= mp->nbins) {
+		sprintf(errmsg, "bad bin number (%d ignored)", bn);
+		error(WARNING, errmsg);
 		return;
 	}
 	raycontrib(contr, r, PRIMARY);		/* compute coefficient */

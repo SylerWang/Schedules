@@ -57,13 +57,13 @@
 #define HAVE_LIBC 1
 
 /* Define to 1 if you have the `m' library (-lm). */
-/* #undef HAVE_LIBM */
+#define HAVE_LIBM 1
 
 /* Define to 1 if you have the <limits.h> header file. */
 #define HAVE_LIMITS_H 1
 
 /* Define to 1 if you have the <malloc.h> header file. */
-/* #undef HAVE_MALLOC_H */
+#define HAVE_MALLOC_H 1
 
 /* Define to 1 if you have the `memmove' function. */
 #define HAVE_MEMMOVE 1
@@ -139,7 +139,7 @@
 #define HOST_BIGENDIAN 0
 
 /* Set the native cpu bit order (FILLORDER_LSB2MSB or FILLORDER_MSB2LSB) */
-#define HOST_FILLORDER FILLORDER_LSB2MSB
+#define HOST_FILLORDER FILLORDER_MSB2LSB
 
 /* Support JPEG compression (requires IJG JPEG library) */
 /* #undef JPEG_SUPPORT */

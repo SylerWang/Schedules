@@ -1,5 +1,5 @@
 #ifndef lint
-static const char RCSid[] = "$Id: bsdf_t.c,v 3.31 2013/08/08 05:26:56 greg Exp $";
+static const char RCSid[] = "$Id: bsdf_t.c,v 3.36 2014/11/11 23:33:21 greg Exp $";
 #endif
 /*
  *  bsdf_t.c
@@ -284,7 +284,7 @@ SDdotravTre(const SDNode *st, const double *pos, int cmask,
 		unsigned	skipmask = 0;
 		csiz *= .5;
 		for (i = st->ndim; i--; )
-			if (1<<i & cmask)
+			if (1<<i & cmask) {
 				if (pos[i] < cmin[i] + csiz)
 					for (n = 1 << st->ndim; n--; ) {
 						if (n & 1<<i)
@@ -295,6 +295,7 @@ SDdotravTre(const SDNode *st, const double *pos, int cmask,
 						if (!(n & 1<<i))
 							skipmask |= 1<<n;
 					}
+			}
 		for (n = 1 << st->ndim; n--; ) {
 			if (1<<n & skipmask)
 				continue;
@@ -516,7 +517,7 @@ build_scaffold(float val, const double *cmin, double csiz, void *cptr)
 		sp->wmax = wid;
 	if (sp->alen >= sp->nall) {	/* need more space? */
 		struct outdir_s	*ndarr;
-		sp->nall += 1024;
+		sp->nall = (int)(1.5*sp->nall) + 256;
 		ndarr = (struct outdir_s *)realloc(sp->darr,
 					sizeof(struct outdir_s)*sp->nall);
 		if (ndarr == NULL) {
@@ -720,7 +721,7 @@ SDqueryTreProjSA(double *psa, const FVECT v1, const RREAL *v2,
 					/* get projected solid angle(s) */
 	if (v2 != NULL) {
 		const SDTre	*sdt = (SDTre *)sdc->dist;
-		double		hcube[SD_MAXDIM];
+		double		hcube[SD_MAXDIM+1];
 		if (SDqueryTre(sdt, v1, v2, hcube) < 0) {
 			strcpy(SDerrorDetail, "Bad call to SDqueryTreProjSA");
 			return SDEinternal;
@@ -799,15 +800,13 @@ SDsampTreCDist(FVECT ioVec, double randX, const SDCDst *cdp)
 	SDsquare2disk(gpos, gpos[0], gpos[1]);
 					/* compute Z-coordinate */
 	gpos[2] = 1. - gpos[0]*gpos[0] - gpos[1]*gpos[1];
-	if (gpos[2] > 0)		/* paranoia, I hope */
-		gpos[2] = sqrt(gpos[2]);
+	gpos[2] = sqrt(gpos[2]*(gpos[2]>0));
 					/* emit from back? */
 	if ((cd->sidef == SD_BREFL) | (cd->sidef == SD_FXMIT))
 		gpos[2] = -gpos[2];
-	if (cd->isodist) {		/* rotate isotropic result */
+	if (cd->isodist) {		/* rotate isotropic sample */
 		rotangle = atan2(-ioVec[1],-ioVec[0]);
-		VCOPY(ioVec, gpos);
-		spinvector(ioVec, ioVec, zvec, rotangle);
+		spinvector(ioVec, gpos, zvec, rotangle);
 	} else
 		VCOPY(ioVec, gpos);
 	return SDEnone;
@@ -849,7 +848,8 @@ load_values(char **spp, float *va, int n)
 	char	*svnext;
 
 	while (n-- > 0 && (svnext = fskip(*spp)) != NULL) {
-		*v++ = atof(*spp);
+		if ((*v++ = atof(*spp)) < 0)
+			v[-1] = 0;
 		*spp = svnext;
 		eat_token(spp, ',');
 	}

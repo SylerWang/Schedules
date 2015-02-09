@@ -127,10 +127,10 @@
 /* ============ Lua Requirements ============= */
 /* =========================================== */
 
-#include "/usr/local/include/lua.h" 
-#include "/usr/local/include/luaconf.h"
-#include "/usr/local/include/lualib.h" 
-#include "/usr/local/include/lauxlib.h"
+#include "/usr/include/lua5.2/lua.h" 
+#include "/usr/include/lua5.2/luaconf.h"
+#include "/usr/include/lua5.2/lualib.h" 
+#include "/usr/include/lua5.2/lauxlib.h"
 
 
 /* Sky information */

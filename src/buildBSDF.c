@@ -1,0 +1,584 @@
+/* buildBSDF program
+
+This program intends to generate BSDF data of multilayer systems using
+J. Klems' equations.
+
+This allows avoiding entering to WINDOW program (which is only available
+for WINDOWS) and including this in routines.
+
+ */
+
+#include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+#include <math.h>
+#include "./ray/src/common/standard.h"
+#include "./ray/src/util/cmatrix.h"
+#include "./ray/src/common/platform.h"
+#include "./ray/src/common/resolu.h"
+#include "./ray/src/common/ezxml.h"
+#define RADIANS(x) (x*PI/180)
+
+
+
+char	*progname;
+char	usage_message[256];
+char 	*output_name;
+char	*output_format;
+char	*layer_name;
+
+int dim=145;
+
+double klems[9][3]={
+		{1,0,5},
+		{8,5,15},
+		{16,15,25},
+		{20,25,35},
+		{24,35,45},
+		{24,45,55},
+		{24,55,65},
+		{16,65,75},
+		{12,75,90}};
+
+void
+hemispherical_print(int dim,double A[dim][dim]){
+	int i,j;
+	double prop[dim][dim], Aux[dim][dim], sum;
+	propagation_matrix(dim,prop);
+	matrix_multiply(dim,prop,A,Aux);
+	for(j=0;j<dim;j++){
+		sum=0;
+		for(i=0; i<dim; i++){
+			sum=sum+Aux[i][j];
+		}
+		printf("%f,",sum);
+	}
+}
+
+void 
+matrix_print(int dim, double A[dim][dim]){
+	int i,j;	
+	for(i=0;i<dim;i++){
+		for(j=0;j<dim;j++){
+			printf("%f,\t",A[i][j]);		
+		}
+		printf("\n");
+	}
+}
+
+void 
+matrix_copy(int dim, double A[dim][dim], double B[dim][dim]){
+	int i,j;	
+	for(i=0;i<dim;i++){
+		for(j=0;j<dim;j++){
+			B[i][j]=A[i][j];
+		}
+	}
+}
+
+void
+eye(int dim, double A[dim][dim]){
+	int i,j;	
+	for(i=0;i<dim;i++){
+		for(j=0;j<dim;j++){
+			A[i][j]=(i==j)?1:0;
+		}	
+	}
+}
+
+void
+matrix_inverse(int dim, double A[dim][dim], double B[dim][dim]){
+	double tem=0,temp=0,temp1=0,temp2=0,temp4=0,temp5=0;
+	int i,j,p,q;
+	
+	double Aux[dim][dim];	
+	eye(dim,Aux);
+	
+	for(i=0;i<dim;i++)
+	{
+		temp=A[i][i];
+		if(temp<0)
+		temp=temp*(-1);
+		p=i;
+		for(j=i+1;j<dim;j++)
+		{
+			if(A[j][i]<0)
+				tem=A[j][i]*(-1);
+			else
+				tem=A[j][i];
+			if(temp<0)
+				temp=temp*(-1);
+			if(tem>temp)
+			{
+				p=j;
+				temp=A[j][i];
+			}
+		}
+		//row exchange in both the matrix
+		for(j=0;j<dim;j++)
+		{
+			temp1=A[i][j];
+			A[i][j]=A[p][j];
+			A[p][j]=temp1;
+			temp2=Aux[i][j];
+			Aux[i][j]=Aux[p][j];
+			Aux[p][j]=temp2;
+		}
+		//dividing the row by A[i][i]
+		temp4=A[i][i];
+		for(j=0;j<dim;j++)
+		{
+			A[i][j]=(double)A[i][j]/temp4;
+			Aux[i][j]=(double)Aux[i][j]/temp4;
+		}
+		//making other elements 0 in order to make the matrix A[][] an indentity matrix and obtaining A inverse Aux[][] matrix
+		for(q=0;q<dim;q++)
+		{
+			if(q==i)
+				continue;
+			temp5=A[q][i];
+			for(j=0;j<dim;j++)
+			{
+				A[q][j]=A[q][j]-(temp5*A[i][j]);
+				Aux[q][j]=Aux[q][j]-(temp5*Aux[i][j]);
+			}
+		}
+	}
+	matrix_copy(dim,Aux,B);
+	
+}
+
+void
+propagation_matrix(int dim, double A[dim][dim]){
+	eye(dim,A);	
+	double theta_max, theta_min, nphi;
+	int i,j,k;
+	
+	
+		
+	k=0;
+	for(i=0; i<9; i++){
+		for(j=0;j<klems[i][0];j++){
+			theta_max=RADIANS(klems[i][2]);
+			theta_min=RADIANS(klems[i][1]);
+			nphi=klems[i][0];
+			A[k][k]=PI*(sin(theta_max)*sin(theta_max)-sin(theta_min)*sin(theta_min))/nphi;
+			k++;
+		}
+	}
+	
+}
+
+
+
+void
+matrix_multiply(int dim, double A[dim][dim], double B[dim][dim], double C[dim][dim]){
+	int i,j,k;
+	double sum;	
+	for(i=0;i<dim;i++){
+		for(j=0;j<dim;j++){
+			sum=0;
+			for(k=0;k<dim;k++){
+				sum=sum+A[i][k]*B[k][j];
+			}
+			C[i][j]=sum;		
+		}	
+	}
+}
+
+void
+matrix_add(int dim, double A[dim][dim], double B[dim][dim], double C[dim][dim]){
+	int i,j;	
+	for(i=0;i<dim;i++){
+		for(j=0;j<dim;j++){
+			C[i][j]=A[i][j]+B[i][j];		
+		}	
+	}
+}
+
+void
+matrix_sustract(int dim, double A[dim][dim], double B[dim][dim], double C[dim][dim]){
+	int i,j;	
+	for(i=0;i<dim;i++){
+		for(j=0;j<dim;j++){
+			C[i][j]=A[i][j]-B[i][j];		
+		}	
+	}
+}
+
+
+
+void
+csv_to_array(int dim, double array[dim][dim], char *string){
+	char *value;	
+	int j,i;
+	
+	i=0;
+	value=strtok(string," ,\n\t");
+	for(i=0;i<dim;i++){
+		j=0;
+		for(j=0;j<dim;j++){
+			array[i][j]=atof(value);
+			value = strtok(NULL,",\n\t");
+		}
+		
+	}
+	
+}
+
+
+int 
+load_XML(int dim,double tf[dim][dim],double tb[dim][dim],double rf[dim][dim],double rb[dim][dim], char *file_name){
+	ezxml_t	wavelength_data, wavelength_data_block;
+	char *data_direction, *bsdf_data;
+	int tr_front_exist=0, tr_back_exist=0, ref_front_exist=0, ref_back_exist=0;
+
+	//Parse file
+	ezxml_t xml_file = ezxml_parse_file(file_name);
+	//Get Optical
+	ezxml_t optical = ezxml_child(xml_file, "Optical");
+	//Get Layer
+	ezxml_t layer = ezxml_child(optical, "Layer");
+	//Get WavelengthData 
+	for(wavelength_data = ezxml_child(layer, "WavelengthData");wavelength_data;wavelength_data=wavelength_data->next){
+		wavelength_data_block=ezxml_child(wavelength_data,"WavelengthDataBlock"); 
+		data_direction=ezxml_child(wavelength_data_block,"WavelengthDataDirection")->txt;
+		bsdf_data=ezxml_child(wavelength_data_block,"ScatteringData")->txt;
+
+		if(strcmp(data_direction,"Transmission Front") == 0){
+			tr_front_exist=1;
+			csv_to_array(dim,tf,bsdf_data);
+		}else if(strcmp(data_direction,"Transmission Back") == 0){
+			tr_back_exist=1;
+			csv_to_array(dim,tb,bsdf_data);
+		}else if(strcmp(data_direction,"Reflection Front") == 0){
+			ref_front_exist=1;
+			csv_to_array(dim,rf,bsdf_data);
+		}else if(strcmp(data_direction,"Reflection Back") == 0){
+			ref_back_exist=1;
+			csv_to_array(dim,rb,bsdf_data);
+		}
+
+	}
+
+	if(tr_front_exist*tr_back_exist*ref_front_exist*ref_back_exist==0){
+		fprintf(stderr, "Error: %s: missing optical data in '%s'\n",
+					progname, file_name);
+		return(1);
+	}else{
+		return(0);
+	}	
+	
+	
+
+
+}
+
+void
+glass_BSDF(int dim, double tf[dim][dim], double tb[dim][dim], double rf[dim][dim], double rb[dim][dim], double trans, double ref){
+	
+	eye(dim,tf);
+	eye(dim,tb);
+	eye(dim,rf);
+	eye(dim,rb);
+
+	double theta,theta_max, theta_min, nphi, prop_item;
+	int i,j,k;
+		
+	k=0;
+	for(i=0; i<9; i++){
+		for(j=0;j<klems[i][0];j++){
+			theta_max=RADIANS(klems[i][2]);
+			theta_min=RADIANS(klems[i][1]);
+			nphi=klems[i][0];
+			prop_item=PI*(sin(theta_max)*sin(theta_max)-sin(theta_min)*sin(theta_min))/nphi;
+
+			theta=0.5*(theta_max+theta_min);
+			double n=1.526; //refraction coefficient of glass
+			double ka=5e-6;
+			double d=4e-3;
+			double alpha=4*PI*ka/600e-9;
+			double theta2=asin(sin(theta)/n);
+			float r,t;
+			if(theta!=0){
+				float r_perp=(sin(theta2-theta)*sin(theta2-theta))/(sin(theta2+theta)*sin(theta2+theta));
+				float r_para=(tan(theta2-theta)*tan(theta2-theta))/(tan(theta2+theta)*tan(theta2+theta));
+				r=0.5*(r_perp+r_para);
+			}else{
+				r=0.0434;
+			}
+			t=1-r;
+			float tau=(t*t*exp(-alpha*d/cos(theta2)))/(1-r*r*exp(-2*alpha*d/cos(theta2)));
+			float rho=r*(1+exp(-alpha*d/cos(theta2))*tau);
+			
+			//Scale to get the desired transmittance and reflectance.			
+			tau=trans*tau/0.602418; //normalized and then scaled.
+			rho=ref*rho/0.060598;
+
+			rf[k][k]=rb[k][k]=r/prop_item;
+			tf[k][k]=tb[k][k]=t/prop_item;
+			
+			k++;
+		}
+	}
+
+}
+
+void
+air_BSDF(int dim, double tf[dim][dim], double tb[dim][dim], double rf[dim][dim], double rb[dim][dim]){
+	
+	eye(dim,tf);
+	eye(dim,tb);
+	eye(dim,rf);
+	eye(dim,rb);
+
+	double theta,theta_max, theta_min, nphi, prop_item;
+	int i,j,k;
+		
+	k=0;
+	for(i=0; i<9; i++){
+		for(j=0;j<klems[i][0];j++){
+			theta_max=RADIANS(klems[i][2]);
+			theta_min=RADIANS(klems[i][1]);
+			nphi=klems[i][0];
+			prop_item=PI*(sin(theta_max)*sin(theta_max)-sin(theta_min)*sin(theta_min))/nphi;
+
+			rf[k][k]=rb[k][k]=0;
+			tf[k][k]=tb[k][k]=1/prop_item;
+			
+			k++;
+		}
+	}
+
+}
+
+void diffuse_BSDF(int dim, double tf[dim][dim], double tb[dim][dim], double rf[dim][dim], double rb[dim][dim], double trans, double ref){
+	int i,j;
+	for(i=0;i<dim;i++){
+		for(j=0;j<dim;j++){
+			tf[i][j]=tb[i][j]=trans/PI;
+			rf[i][j]=rb[i][j]=ref/PI;
+		}
+	}
+}
+
+int
+get_BSDF(int dim, double tf[dim][dim], double tb[dim][dim], double rf[dim][dim], double rb[dim][dim], char *layer_name){
+	char *function = strtok(layer_name,"()");
+	
+	if(strcmp(function,"xml")==0){
+		char *file=strtok(NULL,"()");
+		if(load_XML(dim, tf, tb, rf, rb,file)){
+			return(1);	
+		}
+		return(0);
+	}else if(strcmp(function,"glass")==0){
+		char *trans=strtok(NULL,"(),");
+		char *ref=strtok(NULL,"(),");
+		if(trans==NULL || ref==NULL){
+			fprintf(stderr, "Error: Incorrect number of arguments for 'specular' function.\nUsage: 'specular(transmittance,reflectance)'\n");
+			return(1);
+		}
+		glass_BSDF(dim,tf,tb,rf,rb,atof(trans), atof(ref));
+		return(0);
+	}else if(strcmp(function,"diffuse")==0){
+		char *trans=strtok(NULL,"(),");
+		char *ref=strtok(NULL,"(),");
+		if(trans==NULL || ref==NULL){
+			fprintf(stderr, "Error: Incorrect number of arguments for 'diffuse' function.\nUsage: 'diffuse(transmittance,reflectance)'\n");
+			return(1);
+		}
+		diffuse_BSDF(dim,tf,tb,rf,rb,atof(trans), atof(ref));
+		return(0);
+	}else if(strcmp(function,"air")==0){
+		air_BSDF(dim,tf,tb,rf,rb);
+		return(0);
+	}else{
+		fprintf(stderr, "Error: Layer function not recognized.\n");
+		return(1);
+	}
+}
+
+
+
+
+int
+main(int argc, char *argv[])
+{
+	
+	int		a, input_layers=-1;
+	double I[dim][dim], Tf[dim][dim], Tb[dim][dim], Rf[dim][dim], Rb[dim][dim], prop[dim][dim], rf[dim][dim], rb[dim][dim], tf[dim][dim], tb[dim][dim], inter1[dim][dim], inter2[dim][dim];
+
+	progname = "buildBSDF"; //argv[0];
+	snprintf(usage_message, sizeof usage_message, "%s%s%s", "Usage: ", progname, "[-o output_name] [-f both/epw/xml/hemispherical] -l Layer1 Layer2 ...");
+	
+	output_format="xml"; //default output format
+	 
+	propagation_matrix(dim,prop);
+	eye(dim,I);
+
+	for (a = 1; a < argc; a++){
+		if(argv[a][0]!='-'){
+			goto userr;		
+		}else{	
+			switch (argv[a][1]) {
+				case 'l':
+					input_layers=1;
+					layer_name=argv[++a];
+
+					if(get_BSDF(dim, Tf, Tb, Rf, Rb, layer_name)){	 //asign the first layer... check for errors						
+						return(1);
+					}
+						
+					while(a+1 < argc){ // read until the end.
+						layer_name=argv[++a];						
+						if(get_BSDF(dim, tf, tb, rf, rb, layer_name)){	 //asign the next layer... check for errors
+							return(1);
+						}
+						
+						//Calc inter1
+						matrix_copy(dim,prop,inter1);
+						matrix_multiply(dim,inter1,Rb,inter1);
+						matrix_multiply(dim,inter1,prop,inter1);
+						matrix_multiply(dim,inter1,rf,inter1);
+						matrix_sustract(dim,I,inter1,inter1);
+						matrix_inverse(dim,inter1,inter1);
+
+						//Calc inter2
+						matrix_copy(dim,prop,inter2);
+						matrix_multiply(dim,inter2,rf,inter2);
+						matrix_multiply(dim,inter2,prop,inter2);
+						matrix_multiply(dim,inter2,Rb,inter2);
+						matrix_sustract(dim,I,inter2,inter2);
+						matrix_inverse(dim,inter2,inter2);
+
+
+
+						//Now the calculations
+
+						/*Rf=Rf+Tb*inter2*prop*rf*prop*Tf*/
+						double Aux1[dim][dim];
+						matrix_copy(dim,Tb,Aux1); //Tb
+						matrix_multiply(dim,Aux1,inter2,Aux1); //Tb*inter2
+						matrix_multiply(dim,Aux1,prop,Aux1); //Tb*inter2*prop
+						matrix_multiply(dim,Aux1,rf,Aux1); //Tb*inter2*prop*rf
+						matrix_multiply(dim,Aux1,prop,Aux1); //Tb*inter2*prop*rf*prop
+						matrix_multiply(dim,Aux1,Tf,Aux1); //Tb*inter2*prop*rf*prop*Tf
+						matrix_add(dim,Aux1,Rf,Aux1); //Rf+Tb*inter2*prop*rf*prop*Tf
+				
+						
+						/*Tf=tf*inter1*prop*Tf*/
+						double Aux2[dim][dim];
+						matrix_copy(dim,tf,Aux2); //tf
+						matrix_multiply(dim,Aux2,inter1,Aux2); //tf*inter1
+						matrix_multiply(dim,Aux2,prop,Aux2); //tf*inter1*prop
+						matrix_multiply(dim,Aux2,Tf,Aux2); //tf*inter1*prop*Tf
+
+						/*Tb=Tb*inter2*prop*tb*/
+						double Aux3[dim][dim];
+						matrix_copy(dim,Tb,Aux3); //Tb
+						matrix_multiply(dim,Aux3,inter2,Aux3); //Tb*inter2
+						matrix_multiply(dim,Aux3,prop,Aux3); //Tb*inter2*prop
+						matrix_multiply(dim,Aux3,tb,Aux3); //Tb*inter2*prop*tb
+
+						/*Rb=rb+tf*inter1*prop*Rb*prop*tb*/
+						double Aux4[dim][dim];
+						matrix_copy(dim,tf,Aux4); //tf
+						matrix_multiply(dim,Aux4,inter1,Aux4); //Tb*inter1
+						matrix_multiply(dim,Aux4,prop,Aux4); //Tb*inter1*prop
+						matrix_multiply(dim,Aux4,Rb,Aux4); //Tb*inter1*prop*Rb
+						matrix_multiply(dim,Aux4,prop,Aux4); //Tb*inter1*prop*Rb*prop
+						matrix_multiply(dim,Aux4,tb,Aux4); //Tb*inter1*prop*Rb*prop*tb
+						matrix_add(dim,Aux4,rb,Aux4); //rb+Tb*inter1*prop*Rb*prop*tb
+
+						matrix_copy(dim,Aux1,Rf);
+						matrix_copy(dim,Aux2,Tf);
+						matrix_copy(dim,Aux3,Tb);
+						matrix_copy(dim,Aux4,Rb);
+						
+					}
+					break;
+				case 'o':
+					output_name=argv[++a];
+					if(output_name[0]=='-')
+						goto outputerr;
+					break;
+				case 'f':
+					output_format=argv[++a];
+					switch (output_format[0]){
+						case 'b': break;
+						case 'x': break;
+						case 'e': break;
+						case 'h': break;
+						default: goto formaterr; break;
+					}
+					break;
+				case 'h':
+					printf("\n\n%s Help:\n\n", progname);
+					printf("%s\n\n", usage_message);					
+					printf("This program aims to build BSDF of complex fenestration systems formed\nby multiple layers. It uses Klems equations.\n\n");
+					printf("The first layer is the most exterior one.\n\n");
+					printf("NOTE: The '-l' argument followed by the layer must be the last argument.\n\n");
+					break;
+				default:
+					goto userr;
+				
+			}
+		}
+	}
+	
+	if(input_layers==-1){
+		goto nolayerserr;
+	}
+	
+	//print results
+	switch(output_format[0]){
+		case 'x':
+			printf("\nTf:\n");
+			matrix_print(dim,Tf);
+			
+			printf("\nTb:\n");
+			matrix_print(dim,Tb);
+			
+			printf("\nRf:\n");
+			matrix_print(dim,Rf);
+			
+			printf("\nRb:\n");
+			matrix_print(dim,Rb);	
+
+			break;
+		case 'h':
+			printf("\nTf:\n");
+			hemispherical_print(dim,Tf);
+			printf("\nTb:\n");
+			hemispherical_print(dim,Tb);
+			printf("\nRf:\n");
+			hemispherical_print(dim,Rf);
+			printf("\nRb:\n");
+			hemispherical_print(dim,Rb);
+			break;
+		default:
+			fprintf(stderr, "Wrong output format specified.\n");
+			return(1);
+	}
+
+	return(0);
+	userr:
+		fprintf(stderr, "Usage: %s %s\n",
+				progname, usage_message);
+
+		return(1);
+
+	formaterr:
+		fprintf(stderr, "Incorrect format value. Only possible values are 'both' (b), 'epw' (e), 'xml' (x) and 'hemispherical' (h)\n");
+		return(1);
+	outputerr:
+		fprintf(stderr, "Incorrect (or missing) name for output. It cannot start with a '-'\n");
+		return(1);
+	nolayerserr:
+		fprintf(stderr, "No layers were found in input. There must be a '-l Layer1 Layer2 ...' statement at the end of the command.\n");
+		return(1);
+
+
+
+}
